@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: fabriq-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fabriq
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      # PGDATA can be set explicitly if you ever need to relocate data dir inside the container
+      # PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
