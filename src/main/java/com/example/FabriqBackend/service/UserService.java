@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service;
 
+import com.example.FabriqBackend.config.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
 import com.example.FabriqBackend.model.Login;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -31,6 +34,8 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be blank");
         }
         user.setPassword(encoder.encode(user.getPassword()));
+        //String tenantId = TenantContext.getCurrentTenant(); // comes from filter
+        user.setTenantId("comp-a");
         userDao.save(user);
         return user;
     }
