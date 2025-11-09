@@ -49,4 +49,9 @@ public class UserPrincipal implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public String getTenantId() {
+        return user.getTenantId();
+    }
+
 }
