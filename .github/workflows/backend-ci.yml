@@ -78,11 +78,6 @@ jobs:
             echo "Waiting for Redis... ($i)"; sleep 2;
           done
 
-      - name: Show Java and Maven versions
-        run: |
-          java -version
-          ./mvnw -v
-
       - name: Build and run tests
         run: ./mvnw -B -ntp -Dstyle.color=always verify
 
