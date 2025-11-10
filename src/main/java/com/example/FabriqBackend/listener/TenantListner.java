@@ -6,13 +6,11 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
 public class TenantListner  {
-    @PrePersist // This method will be called before the entity is persisted
-    @PreUpdate // This method will be called before the entity is updated
-
+    @PrePersist
+    @PreUpdate
     public void setTenant(TenantAwareEntity entity) {
-        // In a real application, you would get the tenant ID from the security context or session
         String tenantId = TenantContext.getCurrentTenant();
-        if (tenantId == null) {
+        if (tenantId != null && (entity.getTenantId() == null || entity.getTenantId().isEmpty())) {
             entity.setTenantId(tenantId);
         }
     }

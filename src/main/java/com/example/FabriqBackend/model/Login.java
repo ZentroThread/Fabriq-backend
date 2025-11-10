@@ -2,8 +2,10 @@ package com.example.FabriqBackend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "login")
 public class Login extends TenantAwareEntity {
@@ -15,7 +17,5 @@ public class Login extends TenantAwareEntity {
     private String password;
     private String role;
 
-    @Column(name = "tenant_id", nullable = false)
-    private String tenantId;
-
+    // tenantId is inherited from TenantAwareEntity
 }

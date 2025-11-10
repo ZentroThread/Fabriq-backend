@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserDao extends TenantAwareDao<Login, Integer> {
 
-    @Query("SELECT l FROM Login l WHERE l.username = ?1 AND l.tenantId = ?#{T(com.example.FabriqBackend.config.TenantContext).getCurrentTenant()}")
+    // Don't filter by tenant for login - we need to get user first to know their tenant
     Login findByUsername(String username);
-
-    //Login findByUsername(String username);
 }
