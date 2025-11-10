@@ -41,11 +41,13 @@ public class UserService {
     }
 
     public String verify(Login user) {
-
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Authentication authentication = authManager.authenticate(
+            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+        );
         if (authentication.isAuthenticated()) {
-
-            return jwtService.generateToken(user.getUsername());
+            // Get the authenticated user's tenant ID
+            Login authenticatedUser = userDao.findByUsername(user.getUsername());
+            return jwtService.generateToken(user.getUsername(), authenticatedUser.getTenantId());
         } else {
             return "fail";
         }
