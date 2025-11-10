@@ -24,6 +24,9 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     @Autowired
+    private TenantFilter tenantFilter;
+
+    @Autowired
     private UserDetailsService userDetailsService;
 
     @Bean
@@ -33,14 +36,13 @@ public class SecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/register","/login").permitAll()
-
                         .anyRequest().authenticated())
-                        .httpBasic(Customizer.withDefaults())
-                        .sessionManagement(session ->
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-        //create a session only if required
+               .addFilterAfter(tenantFilter, JwtFilter.class)
+                //create a session only if required
                 .build();
     }
 
