@@ -20,11 +20,23 @@ public class TenantFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String tenantId = null;
 
+            // First, try to get tenant from authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
                 UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-                TenantContext.setCurrentTenant(userPrincipal.getTenantId());
+                tenantId = userPrincipal.getTenantId();
+            }
+
+            // If not authenticated, try to get tenant from header (for registration, etc.)
+            if (tenantId == null) {
+                tenantId = request.getHeader("X-Tenant-ID");
+            }
+
+            // Set tenant context if we found a tenant ID
+            if (tenantId != null && !tenantId.isEmpty()) {
+                TenantContext.setCurrentTenant(tenantId);
             }
 
             filterChain.doFilter(request, response);
