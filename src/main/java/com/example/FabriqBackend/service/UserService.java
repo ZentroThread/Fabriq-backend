@@ -3,6 +3,7 @@ package com.example.FabriqBackend.service;
 import com.example.FabriqBackend.config.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
 import com.example.FabriqBackend.model.Login;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,23 +15,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+//import static com.example.FabriqBackend.config.TenantContext.getCurrentTenant;
+
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 @CacheConfig(cacheNames = "users")
 public class UserService {
 
-    @Autowired
-    private JWTService jwtService;
 
-    @Autowired
-    AuthenticationManager authManager;
+    private final JWTService jwtService;
+    final AuthenticationManager authManager;
+    private final UserDao userDao;
 
-
-
-    @Autowired
-    private UserDao userDao;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -51,7 +50,7 @@ public class UserService {
         return user;
     }
 
-
+    @Cacheable(key = "#result.tenantId + ':' + #username  + ':user logged:'")
     public String verify(Login user) {
 
         // Use cached path
@@ -69,8 +68,9 @@ public class UserService {
     }
 
     // Read by tenant + username
-    @Cacheable(key = "T(com.example.FabriqBackend.config.TenantContext).getCurrentTenant() + ':' + #username")
+    @Cacheable(key = "getCurrentTenant() + ':' + #username + ':retrieved by username'")
     public Login getByUsername(String username) {
         return userDao.findByUsername(username);
     }
+
 }
