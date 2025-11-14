@@ -1,4 +1,4 @@
-package com.example.FabriqBackend.config;
+package com.example.FabriqBackend.config.Tenant;
 
 import com.example.FabriqBackend.model.UserPrincipal;
 import jakarta.servlet.FilterChain;

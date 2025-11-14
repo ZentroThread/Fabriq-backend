@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.config;
 
+import com.example.FabriqBackend.config.Tenant.TenantFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
