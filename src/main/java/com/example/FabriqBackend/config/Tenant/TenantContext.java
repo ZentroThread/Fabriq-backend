@@ -1,4 +1,4 @@
-package com.example.FabriqBackend.config;
+package com.example.FabriqBackend.config.Tenant;
 
 public class TenantContext {
     private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();

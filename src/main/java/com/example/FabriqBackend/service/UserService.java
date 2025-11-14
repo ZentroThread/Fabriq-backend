@@ -1,12 +1,10 @@
 package com.example.FabriqBackend.service;
 
-import com.example.FabriqBackend.config.TenantContext;
+import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
 import com.example.FabriqBackend.model.Login;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,10 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-//import static com.example.FabriqBackend.config.TenantContext.getCurrentTenant;
+//import static com.example.FabriqBackend.config.Tenant.TenantContext.getCurrentTenant;
 
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
