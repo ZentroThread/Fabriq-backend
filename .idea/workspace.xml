@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="Updated: enhanced JWT handling to support multitenancy with tenant ID extraction and adjustments in security configuration">
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/FabriqBackendApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/FabriqBackendApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Login.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CustomerController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CustomerDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Customer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CustomerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/TenantFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/TenantFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,6 +35,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Medhani-Premathilaka"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ZentroThread/Fabriq-backend.git",
+    "accountId": "b635383e-68ca-4e7e-9bfc-1ced4b94982a"
+  }
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -66,7 +81,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.FabriqBackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dbTenant&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/USER/Desktop/HiruSandu/FabriqBackend&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -135,6 +150,7 @@
       <workItem from="1762767591308" duration="267000" />
       <workItem from="1762768096271" duration="12000" />
       <workItem from="1762768123483" duration="19000" />
+      <workItem from="1763050443893" duration="5319000" />
     </task>
     <task id="LOCAL-00001" summary="updated with psql local datasource">
       <option name="closed" value="true" />

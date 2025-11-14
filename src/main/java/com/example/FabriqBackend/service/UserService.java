@@ -39,8 +39,13 @@ public class UserService {
         if (!StringUtils.hasText(user.getPassword())) {
             throw new IllegalArgumentException("Password cannot be blank");
         }
+
+        String tenantId = TenantContext.getCurrentTenant();
+        if (!StringUtils.hasText(tenantId)) {
+            throw new IllegalArgumentException("Tenant ID is required. Please provide X-Tenant-ID header.");
+        }
+
         user.setPassword(encoder.encode(user.getPassword()));
-        String tenantId = TenantContext.getCurrentTenant(); // comes from filter
         user.setTenantId(tenantId);
         userDao.save(user);
         return user;
