@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/register","/login").permitAll()
+                        .requestMatchers("/addCustomer","/readCustomers","/deleteCustomer/{custId}", "/updateCustomer/{custId}" , "{id}").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
