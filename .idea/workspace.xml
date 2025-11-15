@@ -4,17 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="refactor : reorganize tenant-related classes into a dedicated package and update imports">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CategoryController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CategoryDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Attire.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Category.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CategoryService.java" afterDir="false" />
+    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="feat : add Attire entity and update Customer and User controllers with base URLs">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/AttireController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/AttireDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dto/AttireUpdateDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/AttireService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CustomerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CustomerDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CustomerDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Attire.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Attire.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CustomerService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +152,9 @@
       <workItem from="1762768096271" duration="12000" />
       <workItem from="1762768123483" duration="19000" />
       <workItem from="1763050443893" duration="36136000" />
-      <workItem from="1763141093180" duration="2636000" />
+      <workItem from="1763141093180" duration="8292000" />
+      <workItem from="1763184893646" duration="13104000" />
+      <workItem from="1763205639575" duration="4182000" />
     </task>
     <task id="LOCAL-00001" summary="updated with psql local datasource">
       <option name="closed" value="true" />
@@ -235,7 +236,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763122929916</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="feat : add Category entity and create,read,delete operations with caching support">
+      <option name="closed" value="true" />
+      <created>1763177516248</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1763177516248</updated>
+    </task>
+    <task id="LOCAL-00012" summary="feat : add Attire entity and update Customer and User controllers with base URLs">
+      <option name="closed" value="true" />
+      <created>1763177532117</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1763177532117</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,7 +269,9 @@
     <MESSAGE value="feat : add ModelMapper configuration for object mapping" />
     <MESSAGE value="feat : update security configuration and removed field injection replaced with constructor injection" />
     <MESSAGE value="refactor : reorganize tenant-related classes into a dedicated package and update imports" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor : reorganize tenant-related classes into a dedicated package and update imports" />
+    <MESSAGE value="feat : add Category entity and create,read,delete operations with caching support" />
+    <MESSAGE value="feat : add Attire entity and update Customer and User controllers with base URLs" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : add Attire entity and update Customer and User controllers with base URLs" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -16,5 +16,8 @@ public class Category extends TenantAwareEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private Integer categoryId;
+    
+    @Column(name = "category_code", unique = true)
+    private String categoryCode;
     private String categoryName;
 }

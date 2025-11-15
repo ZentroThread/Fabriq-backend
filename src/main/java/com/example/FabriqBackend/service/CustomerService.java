@@ -32,7 +32,7 @@ public class CustomerService {
     }
 
     @Cacheable(key = "':fetched all customers:'  ")
-    public List<Customer> getAllCustomers() {
+    public List<Customer>   getAllCustomers() {
         return customerDao.findAll();
     }
 
