@@ -4,18 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="updated : enhanced multitenancy support by extracting tenant ID from user authentication and request headers">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/AppConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CustomerController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CustomerDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dto/CustomerUpdateDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Customer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CustomerService.java" afterDir="false" />
+    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="refactor : reorganize tenant-related classes into a dedicated package and update imports">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CategoryController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CategoryDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Attire.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Category.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CategoryService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/CustomerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CustomerDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/CustomerDao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,18 +37,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Medhani-Premathilaka"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Medhani-Premathilaka&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/ZentroThread/Fabriq-backend.git",
-    "accountId": "b635383e-68ca-4e7e-9bfc-1ced4b94982a"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ZentroThread/Fabriq-backend.git&quot;,
+    &quot;accountId&quot;: &quot;b635383e-68ca-4e7e-9bfc-1ced4b94982a&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -73,37 +72,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.FabriqBackend [clean].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "900",
-    "RequestMappingsPanelWidth1": "899",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.FabriqBackendApplication.executor": "Run",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/USER/Desktop/HiruSandu/FabriqBackend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.FabriqBackend [clean].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.FabriqBackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;medhani&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/USER/Desktop/HiruSandu/FabriqBackend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.example.FabriqBackend.config" />
@@ -153,7 +152,8 @@
       <workItem from="1762767591308" duration="267000" />
       <workItem from="1762768096271" duration="12000" />
       <workItem from="1762768123483" duration="19000" />
-      <workItem from="1763050443893" duration="24154000" />
+      <workItem from="1763050443893" duration="36136000" />
+      <workItem from="1763141093180" duration="2636000" />
     </task>
     <task id="LOCAL-00001" summary="updated with psql local datasource">
       <option name="closed" value="true" />
@@ -203,7 +203,39 @@
       <option name="project" value="LOCAL" />
       <updated>1763095306006</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="feat : add Customer entity and CRUD operations with caching support">
+      <option name="closed" value="true" />
+      <created>1763122750254</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1763122750255</updated>
+    </task>
+    <task id="LOCAL-00008" summary="feat : add ModelMapper configuration for object mapping">
+      <option name="closed" value="true" />
+      <created>1763122768946</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1763122768946</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat : update security configuration and removed field injection replaced with constructor injection">
+      <option name="closed" value="true" />
+      <created>1763122830421</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1763122830421</updated>
+    </task>
+    <task id="LOCAL-00010" summary="refactor : reorganize tenant-related classes into a dedicated package and update imports">
+      <option name="closed" value="true" />
+      <created>1763122929915</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1763122929916</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -216,6 +248,20 @@
     <MESSAGE value="Setup : established multitenant architecture" />
     <MESSAGE value="Updated: enhanced JWT handling to support multitenancy with tenant ID extraction and adjustments in security configuration" />
     <MESSAGE value="updated : enhanced multitenancy support by extracting tenant ID from user authentication and request headers" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated : enhanced multitenancy support by extracting tenant ID from user authentication and request headers" />
+    <MESSAGE value="feat : add Customer entity and CRUD operations with caching support" />
+    <MESSAGE value="feat : add ModelMapper configuration for object mapping" />
+    <MESSAGE value="feat : update security configuration and removed field injection replaced with constructor injection" />
+    <MESSAGE value="refactor : reorganize tenant-related classes into a dedicated package and update imports" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor : reorganize tenant-related classes into a dedicated package and update imports" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.hibernate.MappingException" package="org.hibernate" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

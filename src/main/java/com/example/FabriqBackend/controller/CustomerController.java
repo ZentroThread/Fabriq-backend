@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/customer")// Base URL for customer-related operations
 @RequiredArgsConstructor
 public class CustomerController {
 
@@ -30,8 +31,6 @@ public class CustomerController {
 
     @DeleteMapping("/deleteCustomer/{custId}")
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer custId) {
-        System.out.println("Deleting customer...");
-
         return customerService.deleteCustomer(custId);
     }
 
