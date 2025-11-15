@@ -7,20 +7,25 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "attire")
+@SuppressWarnings("JpaDataSourceORMInspection")
 public class Attire extends TenantAwareEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @EqualsAndHashCode.Include
+
 //if use .AUTO it expects Long type
     private Integer id;
-    private Integer attireCode;
+
+    @Column(name = "attire_code" , unique = true)
+    private String attireCode;
     private String attireName;
     private Double attirePrice;
-    private String attireType;
+    private String attireStatus;
 
     @ManyToOne
     @JoinColumn(name = "category_id" , referencedColumnName = "category_id")
