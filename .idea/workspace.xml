@@ -4,9 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="updated : enhanced multitenancy support by extracting tenant ID from user authentication and request headers">
+    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="implemented employee CRUD operations and added exception handlers">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/EmployeeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/EmployeeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/EmployeeDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/EmployeeDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dto/EmployeeDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dto/EmployeeDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/mapper/EmployeeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/mapper/EmployeeMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Employee.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Employee.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/EmployeeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/EmployeeService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -195,7 +202,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763095306006</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="implemented employee CRUD operations and added exception handlers">
+      <option name="closed" value="true" />
+      <created>1763221820070</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1763221820072</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -208,6 +223,7 @@
     <MESSAGE value="Setup : established multitenant architecture" />
     <MESSAGE value="Updated: enhanced JWT handling to support multitenancy with tenant ID extraction and adjustments in security configuration" />
     <MESSAGE value="updated : enhanced multitenancy support by extracting tenant ID from user authentication and request headers" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated : enhanced multitenancy support by extracting tenant ID from user authentication and request headers" />
+    <MESSAGE value="implemented employee CRUD operations and added exception handlers" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented employee CRUD operations and added exception handlers" />
   </component>
 </project>
