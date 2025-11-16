@@ -13,7 +13,7 @@ public class EmployeeMapper {
         if (employee == null) return null;
 
         EmployeeDto dto = new EmployeeDto();
-        dto.setEmpId(employee.getEmpId());
+        dto.setEmpCode(employee.getEmpCode());
         dto.setEmpFirstName(employee.getEmpFirstName());
         dto.setEmpLastName(employee.getEmpLastName());
         dto.setNicNumber(employee.getNicNumber());
@@ -33,6 +33,7 @@ public class EmployeeMapper {
     public static Employee toEntity(EmployeeDto dto, Employee employee) {
         if (dto == null) return null;
 
+        employee.setEmpCode(dto.getEmpCode());
         employee.setEmpFirstName(dto.getEmpFirstName());
         employee.setEmpLastName(dto.getEmpLastName());
         employee.setNicNumber(dto.getNicNumber());

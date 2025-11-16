@@ -39,7 +39,9 @@ public class SecurityConfig {
                         .requestMatchers("/register","/login").permitAll()
                         .requestMatchers(
                                 "/addCustomer","/readCustomers","/deleteCustomer/{custId}", "/updateCustomer/{custId}" , "{id}",
-                                "/addEmployee","/getEmployees","/getEmployees/**","/deleteEmployee/**","/updateEmployee/**"
+                                "/employees/**",
+                                "/attendance/**",
+                                "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml", "/swagger-ui.html"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

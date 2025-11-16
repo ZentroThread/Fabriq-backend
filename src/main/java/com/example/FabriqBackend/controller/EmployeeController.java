@@ -12,11 +12,12 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
+@RequestMapping("/employees")
 public class EmployeeController {
 
     private EmployeeService employeeService;
 
-    @PostMapping("/addEmployee")
+    @PostMapping
     public ResponseEntity<?> addEmployee(@RequestBody EmployeeDto dto){
         employeeService.addEmployee(dto);
         return ResponseEntity
@@ -24,31 +25,31 @@ public class EmployeeController {
                 .body(new ResponseDto("201","Employee created successfully"));
     }
 
-    @GetMapping("/getEmployees/{empId}")
-    public ResponseEntity<EmployeeDto> fetchEmployeeById(@PathVariable Long empId){
-        EmployeeDto dto = employeeService.fetchEmployeeById(empId);
+    @GetMapping("/{empCode}")
+    public ResponseEntity<EmployeeDto> fetchEmployeeById(@PathVariable String empCode){
+        EmployeeDto dto = employeeService.fetchEmployeeById(empCode);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(dto);
     }
 
-    @DeleteMapping("/deleteEmployee/{empId}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable Long empId){
-        employeeService.deleteEmployee(empId);
+    @DeleteMapping("/{empCode}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable String empCode){
+        employeeService.deleteEmployee(empCode);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDto("200","Employee deleted successfully"));
     }
 
-    @PutMapping("/updateEmployee/{empId}")
-    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDto dto, @PathVariable Long empId){
-        employeeService.updateEmployee(dto,empId);
+    @PutMapping("/{empCode}")
+    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDto dto, @PathVariable String empCode){
+        employeeService.updateEmployee(dto,empCode);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDto("200","Employee updated successfully"));
     }
 
-    @GetMapping("getEmployees")
+    @GetMapping
     public ResponseEntity<List<EmployeeDto>> fetchAllEmployees(){
         List<EmployeeDto> empList = employeeService.fetchAllEmployees();
         return ResponseEntity

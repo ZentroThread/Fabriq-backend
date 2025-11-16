@@ -1,9 +1,6 @@
 package com.example.FabriqBackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +10,9 @@ import lombok.Setter;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long empId;
+    private Long id;
+    @Column(nullable = false,unique = true)
+    private String empCode;
     private String empFirstName;
     private String empLastName;
     private String nicNumber;

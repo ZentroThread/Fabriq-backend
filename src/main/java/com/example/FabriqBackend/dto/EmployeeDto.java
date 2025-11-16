@@ -4,7 +4,7 @@ package com.example.FabriqBackend.dto;
 import lombok.*;
 @Data
 public class EmployeeDto {
-    private Long empId;
+    private String empCode;
     private String empFirstName;
     private String empLastName;
     private String nicNumber;

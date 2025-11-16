@@ -19,27 +19,27 @@ public class EmployeeService {
 
     private final EmployeeDao empDao;
 
-    @CachePut(value="employees", key="#result.empId")
+    @CachePut(value="employees", key="#result.empCode")
     @CacheEvict(value = "employeesAll", allEntries = true)
     public EmployeeDto addEmployee(EmployeeDto dto){
 
         Employee emp = EmployeeMapper.toEntity(dto,new Employee());
         Employee savedEmp = empDao.save(emp);
 
-        EmployeeDto savedDto = EmployeeMapper.toDto(savedEmp);
+        //EmployeeDto savedDto = EmployeeMapper.toDto(savedEmp);
         //savedDto.setAge(savedEmp.getAge());
-        savedDto.setEmpId(savedEmp.getEmpId());
+        //savedDto.setEmpId(savedEmp.getEmpId());
 
-        return savedDto;
+        return EmployeeMapper.toDto(savedEmp);
 
     }
 
-    @CachePut(value="employees", key = "#result.empId")
+    @CachePut(value="employees", key = "#result.empCode")
     @CacheEvict(value = "employeesAll", allEntries = true)
-    public EmployeeDto updateEmployee(EmployeeDto dto,Long empId){
+    public EmployeeDto updateEmployee(EmployeeDto dto,String empCode){
 
-        Employee existingEmp = empDao.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empId));
+        Employee existingEmp = empDao.findByEmpCode(empCode)
+                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
         Employee updatedEmp = empDao.save( EmployeeMapper.toEntity(dto,existingEmp));
 
@@ -47,22 +47,22 @@ public class EmployeeService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "employees", key = "#empId"),
+            @CacheEvict(value = "employees", key = "#empCode"),
             @CacheEvict(value = "employeesAll", allEntries = true)
     })
-    public void deleteEmployee(Long empId){
+    public void deleteEmployee(String empCode){
 
-        empDao.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empId));
-        empDao.deleteById(empId);
+        empDao.findByEmpCode(empCode)
+                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
+        empDao.deleteByEmpCode(empCode);
 
     }
 
-    @Cacheable(value = "employees", key="#empId")
-    public EmployeeDto fetchEmployeeById(Long empId){
+    @Cacheable(value = "employees", key="#empCode")
+    public EmployeeDto fetchEmployeeById(String empCode){
 
-        Employee emp = empDao.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empId));
+        Employee emp = empDao.findByEmpCode(empCode)
+                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
         return EmployeeMapper.toDto(emp);
     }
