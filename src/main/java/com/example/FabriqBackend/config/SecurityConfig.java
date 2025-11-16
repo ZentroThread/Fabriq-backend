@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/category/**").permitAll()
                         .requestMatchers("/attire/**").permitAll()
                         .requestMatchers("/measurement/**").permitAll()
+                        .requestMatchers("/attireRent/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->

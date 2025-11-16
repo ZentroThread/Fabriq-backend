@@ -20,7 +20,7 @@ public class Attire extends TenantAwareEntity implements Serializable {
 //if use .AUTO it expects Long type
     private Integer id;
 
-    @Column(name = "attire_code" , unique = true)
+    @Column(name = "attire_code")
     private String attireCode;
     private String attireName;
     private Double attirePrice;

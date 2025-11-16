@@ -4,16 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="feat : add Attire entity and update Customer and User controllers with base URLs">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/AttireController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/AttireDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dto/AttireUpdateDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/AttireService.java" afterDir="false" />
+    <list default="true" id="ecfcf4ca-8b72-4d22-b526-8f020aed524b" name="Changes" comment="feat : update Attire and Customer entities with new fields, add CategoryDao method for categoryCode, and permit measurement endpoints in security configuration">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/controller/AttireRentController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dao/AttireRentDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/dto/AttireRentAddDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/AttireRent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/AttireRentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Attire.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Attire.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/model/Category.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/FabriqBackend/service/CustomerService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,7 +153,7 @@
       <workItem from="1763050443893" duration="36136000" />
       <workItem from="1763141093180" duration="8292000" />
       <workItem from="1763184893646" duration="13104000" />
-      <workItem from="1763205639575" duration="4182000" />
+      <workItem from="1763205639575" duration="37373000" />
     </task>
     <task id="LOCAL-00001" summary="updated with psql local datasource">
       <option name="closed" value="true" />
@@ -252,7 +251,39 @@
       <option name="project" value="LOCAL" />
       <updated>1763177532117</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="feat : add Attire entity with CRUD operations and corresponding controller, service, and DAO">
+      <option name="closed" value="true" />
+      <created>1763218895264</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1763218895264</updated>
+    </task>
+    <task id="LOCAL-00014" summary="feat : add categoryCode field to Category entity and update security configuration to permit attire endpoints">
+      <option name="closed" value="true" />
+      <created>1763218904381</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1763218904381</updated>
+    </task>
+    <task id="LOCAL-00015" summary="feat : add Measurement entity with CRUD operations and corresponding controller, service, and DAO">
+      <option name="closed" value="true" />
+      <created>1763363033499</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1763363033501</updated>
+    </task>
+    <task id="LOCAL-00016" summary="feat : update Attire and Customer entities with new fields, add CategoryDao method for categoryCode, and permit measurement endpoints in security configuration">
+      <option name="closed" value="true" />
+      <created>1763363053827</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1763363053827</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -271,7 +302,11 @@
     <MESSAGE value="refactor : reorganize tenant-related classes into a dedicated package and update imports" />
     <MESSAGE value="feat : add Category entity and create,read,delete operations with caching support" />
     <MESSAGE value="feat : add Attire entity and update Customer and User controllers with base URLs" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat : add Attire entity and update Customer and User controllers with base URLs" />
+    <MESSAGE value="feat : add Attire entity with CRUD operations and corresponding controller, service, and DAO" />
+    <MESSAGE value="feat : add categoryCode field to Category entity and update security configuration to permit attire endpoints" />
+    <MESSAGE value="feat : add Measurement entity with CRUD operations and corresponding controller, service, and DAO" />
+    <MESSAGE value="feat : update Attire and Customer entities with new fields, add CategoryDao method for categoryCode, and permit measurement endpoints in security configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : update Attire and Customer entities with new fields, add CategoryDao method for categoryCode, and permit measurement endpoints in security configuration" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
