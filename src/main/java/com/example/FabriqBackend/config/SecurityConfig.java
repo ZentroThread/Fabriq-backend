@@ -42,6 +42,13 @@ public class SecurityConfig {
                         .requestMatchers("/attire/**").permitAll()
                         .requestMatchers("/measurement/**").permitAll()
                         .requestMatchers("/attireRent/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
