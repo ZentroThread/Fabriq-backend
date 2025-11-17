@@ -10,7 +10,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "attire")
-@SuppressWarnings("JpaDataSourceORMInspection")
 public class Attire extends TenantAwareEntity implements Serializable {
 
     @Id
@@ -30,4 +29,6 @@ public class Attire extends TenantAwareEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "category_id" , referencedColumnName = "category_id")
     private Category category;
+
+
 }

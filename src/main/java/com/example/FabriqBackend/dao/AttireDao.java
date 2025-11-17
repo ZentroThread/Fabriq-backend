@@ -13,4 +13,6 @@ public interface AttireDao  extends TenantAwareDao<Attire, Integer> {
     List<Attire> findByAttireStatus(String attireStatus);
 
     List<Attire> findByCategoryCategoryId(Integer categoryId);
+
+
 }

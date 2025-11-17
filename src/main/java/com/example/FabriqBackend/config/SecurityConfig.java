@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/customer/addCustomer","/customer/readCustomers","/customer/deleteCustomer/{custId}", "/customer/updateCustomer/{custId}" , "/customer/{id}").permitAll()
                         .requestMatchers("/category/**").permitAll()
                         .requestMatchers("/attire/**").permitAll()
+                        .requestMatchers("/measurement/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
