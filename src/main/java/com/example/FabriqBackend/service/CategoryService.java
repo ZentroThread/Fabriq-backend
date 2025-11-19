@@ -18,14 +18,14 @@ public class CategoryService {
 
     private final CategoryDao categoryDao;
 
-   @CachePut(key = "#category.tenantId + ':category:' + #category.categoryName")
+    @CachePut(key = "#category.tenantId + ':category:' + #category.categoryName")
     public ResponseEntity<?> createCategory(Category category) {
 
         Category cat = categoryDao.save(category);
         return new ResponseEntity<>(cat, HttpStatus.CREATED);
     }
 
-    @CacheEvict( key="#id")
+    @CacheEvict(key = "#id")
     public ResponseEntity<?> deleteCategory(Integer id) {
         categoryDao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -34,6 +34,6 @@ public class CategoryService {
     @Cacheable(key = "'allCategories'")
     public ResponseEntity<?> getAllCategories() {
 
-       return new ResponseEntity<>(categoryDao.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(categoryDao.findAll(), HttpStatus.OK);
     }
 }

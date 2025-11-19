@@ -42,7 +42,7 @@ public class AttireController {
     }
 
     @GetMapping("/code/{attireCode}")
-    public ResponseEntity<?>  getAttireByAttireCode(@PathVariable String attireCode) {
+    public ResponseEntity<?> getAttireByAttireCode(@PathVariable String attireCode) {
         return attireService.getAttireByAttireCode(attireCode);
     }
 

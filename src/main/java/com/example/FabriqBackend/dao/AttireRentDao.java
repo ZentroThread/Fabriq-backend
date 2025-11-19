@@ -4,6 +4,6 @@ import com.example.FabriqBackend.model.AttireRent;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AttireRentDao extends TenantAwareDao<AttireRent, Integer > {
+public interface AttireRentDao extends TenantAwareDao<AttireRent, Integer> {
 
 }

@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,14 +14,15 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 
 @Component
 public class JWTService {
     private String secretKey = "";
 
-    public JWTService(){
-        try{
+    public JWTService() {
+        try {
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
             SecretKey sk = keyGen.generateKey();
             secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
@@ -58,6 +58,7 @@ public class JWTService {
         // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
+
     public String extractTenantId(String token) {
         // extract the tenantId from jwt token
         return extractClaim(token, claims -> claims.get("tenantId", String.class));

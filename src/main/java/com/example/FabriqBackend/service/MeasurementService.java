@@ -66,7 +66,7 @@ public class MeasurementService {
     }
 
 
-    @Cacheable(key ="'allMeasurements'")
+    @Cacheable(key = "'allMeasurements'")
     public ResponseEntity<?> getAllMeasurements() {
         List<Measurement> measurements = measurementDao.findAll();
         if (measurements.isEmpty()) {
@@ -75,7 +75,7 @@ public class MeasurementService {
         return ResponseEntity.ok(measurements);
     }
 
-    @CacheEvict( key="#id+ ':deletedMeasurement'")
+    @CacheEvict(key = "#id+ ':deletedMeasurement'")
     public ResponseEntity<?> deleteMeasurement(Integer id) {
         Optional<Measurement> measurement = measurementDao.findById(id);
         if (measurement.isPresent()) {
@@ -89,7 +89,7 @@ public class MeasurementService {
     @CachePut(key = "'updatedMeasurement:' + #id")
     public ResponseEntity<?> updateMeasurement(Integer id, MeasurementUpdateDto measurementUpdateDto) {
         Measurement measurement = measurementDao.findById(id)
-                .map( measurement1 -> {
+                .map(measurement1 -> {
                     modelMapper.map(measurementUpdateDto, measurement1);
 
                     Measurement updatedMeasurement = measurementDao.save(measurement1);

@@ -32,7 +32,7 @@ public class Measurement extends TenantAwareEntity implements Serializable {
     private Attire attire;
 
     @ManyToOne
-    @JoinColumn(name= "category_code", referencedColumnName = "category_code")
+    @JoinColumn(name = "category_code", referencedColumnName = "category_code")
     private Category category;
 
 

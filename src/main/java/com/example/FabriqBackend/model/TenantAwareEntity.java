@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @MappedSuperclass
 @EntityListeners(TenantListner.class)
-public abstract  class TenantAwareEntity {
+public abstract class TenantAwareEntity {
 
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;

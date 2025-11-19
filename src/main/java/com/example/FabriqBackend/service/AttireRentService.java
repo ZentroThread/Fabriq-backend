@@ -47,43 +47,45 @@ public class AttireRentService {
     }
 
 
-    @Cacheable("'allAttireRent'")
+    @Cacheable(key = "'allAttireRent'")
     public ResponseEntity<?> getAllAttireRent() {
-        attireDao.findAll();
-        return new ResponseEntity<>( HttpStatus.OK);
+        return new ResponseEntity<>(attireRentDao.findAll(), HttpStatus.OK);
     }
 
-    @CacheEvict(key ="'deleteAttireRent'")
+    @CacheEvict(key = "'deleteAttireRent'")
     public ResponseEntity<?> deleteAttireRent(Integer id) {
         attireRentDao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-@CachePut(key = "'updateAttireRent:' + #id")
-public ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto) {
+    @CachePut(key = "'updateAttireRent:' + #id")
+    public ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto) {
 
-    AttireRent existing = attireRentDao.findById(id)
-            .map(attireRent -> {
-                modelMapper.map(dto, attireRent);
+        AttireRent existing = attireRentDao.findById(id)
+                .map(attireRent -> {
+                    modelMapper.map(dto, attireRent);
 
-                Customer customer = customerDao.findByCustCode(dto.getCustomerCode()).orElse(null);
-                if (customer == null) {
-                    throw new RuntimeException("Customer not found");
-                }
-                attireRent.setCustomer(customer);
+                    Customer customer = customerDao.findByCustCode(dto.getCustomerCode()).orElse(null);
+                    if (customer == null) {
+                        throw new RuntimeException("Customer not found");
+                    }
+                    attireRent.setCustomer(customer);
 
-                Attire attire = attireDao.findByAttireCode(dto.getAttireCode());
-                if (attire == null) {
-                    throw new RuntimeException("Attire not found");
-                }
-                attireRent.setAttire(attire);
+                    Attire attire = attireDao.findByAttireCode(dto.getAttireCode());
+                    if (attire == null) {
+                        throw new RuntimeException("Attire not found");
+                    }
+                    attireRent.setAttire(attire);
 
-                return attireRent;
-            }).orElse(null);
-    AttireRent updated = attireRentDao.save(existing);
+                    return attireRent;
+                }).orElse(null);
+        if (existing == null) {
+            return new ResponseEntity<>("AttireRent not found", HttpStatus.NOT_FOUND);
+        }
+        AttireRent updated = attireRentDao.save(existing);
 
-    return ResponseEntity.ok(updated);
-}
+        return ResponseEntity.ok(updated);
+    }
 
 }

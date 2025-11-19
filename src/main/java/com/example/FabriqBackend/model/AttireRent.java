@@ -17,7 +17,6 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-
     private Date rentDate;
     private Date returnDate;
     private Date rentDuration;

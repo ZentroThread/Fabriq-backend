@@ -3,7 +3,6 @@ package com.example.FabriqBackend.service;
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -12,8 +11,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -26,21 +23,21 @@ public class CustomerService {
     private final ModelMapper modelMapper;
 
     @CachePut(key = "#customer.tenantId + ':' + #customer.custId ")
-    public ResponseEntity<?> addCustomer( Customer customer) {
+    public ResponseEntity<?> addCustomer(Customer customer) {
         customerDao.save(customer);
         return ResponseEntity.ok().build();
     }
 
     @Cacheable(key = "':fetched all customers:'  ")
-    public List<Customer>   getAllCustomers() {
+    public List<Customer> getAllCustomers() {
         return customerDao.findAll();
     }
 
 
-    @CacheEvict(key = " #custId "   )
+    @CacheEvict(key = " #custId ")
     public ResponseEntity<?> deleteCustomer(Integer custId) {
         customerDao.deleteById(custId);
-       return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @CachePut(key = "':updated customer:' + #custId ")

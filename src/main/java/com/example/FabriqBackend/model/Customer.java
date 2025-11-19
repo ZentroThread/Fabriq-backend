@@ -20,6 +20,7 @@ public class Customer extends TenantAwareEntity implements Serializable {
 
     @Column(name = "cust_code", unique = true)
     private String custCode;
+
     private String custName;
     private String custEmail;
     private String custAddress;

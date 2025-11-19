@@ -10,7 +10,6 @@ public class MeasurementAddDto {
     private Double waist;
     private Double hip;
     private Double sleeveLength;
-
     private String custCode;
     private String attireCode;
     private String categoryCode;

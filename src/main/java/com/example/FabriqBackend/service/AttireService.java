@@ -34,7 +34,7 @@ public class AttireService {
         return attireDao.findAll();
     }
 
-    @CacheEvict( key="#id + ':deletedAttire'")
+    @CacheEvict(key = "#id + ':deletedAttire'")
     public ResponseEntity<?> deleteAttire(Integer id) {
         attireDao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -44,7 +44,7 @@ public class AttireService {
     public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto) {
 
         Attire attire1 = attireDao.findById(id)
-                .map( attire -> {
+                .map(attire -> {
                     modelMapper.map(attireUpdateDto, attire);
 
                     Attire updatedAttire = attireDao.save(attire);
@@ -74,9 +74,9 @@ public class AttireService {
         }
     }
 
-   @Cacheable(key = "'attiresByStatus:' + #status")
+    @Cacheable(key = "'attiresByStatus:' + #status")
     public List<Attire> getAttireByStatus(String status) {
-        return  attireDao.findByAttireStatus(status);
+        return attireDao.findByAttireStatus(status);
     }
 
     public List<Attire> getAttireByCategoryId(Integer categoryId) {

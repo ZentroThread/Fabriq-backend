@@ -1,9 +1,7 @@
 package com.example.FabriqBackend.controller;
 
-import com.example.FabriqBackend.dao.MeasurementDao;
 import com.example.FabriqBackend.dto.MeasurementAddDto;
 import com.example.FabriqBackend.dto.MeasurementUpdateDto;
-import com.example.FabriqBackend.model.Measurement;
 import com.example.FabriqBackend.service.MeasurementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,7 @@ public class MeasurementController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateMeasurement(@PathVariable Integer id, @RequestBody MeasurementUpdateDto measurementDao) {
-        return measurementService.updateMeasurement(id,measurementDao );
+        return measurementService.updateMeasurement(id, measurementDao);
     }
 
     @GetMapping("/{id}")

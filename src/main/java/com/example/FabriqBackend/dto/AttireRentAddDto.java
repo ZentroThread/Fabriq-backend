@@ -10,8 +10,6 @@ public class AttireRentAddDto {
 
     private Date rentDate;
     private Date returnDate;
-
-
     private String customerCode;
     @Column(name = "attire_code", unique = false)
     private String attireCode;

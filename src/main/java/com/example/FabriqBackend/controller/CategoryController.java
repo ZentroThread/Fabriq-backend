@@ -15,7 +15,7 @@ public class CategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<?> createCategory(@RequestBody Category category) {
-        return  categoryService.createCategory(category);
+        return categoryService.createCategory(category);
     }
 
     @DeleteMapping("/delete/{id}")

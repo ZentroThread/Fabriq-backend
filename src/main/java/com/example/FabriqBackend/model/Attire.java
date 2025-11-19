@@ -16,8 +16,6 @@ public class Attire extends TenantAwareEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @EqualsAndHashCode.Include
-
-//if use .AUTO it expects Long type
     private Integer id;
 
     @Column(name = "attire_code")
@@ -27,7 +25,7 @@ public class Attire extends TenantAwareEntity implements Serializable {
     private String attireStatus;
 
     @ManyToOne
-    @JoinColumn(name = "category_id" , referencedColumnName = "category_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
 
 
