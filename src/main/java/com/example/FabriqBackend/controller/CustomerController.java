@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/customer")// Base URL for customer-related operations
+@RequestMapping("/v1/customer")// Base URL for customer-related operations
 @RequiredArgsConstructor
 public class CustomerController {
 

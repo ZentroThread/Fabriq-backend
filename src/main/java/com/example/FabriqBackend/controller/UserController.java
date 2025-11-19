@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController //base url for user related operations
-@RequestMapping("/user")
+@RequestMapping("/v1/user")
 @RequiredArgsConstructor//lombok will create constructor for all final fields
 public class UserController {
 

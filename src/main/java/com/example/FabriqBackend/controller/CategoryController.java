@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/category")// Base URL for category-related operations
+@RequestMapping("/v1/category")// Base URL for category-related operations
 @RequiredArgsConstructor
 public class CategoryController {
 

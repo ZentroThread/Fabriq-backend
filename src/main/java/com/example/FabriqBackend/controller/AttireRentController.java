@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/attire-rent")// Base URL for attire rent-related operations
+@RequestMapping("/v1/attire-rent")// Base URL for attire rent-related operations
 @RequiredArgsConstructor
 public class AttireRentController {
 

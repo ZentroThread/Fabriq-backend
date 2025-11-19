@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/attire")
+@RequestMapping("/v1/attire")
 @RequiredArgsConstructor
 public class AttireController {
 
