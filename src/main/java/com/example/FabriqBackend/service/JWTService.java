@@ -58,6 +58,11 @@ public class JWTService {
         // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
+    public String extractTenantId(String token) {
+        // extract the tenantId from jwt token
+        return extractClaim(token, claims -> claims.get("tenantId", String.class));
+    }
+
 
     public String extractTenantId(String token) {
         // extract the tenantId from jwt token
