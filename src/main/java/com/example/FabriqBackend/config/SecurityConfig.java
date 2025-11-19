@@ -37,7 +37,12 @@ public class SecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/register","/login").permitAll()
-                        .requestMatchers("/addCustomer","/readCustomers","/deleteCustomer/{custId}", "/updateCustomer/{custId}" , "{id}").permitAll()
+                        .requestMatchers(
+                                "/addCustomer","/readCustomers","/deleteCustomer/{custId}", "/updateCustomer/{custId}" , "{id}",
+                                "/employees/**",
+                                "/attendance/**",
+                                "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml", "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
