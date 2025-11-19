@@ -30,7 +30,5 @@ public class userDetailsService implements UserDetailsService {
         }
 
         return new UserPrincipal(users);
-
-
     }
 }

@@ -5,7 +5,7 @@ import com.example.FabriqBackend.model.TenantAwareEntity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
-public class TenantListner  {
+public class TenantListner {
     @PrePersist
     @PreUpdate
     public void setTenant(TenantAwareEntity entity) {

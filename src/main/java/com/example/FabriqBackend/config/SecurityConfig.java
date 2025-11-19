@@ -33,21 +33,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-       return http
+        return http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/register","/login").permitAll()
-                        .requestMatchers("/addCustomer","/readCustomers","/deleteCustomer/{custId}", "/updateCustomer/{custId}" , "{id}").permitAll()
+                        .requestMatchers(
+                                "/user/**",
+                                "/customer/**",
+                                "/category/**",
+                                "/attire/**",
+                                "/measurement/**",
+                                "/v1/attire-rent/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-               .addFilterAfter(tenantFilter, JwtFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(tenantFilter, JwtFilter.class)
                 //create a session only if required
                 .build();
     }
-
 
 
     @Bean
@@ -61,6 +71,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 
-        return  config.getAuthenticationManager();
+        return config.getAuthenticationManager();
     }
 }

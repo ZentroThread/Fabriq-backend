@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface TenantAwareDao <T extends TenantAwareEntity, ID> extends JpaRepository<T, ID> {
+public interface TenantAwareDao<T extends TenantAwareEntity, ID> extends JpaRepository<T, ID> {
 
     @Query("SELECT e FROM #{#entityName} e WHERE e.tenantId = ?#{T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()}")
     List<T> findAll();

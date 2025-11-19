@@ -52,7 +52,7 @@ public class UserService {
         // Use cached path
         Login stored = getByUsername(user.getUsername());
         Authentication authentication = authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
         if (authentication.isAuthenticated()) {
             // Get the authenticated user's tenant ID

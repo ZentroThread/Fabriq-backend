@@ -4,40 +4,38 @@ import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
 import com.example.FabriqBackend.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/v1/customer")// Base URL for customer-related operations
 @RequiredArgsConstructor
 public class CustomerController {
 
 
     private final CustomerService customerService;
 
-    @PostMapping("/addCustomer")
+    @PostMapping("/add-customer")
     public ResponseEntity<?> addCustomer(@RequestBody Customer customer) {
         return customerService.addCustomer(customer);
     }
 
-    @GetMapping("/readCustomers")
+    @GetMapping("/rea-customers")
     public List<Customer> readCustomers() {
 
         return customerService.getAllCustomers();
     }
 
-    @DeleteMapping("/deleteCustomer/{custId}")
+    @DeleteMapping("/delete-customer/{custId}")
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer custId) {
-        System.out.println("Deleting customer...");
-
         return customerService.deleteCustomer(custId);
     }
 
-    @PutMapping("/updateCustomer/{custId}")
-    public ResponseEntity<?> updateCustomer(@PathVariable Integer custId , @RequestBody CustomerUpdateDto customerUpdateDto) {
-        return customerService.updateCustomer(custId,customerUpdateDto);
+    @PutMapping("/update-customer/{custId}")
+    public ResponseEntity<?> updateCustomer(@PathVariable Integer custId, @RequestBody CustomerUpdateDto customerUpdateDto) {
+        return customerService.updateCustomer(custId, customerUpdateDto);
     }
 
     @GetMapping("/{custId}")
