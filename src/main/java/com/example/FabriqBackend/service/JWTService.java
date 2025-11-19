@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 @Component
 public class JWTService {
-    private String secretKey = "";
+    private final String secretKey;
 
     public JWTService() {
         try {
@@ -33,7 +33,7 @@ public class JWTService {
 
     public String generateToken(String username, String tenantId) {
 
-        Map<String, Object> claims = new HashMap<String, Object>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("tenantId", tenantId);
 
         return Jwts.builder()
@@ -62,13 +62,6 @@ public class JWTService {
         // extract the tenantId from jwt token
         return extractClaim(token, claims -> claims.get("tenantId", String.class));
     }
-
-
-    public String extractTenantId(String token) {
-        // extract the tenantId from jwt token
-        return extractClaim(token, claims -> claims.get("tenantId", String.class));
-    }
-
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);

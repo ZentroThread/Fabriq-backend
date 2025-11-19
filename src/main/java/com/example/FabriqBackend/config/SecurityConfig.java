@@ -42,7 +42,7 @@ public class SecurityConfig {
                                 "/category/**",
                                 "/attire/**",
                                 "/measurement/**",
-                                "/attireRent/**",
+                                "/v1/attire-rent/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
