@@ -1,8 +1,9 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
+import com.example.FabriqBackend.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -17,43 +18,44 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "customers")
-public class CustomerService {
+public class CustomerServiceImpl implements ICustomerService {
 
     private final CustomerDao customerDao;
     private final ModelMapper modelMapper;
 
-    @CachePut(key = "#customer.tenantId + ':' + #customer.custId ")
+    @CachePut(key = "#result.body != null ? #result.body.tenantId + ':' + #result.body.custId : 'null'", condition = "#result.statusCode.is2xxSuccessful()")
     public ResponseEntity<?> addCustomer(Customer customer) {
-        customerDao.save(customer);
-        return ResponseEntity.ok().build();
+        Customer savedCustomer = customerDao.save(customer);
+        return ResponseEntity.ok(savedCustomer);
     }
 
-    @Cacheable(key = "':fetched all customers:'  ")
+    @Cacheable(key = "'all'")
     public List<Customer> getAllCustomers() {
         return customerDao.findAll();
     }
 
-
-    @CacheEvict(key = " #custId ")
+    @CacheEvict(key = "#custId")
     public ResponseEntity<?> deleteCustomer(Integer custId) {
         customerDao.deleteById(custId);
         return ResponseEntity.ok().build();
     }
 
-    @CachePut(key = "':updated customer:' + #custId ")
+    @CachePut(key = "#custId")
     public ResponseEntity<?> updateCustomer(Integer custId, CustomerUpdateDto customerUpdateDto) {
         Customer cust = customerDao.findById(custId)
                 .map(customer -> {
                     modelMapper.map(customerUpdateDto, customer);
-
-                    Customer updatedCustomer = customerDao.save(customer);
-                    return ResponseEntity.ok().body(updatedCustomer);
+                    return customerDao.save(customer);
                 })
-                .orElseGet(() -> ResponseEntity.notFound().build()).getBody();
+                .orElse(null);
+
+        if (cust == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(cust);
     }
 
-    @CachePut(key = "':fetched customer by id:' + #custId ")
+    @Cacheable(key = "#custId")
     public Customer getCustomerById(Integer custId) {
         return customerDao.findById(custId).orElse(null);
     }

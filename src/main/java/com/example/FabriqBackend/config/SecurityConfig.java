@@ -33,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http
+       return http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
@@ -53,11 +53,12 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(tenantFilter, JwtFilter.class)
+               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+               .addFilterAfter(tenantFilter, JwtFilter.class)
                 //create a session only if required
                 .build();
     }
+
 
 
     @Bean
@@ -71,6 +72,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 
-        return config.getAuthenticationManager();
+        return  config.getAuthenticationManager();
     }
 }
