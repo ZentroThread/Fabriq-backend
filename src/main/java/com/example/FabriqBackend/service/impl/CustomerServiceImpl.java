@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "customers")
-public class CustomerService implements ICustomerService {
+public class CustomerServiceImpl implements ICustomerService {
 
     private final CustomerDao customerDao;
     private final ModelMapper modelMapper;

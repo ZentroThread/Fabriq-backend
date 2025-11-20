@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class EmployeeService implements IEmployeeService {
+public class EmployeeServiceImpl implements IEmployeeService {
 
     private final EmployeeDao empDao;
 

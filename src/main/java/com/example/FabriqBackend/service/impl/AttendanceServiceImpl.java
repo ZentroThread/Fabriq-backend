@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class AttendanceService implements IAttendanceService {
+public class AttendanceServiceImpl implements IAttendanceService {
     private final AttendanceDao attendanceDao;
     private final AppConfig appConfig;
 
