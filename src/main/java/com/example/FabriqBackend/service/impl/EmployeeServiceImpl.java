@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -71,6 +72,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Cacheable(value="employeesAll")
     public List<EmployeeDto> fetchAllEmployees(){
         List<Employee> empList = empDao.findAll();
+
+        return empList
+                .stream()
+                .map(EmployeeMapper::toDto)
+                .toList();
+    }
+
+    public List<EmployeeDto> fetchEmployeeByRole(String role){
+
+        Optional<Employee> empList = empDao.findByRole(role);
 
         return empList
                 .stream()

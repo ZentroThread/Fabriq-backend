@@ -10,4 +10,5 @@ public interface IEmployeeService {
     void deleteEmployee(String empCode);
     EmployeeDto fetchEmployeeById(String empCode);
     List<EmployeeDto> fetchAllEmployees();
+    List<EmployeeDto> fetchEmployeeByRole(String role);
 }

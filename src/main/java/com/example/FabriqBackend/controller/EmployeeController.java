@@ -14,7 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/v1/employees")
 public class EmployeeController {
 
     private IEmployeeService employeeService;
@@ -74,6 +74,21 @@ public class EmployeeController {
     )
     public ResponseEntity<List<EmployeeDto>> fetchAllEmployees(){
         List<EmployeeDto> empList = employeeService.fetchAllEmployees();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(empList);
+    }
+
+    @GetMapping("/role/{role}")
+    @Operation(
+            summary = "Fetch Employees using role",
+            description = "This endpoint helps to find employees using their role"
+    )
+    public ResponseEntity<List<EmployeeDto>> fetchEmployeeByRole(@PathVariable String role){
+        List<EmployeeDto> empList = employeeService.fetchEmployeeByRole(role);
+        if(empList.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(empList);
