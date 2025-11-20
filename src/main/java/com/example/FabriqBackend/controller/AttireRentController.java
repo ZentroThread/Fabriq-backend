@@ -1,7 +1,8 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttireRentAddDto;
-import com.example.FabriqBackend.service.AttireRentService;
+import com.example.FabriqBackend.service.IAttireRentService;
+import com.example.FabriqBackend.service.impl.AttireRentServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AttireRentController {
 
-    private final AttireRentService attireRentService;
+    private final IAttireRentService attireRentService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addAttireRent(@RequestBody AttireRentAddDto dto) {

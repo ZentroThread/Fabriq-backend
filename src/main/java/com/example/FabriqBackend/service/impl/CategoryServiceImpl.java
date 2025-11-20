@@ -1,7 +1,8 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.CategoryDao;
 import com.example.FabriqBackend.model.Category;
+import com.example.FabriqBackend.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "categories")
-public class CategoryService {
+public class CategoryServiceImpl implements ICategoryService {
 
     private final CategoryDao categoryDao;
 

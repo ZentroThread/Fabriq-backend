@@ -1,4 +1,4 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
@@ -7,6 +7,7 @@ import com.example.FabriqBackend.dto.AttireRentAddDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Customer;
+import com.example.FabriqBackend.service.IAttireRentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "attireRents")
-public class AttireRentService {
+public class AttireRentServiceImpl implements IAttireRentService {
 
     private final AttireRentDao attireRentDao;
     private final ModelMapper modelMapper;

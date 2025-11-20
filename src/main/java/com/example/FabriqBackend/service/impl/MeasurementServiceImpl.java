@@ -1,4 +1,4 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.CategoryDao;
@@ -10,6 +10,7 @@ import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.Category;
 import com.example.FabriqBackend.model.Customer;
 import com.example.FabriqBackend.model.Measurement;
+import com.example.FabriqBackend.service.IMeasurementService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -25,7 +26,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "measurements")
-public class MeasurementService {
+public class MeasurementServiceImpl implements IMeasurementService {
 
     private final MeasurementDao measurementDao;
     private final ModelMapper modelMapper;
