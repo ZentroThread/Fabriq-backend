@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -16,9 +15,12 @@ public class Customer extends TenantAwareEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cust_id")
     private Integer custId;
 
+    @Column(name = "cust_code", unique = true)
     private String custCode;
+
     private String custName;
     private String custEmail;
     private String custAddress;

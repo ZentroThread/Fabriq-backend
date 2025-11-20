@@ -1,9 +1,8 @@
-package com.example.FabriqBackend.service.impl;
+package com.example.FabriqBackend.service;
 
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -18,13 +17,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "customers")
-public class CustomerServiceImpl implements ICustomerService {
+public class CustomerService {
 
     private final CustomerDao customerDao;
     private final ModelMapper modelMapper;
 
     @CachePut(key = "#customer.tenantId + ':' + #customer.custId ")
-    public ResponseEntity<?> addCustomer( Customer customer) {
+    public ResponseEntity<?> addCustomer(Customer customer) {
         customerDao.save(customer);
         return ResponseEntity.ok().build();
     }
@@ -35,10 +34,10 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
 
-    @CacheEvict(key = " #custId "   )
+    @CacheEvict(key = " #custId ")
     public ResponseEntity<?> deleteCustomer(Integer custId) {
         customerDao.deleteById(custId);
-       return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @CachePut(key = "':updated customer:' + #custId ")

@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/v1/customer")// Base URL for customer-related operations
 @RequiredArgsConstructor
-@RequestMapping("/customers")
 public class CustomerController {
 
 
     private final ICustomerService customerService;
 
-    @PostMapping
+    @PostMapping("/add-customer")
     @Operation(
             summary = "Add a new customer",
             description = "This endpoint allows adding a new customer by providing the necessary details in the request body."
@@ -28,7 +28,7 @@ public class CustomerController {
         return customerService.addCustomer(customer);
     }
 
-    @GetMapping
+    @GetMapping("/rea-customers")
     @Operation(
             summary = "Retrieve all customers",
             description = "This endpoint retrieves a list of all customers."
@@ -38,18 +38,19 @@ public class CustomerController {
         return customerService.getAllCustomers();
     }
 
-    @DeleteMapping("/{custId}")
+    @DeleteMapping("/delete-customer/{custId}")
     @Operation(
             summary = "Delete a customer",
             description = "This endpoint allows deleting a customer by their ID."
     )
+
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer custId) {
         System.out.println("Deleting customer...");
 
         return customerService.deleteCustomer(custId);
     }
 
-    @PutMapping("/{custId}")
+    @PutMapping("/updateCustomer/{custId}")
     @Operation(
             summary = "Update a customer's details",
             description = "This endpoint allows updating the details of an existing customer by their ID."
@@ -57,7 +58,6 @@ public class CustomerController {
     public ResponseEntity<?> updateCustomer(@PathVariable Integer custId , @RequestBody CustomerUpdateDto customerUpdateDto) {
         return customerService.updateCustomer(custId,customerUpdateDto);
     }
-
     @GetMapping("/{custId}")
     @Operation(
             summary = "Get customer by ID",
