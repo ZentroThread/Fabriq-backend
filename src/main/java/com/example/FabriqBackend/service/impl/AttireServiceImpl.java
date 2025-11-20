@@ -1,8 +1,9 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
+import com.example.FabriqBackend.service.IAttireService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -18,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "attires")
-public class AttireService {
+public class AttireServiceImpl implements IAttireService {
 
     private final AttireDao attireDao;
     private final ModelMapper modelMapper;

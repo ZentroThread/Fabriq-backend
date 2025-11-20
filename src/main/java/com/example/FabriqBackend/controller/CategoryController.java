@@ -1,7 +1,8 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.model.Category;
-import com.example.FabriqBackend.service.CategoryService;
+import com.example.FabriqBackend.service.ICategoryService;
+import com.example.FabriqBackend.service.impl.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService;
+    private final ICategoryService categoryService;
 
     @PostMapping("/add")
     public ResponseEntity<?> createCategory(@RequestBody Category category) {
