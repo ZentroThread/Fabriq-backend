@@ -1,9 +1,9 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
-import jakarta.transaction.Transactional;
+import com.example.FabriqBackend.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -12,15 +12,13 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "customers")
-public class CustomerService {
+public class CustomerService implements ICustomerService {
 
     private final CustomerDao customerDao;
     private final ModelMapper modelMapper;

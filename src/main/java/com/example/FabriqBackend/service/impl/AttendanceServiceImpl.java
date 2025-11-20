@@ -1,9 +1,10 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.config.AppConfig;
 import com.example.FabriqBackend.dao.AttendanceDao;
 import com.example.FabriqBackend.dto.AttendanceDto;
 import com.example.FabriqBackend.model.Attendance;
+import com.example.FabriqBackend.service.IAttendanceService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class AttendanceService {
+public class AttendanceService implements IAttendanceService {
     private final AttendanceDao attendanceDao;
     private final AppConfig appConfig;
 

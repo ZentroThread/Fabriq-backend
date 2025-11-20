@@ -1,9 +1,10 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.EmployeeDto;
 import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
+import com.example.FabriqBackend.service.IEmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class EmployeeService {
+public class EmployeeService implements IEmployeeService {
 
     private final EmployeeDao empDao;
 
