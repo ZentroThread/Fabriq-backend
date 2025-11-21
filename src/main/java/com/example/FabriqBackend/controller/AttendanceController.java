@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/attendance")
+@RequestMapping("/v1/attendance")
 public class AttendanceController {
     private final IAttendanceService attendanceService;
 

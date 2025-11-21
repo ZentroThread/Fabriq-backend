@@ -1,8 +1,10 @@
-package com.example.FabriqBackend.service;
+package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
 import com.example.FabriqBackend.model.Login;
+import com.example.FabriqBackend.service.IUserService;
+import com.example.FabriqBackend.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
@@ -19,7 +21,7 @@ import org.springframework.util.StringUtils;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "users")
-public class UserService {
+public class UserServiceImpl implements IUserService {
 
 
     private final JWTService jwtService;

@@ -18,56 +18,45 @@ public class AttendanceServiceImpl implements IAttendanceService {
     private final AttendanceDao attendanceDao;
     private final AppConfig appConfig;
 
-    public void markAttendance(AttendanceDto dto){
+    public void markAttendance(AttendanceDto dto) {
         if (dto.getEmpCode() == null || dto.getEmpCode().isEmpty()) {
             throw new RuntimeException("empCode is required to mark attendance");
         }
-        Attendance attendance = appConfig.modelMapper().map(dto,Attendance.class);
+        Attendance attendance = appConfig.modelMapper().map(dto, Attendance.class);
         attendanceDao.save(attendance);
     }
 
-//    public List<AttendanceDto> fetchAttendanceByEmpCodeAndDate(String empCode,String date ){
-//
-//        Optional<List<Attendance>> attendanceList = attendanceDao.findByEmpCodeAndDate(empCode, LocalDate.parse(date));
-//        if(attendanceList.isEmpty()){
-//            throw new RuntimeException("Attendance not found for empCode:" + empCode + "and date: " + date);
-//        }
-//        return attendanceList
-//                .stream()
-//                .map(attendance-> appConfig.modelMapper().map(attendance,AttendanceDto.class))
-//                .toList();
-//    }
 
     //get attendance for an employee for a month
-    public List<AttendanceDto> getMonthlyAttendanceByEmpCode(String empCode,int year,int month){
+    public List<AttendanceDto> getMonthlyAttendanceByEmpCode(String empCode, int year, int month) {
 
-        LocalDate start = LocalDate.of(year,month,1);
+        LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-        Optional<List<Attendance>> attendanceList = attendanceDao.findByEmpCodeAndDateBetweenOrderByTimeAsc(empCode,start,end);
-        if(attendanceList.isEmpty()){
+        Optional<List<Attendance>> attendanceList = attendanceDao.findByEmpCodeAndDateBetweenOrderByTimeAsc(empCode, start, end);
+        if (attendanceList.isEmpty()) {
             throw new RuntimeException("Attendance not found for empCode:" + empCode + "for month: " + month + " and year: " + year);
         }
         return attendanceList.get()
                 .stream()
-                .map(attendance-> appConfig.modelMapper().map(attendance,AttendanceDto.class))
+                .map(attendance -> appConfig.modelMapper().map(attendance, AttendanceDto.class))
                 .toList();
 
     }
 
     //get attendance for all employees for a month
-    public List<AttendanceDto> fetchAllAttendanceForMonth(int year, int month){
+    public List<AttendanceDto> fetchAllAttendanceForMonth(int year, int month) {
 
-        LocalDate start = LocalDate.of(year,month,1);
+        LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
-        Optional<List<Attendance>> attendanceList = attendanceDao.findByDateBetweenOrderByTimeAsc(start,end);
+        Optional<List<Attendance>> attendanceList = attendanceDao.findByDateBetweenOrderByTimeAsc(start, end);
 
-        if(attendanceList.isEmpty()){
+        if (attendanceList.isEmpty()) {
             throw new RuntimeException("Attendance not found for month: " + month + " and year: " + year);
         }
         return attendanceList.get()
                 .stream()
-                .map(attendance-> appConfig.modelMapper().map(attendance,AttendanceDto.class))
+                .map(attendance -> appConfig.modelMapper().map(attendance, AttendanceDto.class))
                 .toList();
     }
 
@@ -79,7 +68,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                         .map(attendance -> appConfig.modelMapper().map(attendance, AttendanceDto.class))
                         .toList());
 
-        if (attendanceList.isEmpty()){
+        if (attendanceList.isEmpty()) {
             throw new RuntimeException("Attendance not found for date: " + date);
         } else {
             return attendanceList.get();
