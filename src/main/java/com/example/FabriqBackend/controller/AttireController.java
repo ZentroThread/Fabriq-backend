@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
-import com.example.FabriqBackend.service.AttireService;
+import com.example.FabriqBackend.service.IAttireService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttireController {
 
-    private final AttireService attireService;
+    private final IAttireService attireService;
 
     @PostMapping("/add")
     @Operation(

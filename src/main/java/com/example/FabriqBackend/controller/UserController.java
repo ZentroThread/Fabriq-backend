@@ -1,9 +1,8 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.model.Login;
-import com.example.FabriqBackend.service.UserService;
+import com.example.FabriqBackend.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PostMapping("/register") //register new user
     @Operation(

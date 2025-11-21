@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.MeasurementAddDto;
 import com.example.FabriqBackend.dto.MeasurementUpdateDto;
-import com.example.FabriqBackend.service.MeasurementService;
+import com.example.FabriqBackend.service.IMeasurementService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MeasurementController {
 
-    private final MeasurementService measurementService;
+    private final IMeasurementService measurementService;
 
 
     @PostMapping("/add")
