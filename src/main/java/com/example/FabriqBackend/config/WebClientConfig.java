@@ -1,4 +1,4 @@
-package com.yourapp.config;
+package com.example.FabriqBackend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
