@@ -4,6 +4,7 @@ import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.service.IAttireService;
+import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -13,7 +14,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -23,11 +26,25 @@ public class AttireServiceImpl implements IAttireService {
 
     private final AttireDao attireDao;
     private final ModelMapper modelMapper;
+    private final S3Service s3Service;
 
     @CachePut(key = "#attire.tenantId + ':attire:' + #attire.attireName")
-    public ResponseEntity<?> createAttire(Attire attire) {
-        attireDao.save(attire);
-        return new ResponseEntity<>(attire, HttpStatus.CREATED);
+    public ResponseEntity<?> createAttire(Attire attire, MultipartFile image) {
+        try {
+            // Upload image to S3 if provided
+            if (image != null && !image.isEmpty()) {
+                String imageUrl = s3Service.uploadFile(image);
+                attire.setImageUrl(imageUrl);
+            }
+
+            Attire savedAttire = attireDao.save(attire);
+            return new ResponseEntity<>(savedAttire, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to create attire: " + e.getMessage());
+        }
+
     }
 
     @Cacheable(key = "'allAttires'")

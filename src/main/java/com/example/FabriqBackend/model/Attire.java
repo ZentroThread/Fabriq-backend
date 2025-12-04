@@ -23,6 +23,8 @@ public class Attire extends TenantAwareEntity implements Serializable {
     private String attireName;
     private Double attirePrice;
     private String attireStatus;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")

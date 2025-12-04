@@ -3,10 +3,12 @@ package com.example.FabriqBackend.controller;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.service.IAttireService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,14 +18,20 @@ import java.util.List;
 public class AttireController {
 
     private final IAttireService attireService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/add")
     @Operation(
             summary = "Create a new attire",
             description = "Creates a new attire record with details such as attire code, name, category, and status."
     )
-    public ResponseEntity<?> createAttire(@RequestBody Attire attire) {
-        return attireService.createAttire(attire);
+    public ResponseEntity<?> createAttire(@RequestParam("attire") String attireJson, @RequestParam(value = "image", required = false) MultipartFile image) {
+        try {
+            Attire attire = objectMapper.readValue(attireJson, Attire.class);
+            return attireService.createAttire(attire, image);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid attire data: " + e.getMessage());
+        }
     }
 
     @GetMapping("/all")
