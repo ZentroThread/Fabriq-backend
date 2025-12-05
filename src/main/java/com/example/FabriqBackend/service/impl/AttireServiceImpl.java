@@ -1,8 +1,11 @@
 package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.AttireDao;
+import com.example.FabriqBackend.dao.CategoryDao;
+import com.example.FabriqBackend.dto.AttireCreateDto;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
+import com.example.FabriqBackend.model.Category;
 import com.example.FabriqBackend.service.IAttireService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -21,24 +24,44 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = "attires")
+@CacheConfig(cacheNames = "create attire")
 public class AttireServiceImpl implements IAttireService {
 
     private final AttireDao attireDao;
     private final ModelMapper modelMapper;
     private final S3Service s3Service;
+    private final CategoryDao categoryDao;
 
-    @CachePut(key = "#attire.tenantId + ':attire:' + #attire.attireName")
-    public ResponseEntity<?> createAttire(Attire attire, MultipartFile image) {
+
+    @CacheEvict(key = "'allAttires'")
+    public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image){
         try {
             // Upload image to S3 if provided
+            Category category = categoryDao.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found with id: " + dto.getCategoryId()));
+
+            Attire attire = modelMapper.map(dto, Attire.class);
+            attire.setId(null); // Ensure ID is null to force insert instead of update
+
+            // Generate unique attireCode if not provided or if duplicate exists
+//            if (attire.getAttireCode() == null || attire.getAttireCode().isEmpty() || attireDao.findByAttireCode(attire.getAttireCode()) != null) {
+//                attire.setAttireCode("ATT-" + System.currentTimeMillis());
+//            }
+
+            attire.setCategory(category);
+
+            // 5. Upload image to S3 if provided
             if (image != null && !image.isEmpty()) {
+
                 String imageUrl = s3Service.uploadFile(image);
                 attire.setImageUrl(imageUrl);
             }
 
+            // 6. Save to database
             Attire savedAttire = attireDao.save(attire);
-            return new ResponseEntity<>(savedAttire, HttpStatus.CREATED);
+
+            // 7. Return success response
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedAttire);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
         } catch (Exception e) {

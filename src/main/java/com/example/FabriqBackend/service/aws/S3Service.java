@@ -41,7 +41,8 @@ public class S3Service {
     }
 
     public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+       // String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String fileName = "images/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)

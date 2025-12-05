@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 public interface CategoryDao extends TenantAwareDao<Category, Integer> {
 
     Category findByCategoryCode(String categoryCode);
+    Category findById(int id);
 }
