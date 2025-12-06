@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.dto;
 
-import lombok.Data;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 public class AttireCreateDto {
     private String attireCode;
     private String attireName;
+    private String attireDescription;
     private Double attirePrice;
     private String attireStatus;
     private Integer categoryId;
+    private Integer attireStock;
+
 }

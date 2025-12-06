@@ -18,11 +18,13 @@ public class Attire extends TenantAwareEntity implements Serializable {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(name = "attire_code",unique = true)
+    @Column(name = "attire_code", unique = true)
     private String attireCode;
     private String attireName;
+    private String attireDescription;
     private Double attirePrice;
     private String attireStatus;
+    private Integer attireStock;
     @Column(name = "image_url")
     private String imageUrl;
 

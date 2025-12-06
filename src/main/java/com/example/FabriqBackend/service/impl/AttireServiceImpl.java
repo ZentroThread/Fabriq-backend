@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service.impl;
 
+import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.CategoryDao;
 import com.example.FabriqBackend.dto.AttireCreateDto;
@@ -34,19 +35,29 @@ public class AttireServiceImpl implements IAttireService {
 
 
     @CacheEvict(key = "'allAttires'")
-    public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image){
+    public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image) {
         try {
-            // Upload image to S3 if provided
-            Category category = categoryDao.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found with id: " + dto.getCategoryId()));
+            // MANUAL TENANT ID OVERRIDE - Set to "t001" for testing
+            String currentTenantId = "T001";
 
+            // Optionally, set it in the context as well
+            TenantContext.setCurrentTenant(currentTenantId);
+
+            System.out.println("🏢 Current Tenant ID (MANUALLY SET): " + currentTenantId);
+            System.out.println("📝 Category ID requested: " + dto.getCategoryId());
+            System.out.println("🔍 Looking for category with tenantId: " + currentTenantId);
+
+            Category category = categoryDao.findByCategoryIdAndTenantId(
+                    dto.getCategoryId(),
+                    currentTenantId
+            ).orElseThrow(() -> new RuntimeException(
+                    "Category not found with id: " + dto.getCategoryId() +
+                            " and tenantId: " + currentTenantId
+            ));
+            System.out.println("✅ Found category: " + category.getCategoryName());
             Attire attire = modelMapper.map(dto, Attire.class);
             attire.setId(null); // Ensure ID is null to force insert instead of update
 
-            // Generate unique attireCode if not provided or if duplicate exists
-//            if (attire.getAttireCode() == null || attire.getAttireCode().isEmpty() || attireDao.findByAttireCode(attire.getAttireCode()) != null) {
-//                attire.setAttireCode("ATT-" + System.currentTimeMillis());
-//            }
 
             attire.setCategory(category);
 
