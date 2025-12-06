@@ -1,6 +1,7 @@
 package com.example.FabriqBackend.model.salary;
 
 import com.example.FabriqBackend.model.Employee;
+import com.example.FabriqBackend.model.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Table(name = "employee_deductions")
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class EmployeeDeduction {
+public class EmployeeDeduction extends TenantAwareEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

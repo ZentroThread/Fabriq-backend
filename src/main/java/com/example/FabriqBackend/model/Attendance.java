@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Attendance {
+public class Attendance extends TenantAwareEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

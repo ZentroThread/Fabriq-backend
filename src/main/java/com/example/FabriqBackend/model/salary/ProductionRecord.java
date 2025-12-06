@@ -1,6 +1,7 @@
 package com.example.FabriqBackend.model.salary;
 
 import com.example.FabriqBackend.model.Employee;
+import com.example.FabriqBackend.model.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @Table(name = "production_record")
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class ProductionRecord {
+public class ProductionRecord extends TenantAwareEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
