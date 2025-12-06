@@ -48,7 +48,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "v1/employees/**"
+                                "v1/employees/**",
+                                "v1/allowance-types/**",
+                                "/v1/deduction-types/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
