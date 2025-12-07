@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "v1/allowance-types/**",
                                 "/v1/deduction-types/**",
                                 "/v1/employee-allowances/**",
-                                "/v1/employee-deductions/**"
+                                "/v1/employee-deductions/**",
+                                "/v1/production-records/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
