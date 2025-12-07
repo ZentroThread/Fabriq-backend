@@ -50,7 +50,9 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "v1/employees/**",
                                 "v1/allowance-types/**",
-                                "/v1/deduction-types/**"
+                                "/v1/deduction-types/**",
+                                "/v1/employee-allowances/**",
+                                "/v1/employee-deductions/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
