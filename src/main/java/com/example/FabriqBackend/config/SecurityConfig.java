@@ -53,7 +53,8 @@ public class SecurityConfig {
                                 "/v1/deduction-types/**",
                                 "/v1/employee-allowances/**",
                                 "/v1/employee-deductions/**",
-                                "/v1/production-records/**"
+                                "/v1/production-records/**",
+                                "/v1/attendance/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

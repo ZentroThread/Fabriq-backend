@@ -48,6 +48,10 @@ public class Employee extends TenantAwareEntity {
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
     private List<EmployeeDeduction> employeeDeductions;
 
+    //attendance relationship
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<Attendance> attendances;
+
     //employee bank details relationship
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_details_id")

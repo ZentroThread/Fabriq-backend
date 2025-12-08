@@ -9,8 +9,18 @@ import java.util.Optional;
 
 public interface AttendanceDao extends TenantAwareDao<Attendance, Long> {
 
-    Optional<List<Attendance>> findByEmpCodeAndDate(String empCode, LocalDate date);
-    Optional<List<Attendance>> findByEmpCodeAndDateBetweenOrderByTimeAsc(String empCode,LocalDate from,LocalDate to);
-    Optional<List<Attendance>> findByDateBetweenOrderByTimeAsc(LocalDate from, LocalDate to);
+    //Optional<List<Attendance>> findByEmpCodeAndDate(String empCode, LocalDate date);
+    //Optional<List<Attendance>> findByEmpCodeAndDateBetweenOrderByTimeAsc(String empCode,LocalDate from,LocalDate to);
+    //Optional<List<Attendance>> findByDateBetweenOrderByTimeAsc(LocalDate from, LocalDate to);
     Optional<List<Attendance>> findByDate(LocalDate date);
+    List<Attendance> findByEmpCodeAndDateBetweenOrderByDateAsc(
+            String empCode,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+    List<Attendance> findByDateBetweenOrderByDateAsc(
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
 }
