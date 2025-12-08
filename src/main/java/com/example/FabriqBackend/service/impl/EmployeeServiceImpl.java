@@ -1,9 +1,11 @@
 package com.example.FabriqBackend.service.impl;
 
+import com.example.FabriqBackend.dao.EmployeeBankDetailsDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.EmployeeDto;
 import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
+import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
 import com.example.FabriqBackend.service.IEmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements IEmployeeService {
 
     private final EmployeeDao empDao;
+    private final EmployeeBankDetailsDao empBankDao;
 
     @CachePut(value="employees", key="#result.empCode")
     @CacheEvict(value = "employeesAll", allEntries = true)
@@ -43,6 +46,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee existingEmp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
+        EmployeeBankDetails bankDetails = empBankDao.findById(dto.getEmployeeBankDetails().getId())
+                .orElse(null);
+
+        existingEmp.setEmployeeBankDetails(bankDetails);
+        //empDao.save(existingEmp);
+
         Employee updatedEmp = empDao.save( EmployeeMapper.toEntity(dto,existingEmp));
 
         return  EmployeeMapper.toDto(updatedEmp);
@@ -54,8 +63,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
     })
     public void deleteEmployee(String empCode){
 
-        empDao.findByEmpCode(empCode)
+        Employee emp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
+        EmployeeBankDetails bankDetails = emp.getEmployeeBankDetails();
+        if(bankDetails != null){
+            empBankDao.deleteById(bankDetails.getId());
+        }
         empDao.deleteByEmpCode(empCode);
 
     }

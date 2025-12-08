@@ -1,9 +1,15 @@
 package com.example.FabriqBackend.dto;
 
 
+import com.example.FabriqBackend.dto.salary.EmployeeBankDetailsDTO;
+import com.example.FabriqBackend.enums.GenderEnum;
 import lombok.*;
+
+import java.time.LocalDate;
+
 @Data
 public class EmployeeDto {
+    private Long id;
     private String empCode;
     private String empFirstName;
     private String empLastName;
@@ -12,6 +18,11 @@ public class EmployeeDto {
     private String dateOfBirth;
     private String role;
     private String address;
+    private GenderEnum gender;
+    private String joinedDate;
+    private String epfNumber;
     //age - computed field
     private Integer age;
+
+    private EmployeeBankDetailsDTO employeeBankDetails;
 }

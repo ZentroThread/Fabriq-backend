@@ -1,12 +1,15 @@
 package com.example.FabriqBackend.model;
 
+import com.example.FabriqBackend.enums.GenderEnum;
 import com.example.FabriqBackend.model.salary.EmployeeAllowance;
+import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
 import com.example.FabriqBackend.model.salary.EmployeeDeduction;
 import com.example.FabriqBackend.model.salary.ProductionRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -28,6 +31,10 @@ public class Employee extends TenantAwareEntity {
     private String dateOfBirth;
     private String role;
     private String address;
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+    private String joinedDate;
+    private String epfNumber;
 
     //production records relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
@@ -40,5 +47,11 @@ public class Employee extends TenantAwareEntity {
     //employee deductions relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
     private List<EmployeeDeduction> employeeDeductions;
+
+    //employee bank details relationship
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bank_details_id")
+    private EmployeeBankDetails employeeBankDetails;
+
 
 }

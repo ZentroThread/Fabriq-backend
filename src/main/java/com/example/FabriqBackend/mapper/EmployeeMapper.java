@@ -2,6 +2,7 @@ package com.example.FabriqBackend.mapper;
 
 import com.example.FabriqBackend.dto.EmployeeDto;
 import com.example.FabriqBackend.model.Employee;
+import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -13,6 +14,8 @@ public class EmployeeMapper {
         if (employee == null) return null;
 
         EmployeeDto dto = new EmployeeDto();
+
+        dto.setId(employee.getId());
         dto.setEmpCode(employee.getEmpCode());
         dto.setEmpFirstName(employee.getEmpFirstName());
         dto.setEmpLastName(employee.getEmpLastName());
@@ -21,6 +24,13 @@ public class EmployeeMapper {
         dto.setDateOfBirth(employee.getDateOfBirth());
         dto.setRole(employee.getRole());
         dto.setAddress(employee.getAddress());
+        dto.setGender(employee.getGender());
+        dto.setJoinedDate(employee.getJoinedDate());
+        dto.setEpfNumber(employee.getEpfNumber());
+
+        if(employee.getEmployeeBankDetails() != null) {
+            dto.setEmployeeBankDetails(EmployeeBankDetailsMapper.toDto(employee.getEmployeeBankDetails()));
+        }
 
         if (employee.getDateOfBirth() != null) {
             dto.setAge(calculateAge(employee.getDateOfBirth()));
@@ -41,6 +51,18 @@ public class EmployeeMapper {
         employee.setDateOfBirth(dto.getDateOfBirth());
         employee.setRole(dto.getRole());
         employee.setAddress(dto.getAddress());
+        employee.setGender(dto.getGender());
+        employee.setJoinedDate(dto.getJoinedDate());
+        employee.setEpfNumber(dto.getEpfNumber());
+
+        if( dto.getEmployeeBankDetails() != null) {
+            employee.setEmployeeBankDetails(EmployeeBankDetailsMapper.toEntity(dto.getEmployeeBankDetails(),
+                    employee.getEmployeeBankDetails() != null ? employee.getEmployeeBankDetails() : new EmployeeBankDetails()));
+        }
+
+        if( dto.getDateOfBirth() != null) {
+            employee.setDateOfBirth(dto.getDateOfBirth());
+        }
 
         return employee;
     }
