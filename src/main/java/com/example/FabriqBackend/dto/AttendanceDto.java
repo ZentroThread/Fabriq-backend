@@ -16,11 +16,11 @@ import java.time.LocalTime;
 public class AttendanceDto {
 
     private Long empId;
-    private String empCode;
     private LocalDate date;
     private LocalTime checkIn;
     private LocalTime checkOut;
     private Double totalHours;
+    private Long lateMinutes;
     private AttendanceStatus status;
 
 }

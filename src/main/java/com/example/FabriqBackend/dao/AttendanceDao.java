@@ -13,7 +13,7 @@ public interface AttendanceDao extends TenantAwareDao<Attendance, Long> {
     //Optional<List<Attendance>> findByEmpCodeAndDateBetweenOrderByTimeAsc(String empCode,LocalDate from,LocalDate to);
     //Optional<List<Attendance>> findByDateBetweenOrderByTimeAsc(LocalDate from, LocalDate to);
     Optional<List<Attendance>> findByDate(LocalDate date);
-    List<Attendance> findByEmpCodeAndDateBetweenOrderByDateAsc(
+    List<Attendance> findByEmployee_EmpCodeAndDateBetweenOrderByDateAsc(
             String empCode,
             LocalDate startDate,
             LocalDate endDate
@@ -23,4 +23,5 @@ public interface AttendanceDao extends TenantAwareDao<Attendance, Long> {
             LocalDate endDate
     );
 
+    Optional<Attendance> findByEmployee_EmpCodeAndDate(String empCode, LocalDate date);
 }

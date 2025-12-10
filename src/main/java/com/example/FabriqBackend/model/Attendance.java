@@ -21,13 +21,11 @@ public class Attendance extends TenantAwareEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "emp_code",nullable = false)
-    private String empCode;
-
     private LocalDate date;
     private LocalTime checkIn;
     private LocalTime checkOut;
     private Double totalHours;
+    private Long lateMinutes;
 
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;

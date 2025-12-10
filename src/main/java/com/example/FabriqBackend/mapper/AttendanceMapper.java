@@ -11,11 +11,11 @@ public class AttendanceMapper {
     public static AttendanceDto toDto(Attendance attendance,AttendanceDto dto) {
 
         dto.setEmpId(attendance.getEmployee() != null ? attendance.getEmployee().getId() : null);
-        dto.setEmpCode(attendance.getEmpCode());
         dto.setDate(attendance.getDate());
         dto.setCheckIn(attendance.getCheckIn());
         dto.setCheckOut(attendance.getCheckOut());
         dto.setTotalHours(attendance.getTotalHours());
+        dto.setLateMinutes(attendance.getLateMinutes());
         dto.setStatus(attendance.getStatus());
 
         return dto;
@@ -23,7 +23,6 @@ public class AttendanceMapper {
 
     public static Attendance toEntity(AttendanceCreateDto dto, Attendance attendance) {
 
-        attendance.setEmpCode(dto.getEmpCode());
         attendance.setDate(dto.getDate());
         attendance.setCheckIn(dto.getCheckIn());
         attendance.setCheckOut(dto.getCheckOut());

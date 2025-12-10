@@ -11,7 +11,6 @@ import com.example.FabriqBackend.model.salary.AllowanceType;
 import com.example.FabriqBackend.model.salary.EmployeeAllowance;
 import com.example.FabriqBackend.service.IEmployeeAllowanceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
