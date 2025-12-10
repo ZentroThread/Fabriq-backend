@@ -46,15 +46,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee existingEmp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
-        EmployeeBankDetails bankDetails = empBankDao.findById(dto.getEmployeeBankDetails().getId())
-                .orElse(null);
+        EmployeeMapper.toEntity(dto,existingEmp);
 
-        existingEmp.setEmployeeBankDetails(bankDetails);
-        //empDao.save(existingEmp);
+        if (existingEmp.getEmployeeBankDetails() != null) {
+            empBankDao.save(existingEmp.getEmployeeBankDetails());
+        }
+        Employee updatedEmp = empDao.save(existingEmp);
 
-        Employee updatedEmp = empDao.save( EmployeeMapper.toEntity(dto,existingEmp));
-
-        return  EmployeeMapper.toDto(updatedEmp);
+        return EmployeeMapper.toDto(updatedEmp);
     }
 
     @Caching(evict = {

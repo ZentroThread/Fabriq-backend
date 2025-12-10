@@ -35,6 +35,7 @@ public class Employee extends TenantAwareEntity {
     private GenderEnum gender;
     private String joinedDate;
     private String epfNumber;
+    private Double basicSalary;
 
     //production records relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)

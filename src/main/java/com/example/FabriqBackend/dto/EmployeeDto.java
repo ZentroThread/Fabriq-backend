@@ -21,6 +21,7 @@ public class EmployeeDto {
     private GenderEnum gender;
     private String joinedDate;
     private String epfNumber;
+    private Double basicSalary;
     //age - computed field
     private Integer age;
 

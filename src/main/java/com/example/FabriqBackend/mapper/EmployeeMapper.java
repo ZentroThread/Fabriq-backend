@@ -27,6 +27,7 @@ public class EmployeeMapper {
         dto.setGender(employee.getGender());
         dto.setJoinedDate(employee.getJoinedDate());
         dto.setEpfNumber(employee.getEpfNumber());
+        dto.setBasicSalary(employee.getBasicSalary());
 
         if(employee.getEmployeeBankDetails() != null) {
             dto.setEmployeeBankDetails(EmployeeBankDetailsMapper.toDto(employee.getEmployeeBankDetails()));
@@ -54,6 +55,7 @@ public class EmployeeMapper {
         employee.setGender(dto.getGender());
         employee.setJoinedDate(dto.getJoinedDate());
         employee.setEpfNumber(dto.getEpfNumber());
+        employee.setBasicSalary(dto.getBasicSalary());
 
         if( dto.getEmployeeBankDetails() != null) {
             employee.setEmployeeBankDetails(EmployeeBankDetailsMapper.toEntity(dto.getEmployeeBankDetails(),
