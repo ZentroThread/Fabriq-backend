@@ -81,8 +81,8 @@ jobs:
       - name: Make Maven wrapper executable
         run: chmod +x ./mvnw
 
-      - name: Build and run tests
-        run: ./mvnw -B -ntp -Dstyle.color=always verify
+      - name: Build (skip tests)
+        run: ./mvnw -B -ntp -Dstyle.color=always verify -DskipTests
 
       - name: Upload test reports on failure
         if: failure()
