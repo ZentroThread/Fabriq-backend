@@ -9,7 +9,6 @@ import java.util.Optional;
 public interface CategoryDao extends TenantAwareDao<Category, Integer> {
 
     Category findByCategoryCode(String categoryCode);
-
     Category findById(int id);
 
     Optional<Category> findByCategoryIdAndTenantId(Integer categoryId, String tenantId);
