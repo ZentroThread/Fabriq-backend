@@ -39,15 +39,18 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             username = jwtService.extractUserName(token);
 
+            // Extract and set tenant ID from JWT token early
+            String tenantId = jwtService.extractTenantId(token);
+            if (tenantId != null && !tenantId.isEmpty()) {
+                TenantContext.setCurrentTenant(tenantId);
+                System.out.println("🔑 JwtFilter: Set tenantId from JWT token: " + tenantId);
+            } else {
+                System.out.println("⚠️ JwtFilter: No tenantId found in JWT token");
+            }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = context.getBean(userDetailsService.class).loadUserByUsername(username);
-                // Extract and set tenant ID from JWT token
-                String tenantId = jwtService.extractTenantId(token);
-                if (tenantId != null && !tenantId.isEmpty()) {
-                    TenantContext.setCurrentTenant(tenantId);
-                }
 
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
