@@ -35,9 +35,10 @@ public class SecurityConfig {
 
        return http
                 .csrf(customizer -> customizer.disable())
+                .cors(Customizer.withDefaults()) // Enable CORS with default configuration
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/user/**",
+                                "/v1/user/**",
                                 "/customer/**",
                                 "/v1/category/**",
                                 "/v1/attire/**",

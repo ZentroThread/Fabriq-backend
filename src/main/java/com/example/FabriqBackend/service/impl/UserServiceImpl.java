@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-//import static com.example.FabriqBackend.config.Tenant.TenantContext.getCurrentTenant;
 
 
 @Service
@@ -29,7 +28,7 @@ public class UserServiceImpl implements IUserService {
     private final UserDao userDao;
 
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @CachePut(key = "#result.tenantId + ':' + #result.username")
     public Login registerUser(Login user) {
@@ -48,25 +47,29 @@ public class UserServiceImpl implements IUserService {
         return user;
     }
 
-    @Cacheable(key = "#result.tenantId + ':' + #username  + ':user logged:'")
     public String verify(Login user) {
 
-        // Use cached path
-        Login stored = getByUsername(user.getUsername());
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            // Get the authenticated user's tenant ID
+            // Get the authenticated user's details
             Login authenticatedUser = userDao.findByUsername(user.getUsername());
-            return jwtService.generateToken(user.getUsername(), authenticatedUser.getTenantId());
+            String token =  jwtService.generateToken(
+                user.getUsername(), 
+                authenticatedUser.getTenantId(),
+                authenticatedUser.getId(),
+                authenticatedUser.getRole()
+            );
+            System.out.println("Generated JWT Token: " + token);
+           return token;
         } else {
             return "fail";
         }
     }
 
     // Read by tenant + username
-    @Cacheable(key = "getCurrentTenant() + ':' + #username + ':retrieved by username'")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #username + ':retrieved by username'")
     public Login getByUsername(String username) {
         return userDao.findByUsername(username);
     }

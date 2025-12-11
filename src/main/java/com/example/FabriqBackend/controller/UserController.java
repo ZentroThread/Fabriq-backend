@@ -1,13 +1,13 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.model.Login;
+import com.example.FabriqBackend.model.UserPrincipal;
 import com.example.FabriqBackend.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController //base url for user related operations
 @RequestMapping("/v1/user")
@@ -32,6 +32,24 @@ public class UserController {
             description = "This endpoint allows an existing user to log in by providing their credentials in the request body."
     )
     public String login(@RequestBody Login user) {
+        System.out.println("login request received for user: " + user.getUsername());
         return userService.verify(user);
     }
+
+    @GetMapping("/me") //get current user details
+    @Operation(
+            summary = "Get current user details",
+            description = "This endpoint returns the details of the currently authenticated user."
+    )
+    public Login getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            String username = userPrincipal.getUsername();
+            return userService.getByUsername(username);
+        }
+        throw new RuntimeException("User not authenticated");
+    }
+
+
 }

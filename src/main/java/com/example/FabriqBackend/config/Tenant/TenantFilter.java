@@ -11,14 +11,35 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
+
+    // Public endpoints that don't require tenant context
+    private static final List<String> PUBLIC_ENDPOINTS = Arrays.asList(
+        "/api/v1/user/login",
+        "/v1/user/register",
+        "/v3/api-docs",
+        "/swagger-ui",
+        "/swagger-resources",
+        "/webjars"
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return PUBLIC_ENDPOINTS.contains(path);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        String requestPath = request.getRequestURI();
+        System.out.println("🌐 TenantFilter: Processing request: " + request.getMethod() + " " + requestPath);
+        
         try {
             String tenantId = null;
 
