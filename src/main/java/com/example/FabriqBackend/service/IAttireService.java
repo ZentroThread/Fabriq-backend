@@ -1,13 +1,15 @@
 package com.example.FabriqBackend.service;
 
+import com.example.FabriqBackend.dto.AttireCreateDto;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface IAttireService {
-    ResponseEntity<?> createAttire(Attire attire);
+    ResponseEntity<?> createAttire(AttireCreateDto attire, MultipartFile image);
     ResponseEntity<?> deleteAttire(Integer id);
     ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto);
     ResponseEntity<?> getAttireById(Integer id);
