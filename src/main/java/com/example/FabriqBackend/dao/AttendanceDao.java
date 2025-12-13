@@ -24,4 +24,7 @@ public interface AttendanceDao extends TenantAwareDao<Attendance, Long> {
     );
 
     Optional<Attendance> findByEmployee_EmpCodeAndDate(String empCode, LocalDate date);
+
+    Optional<List<Attendance>> findByEmployee_IdAndDateBetween(Long id, LocalDate startDate, LocalDate endDate);
+
 }

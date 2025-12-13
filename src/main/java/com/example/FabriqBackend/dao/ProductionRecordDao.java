@@ -15,4 +15,6 @@ public interface ProductionRecordDao extends TenantAwareDao<ProductionRecord, Lo
     Optional<List<ProductionRecord>> findByDateBetween(LocalDate startDate, LocalDate endDate);
     Optional<List<ProductionRecord>> findByDateBetweenAndEmployee_Id(LocalDate startDate, LocalDate endDate, Long empId);
 
+    Optional<List<ProductionRecord>> findByEmployee_IdAndDateBetween(Long id, LocalDate startDate, LocalDate endDate);
+
 }

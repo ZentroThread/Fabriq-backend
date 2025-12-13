@@ -1,10 +1,7 @@
 package com.example.FabriqBackend.model;
 
 import com.example.FabriqBackend.enums.GenderEnum;
-import com.example.FabriqBackend.model.salary.EmployeeAllowance;
-import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
-import com.example.FabriqBackend.model.salary.EmployeeDeduction;
-import com.example.FabriqBackend.model.salary.ProductionRecord;
+import com.example.FabriqBackend.model.salary.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +49,10 @@ public class Employee extends TenantAwareEntity {
     //attendance relationship
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Attendance> attendances;
+
+    //payroll records relationship
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<PayrollRecord> payrollRecords;
 
     //employee bank details relationship
     @OneToOne(cascade = CascadeType.ALL)
