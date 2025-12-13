@@ -1,6 +1,5 @@
 package com.example.FabriqBackend.config;
 
-import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.service.JWTService;
 import com.example.FabriqBackend.service.userDetailsService;
 import jakarta.servlet.FilterChain;
@@ -28,58 +27,56 @@ public class JwtFilter extends OncePerRequestFilter {
     private JWTService jwtService;
 
     @Autowired
-    ApplicationContext context;
+    private ApplicationContext context;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
         String token = null;
         String username = null;
 
-        // Extract JWT token from HttpOnly cookie
+        // Extract JWT from HttpOnly cookie
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {
                     token = cookie.getValue();
-                    System.out.println("🍪 JwtFilter: Found JWT token in cookie");
                     break;
                 }
             }
         }
 
-        // Extract username and tenant from token if found
-        if (token != null && !token.isEmpty()) {
+        // Authenticate only if token exists and user not already authenticated
+        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 username = jwtService.extractUserName(token);
 
-                // Extract and set tenant ID from JWT token early
-                String tenantId = jwtService.extractTenantId(token);
-                if (tenantId != null && !tenantId.isEmpty()) {
-                    TenantContext.setCurrentTenant(tenantId);
-                    System.out.println("🔑 JwtFilter: Set tenantId from JWT token: " + tenantId);
-                } else {
-                    System.out.println("⚠️ JwtFilter: No tenantId found in JWT token");
+                UserDetails userDetails =
+                        context.getBean(userDetailsService.class)
+                                .loadUserByUsername(username);
+
+                if (jwtService.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
+
             } catch (Exception e) {
-                System.out.println("❌ JwtFilter: Invalid token in cookie - " + e.getMessage());
-            }
-        } else {
-            System.out.println("⚠️ JwtFilter: No JWT token found in cookies");
-        }
-
-        // Authenticate user if token is valid
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = context.getBean(userDetailsService.class).loadUserByUsername(username);
-
-            if (jwtService.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource()
-                        .buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                System.out.println("✅ JwtFilter: User authenticated successfully: " + username);
+                // Invalid token → user remains unauthenticated
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }
