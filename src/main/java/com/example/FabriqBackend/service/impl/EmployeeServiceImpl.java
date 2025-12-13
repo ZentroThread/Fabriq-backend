@@ -24,8 +24,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private final EmployeeDao empDao;
     private final EmployeeBankDetailsDao empBankDao;
 
-    @CachePut(value="employees", key="#result.empCode")
-    @CacheEvict(value = "employeesAll", allEntries = true)
+    @CachePut(
+            value = "employees",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #result.empCode"
+    )
+    @CacheEvict(
+            value = "employeesAll",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+    )
     public EmployeeDto addEmployee(EmployeeDto dto){
 
         Employee emp = EmployeeMapper.toEntity(dto,new Employee());
@@ -39,8 +45,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     }
 
-    @CachePut(value="employees", key = "#result.empCode")
-    @CacheEvict(value = "employeesAll", allEntries = true)
+    @CachePut(
+            value = "employees",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #result.empCode"
+    )
+    @CacheEvict(
+            value = "employeesAll",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+    )
     public EmployeeDto updateEmployee(EmployeeDto dto,String empCode){
 
         Employee existingEmp = empDao.findByEmpCode(empCode)
@@ -57,8 +69,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "employees", key = "#empCode"),
-            @CacheEvict(value = "employeesAll", allEntries = true)
+            @CacheEvict(
+                    value = "employees",
+                    key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #empCode"
+            ),
+            @CacheEvict(
+                    value = "employeesAll",
+                    key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+            )
     })
     public void deleteEmployee(String empCode){
 
@@ -72,7 +90,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     }
 
-    @Cacheable(value = "employees", key="#empCode")
+    @Cacheable(
+            value = "employees",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #empCode"
+    )
     public EmployeeDto fetchEmployeeById(String empCode){
 
         Employee emp = empDao.findByEmpCode(empCode)
@@ -81,7 +102,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return EmployeeMapper.toDto(emp);
     }
 
-    @Cacheable(value="employeesAll")
+    @Cacheable(
+            value = "employeesAll",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+    )
     public List<EmployeeDto> fetchAllEmployees(){
         List<Employee> empList = empDao.findAll();
 
