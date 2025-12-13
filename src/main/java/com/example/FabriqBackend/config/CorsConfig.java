@@ -18,7 +18,7 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization", "X-Tenant-ID")
-                        .allowCredentials(true);
+                        .allowCredentials(true); // ✅ REQUIRED for HttpOnly cookies to work with cross-origin requests
             }
         };
     }

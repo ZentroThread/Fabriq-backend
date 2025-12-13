@@ -4,6 +4,7 @@ import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.model.UserPrincipal;
 import com.example.FabriqBackend.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,9 +32,9 @@ public class UserController {
             summary = "Login an existing user",
             description = "This endpoint allows an existing user to log in by providing their credentials in the request body."
     )
-    public String login(@RequestBody Login user) {
+    public String login(@RequestBody Login user,  HttpServletResponse response) {
         System.out.println("login request received for user: " + user.getUsername());
-        return userService.verify(user);
+        return userService.verify(user,response);
     }
 
     @GetMapping("/me") //get current user details
@@ -51,5 +52,13 @@ public class UserController {
         throw new RuntimeException("User not authenticated");
     }
 
+    @PostMapping("/logout") //logout user and clear cookie
+    @Operation(
+            summary = "Logout user",
+            description = "This endpoint logs out the user by clearing the JWT token cookie."
+    )
+    public String logout(HttpServletResponse response) {
+        return userService.logout(response);
+    }
 
 }

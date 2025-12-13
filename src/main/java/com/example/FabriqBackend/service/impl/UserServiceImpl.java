@@ -5,10 +5,13 @@ import com.example.FabriqBackend.dao.UserDao;
 import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.service.IUserService;
 import com.example.FabriqBackend.service.JWTService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,7 +50,7 @@ public class UserServiceImpl implements IUserService {
         return user;
     }
 
-    public String verify(Login user) {
+    public String verify(Login user, HttpServletResponse response) {
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
@@ -61,10 +64,27 @@ public class UserServiceImpl implements IUserService {
                 authenticatedUser.getId(),
                 authenticatedUser.getRole()
             );
-            System.out.println("Generated JWT Token: " + token);
-           return token;
+            
+            // Create HttpOnly cookie with JWT token
+            // 🔒 SECURITY BEST PRACTICES:
+            // - httpOnly(true): Prevents JavaScript access (XSS protection)
+            // - secure(false for dev, true for prod): Only sends over HTTPS in production
+            // - sameSite("Lax"): Balanced CSRF protection (allows navigation, blocks cross-site POST)
+            // - path("/"): Cookie accessible across entire application
+            // - maxAge: Token expiration (24 hours)
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)  // ✅ Prevents XSS attacks
+                    .secure(false)   // ⚠️ Set to true in production with HTTPS
+                    .path("/")       // ✅ Available for all endpoints
+                    .sameSite("Lax") // ✅ CSRF protection (use "None" if cross-site + add secure(true))
+                    .maxAge(24 * 60 * 60) // 24 hours
+                    .build();
+
+            response.addHeader("Set-Cookie", cookie.toString());
+            System.out.println("🍪 Cookie created: " + cookie.getName() + " (HttpOnly: " + cookie.isHttpOnly() + ")");
+            return "Login successful";
         } else {
-            return "fail";
+            return "Invalid credentials";
         }
     }
 
@@ -72,6 +92,21 @@ public class UserServiceImpl implements IUserService {
     @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #username + ':retrieved by username'")
     public Login getByUsername(String username) {
         return userDao.findByUsername(username);
+    }
+
+    public String logout(HttpServletResponse response) {
+        // Clear the JWT cookie by setting maxAge to 0
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false)  // Set to true in production
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(0)  // Immediately expire the cookie
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+        System.out.println("🍪 Cookie cleared - User logged out");
+        return "Logout successful";
     }
 
 }
