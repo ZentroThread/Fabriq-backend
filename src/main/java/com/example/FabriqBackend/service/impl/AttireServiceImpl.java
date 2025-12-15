@@ -37,15 +37,13 @@ public class AttireServiceImpl implements IAttireService {
     @CacheEvict(key = "'allAttires'")
     public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image) {
         try {
-            // MANUAL TENANT ID OVERRIDE - Set to "t001" for testing
-            String currentTenantId = "T001";
+            // Get tenant ID from context (automatically set by JwtFilter from JWT token)
+            String currentTenantId = TenantContext.getCurrentTenant();
 
-            // Optionally, set it in the context as well
-            TenantContext.setCurrentTenant(currentTenantId);
-
-            System.out.println("🏢 Current Tenant ID (MANUALLY SET): " + currentTenantId);
-            System.out.println("📝 Category ID requested: " + dto.getCategoryId());
-            System.out.println("🔍 Looking for category with tenantId: " + currentTenantId);
+            if (currentTenantId == null || currentTenantId.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Tenant ID not found. Please ensure you are authenticated.");
+            }
 
             Category category = categoryDao.findByCategoryIdAndTenantId(
                     dto.getCategoryId(),
@@ -54,7 +52,6 @@ public class AttireServiceImpl implements IAttireService {
                     "Category not found with id: " + dto.getCategoryId() +
                             " and tenantId: " + currentTenantId
             ));
-            System.out.println("✅ Found category: " + category.getCategoryName());
             Attire attire = modelMapper.map(dto, Attire.class);
             attire.setId(null); // Ensure ID is null to force insert instead of update
 
@@ -93,17 +90,67 @@ public class AttireServiceImpl implements IAttireService {
     }
 
     @CachePut(key = "'updatedAttire:' + #id")
-    public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto) {
+    public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto, MultipartFile image) {
+        try {
+            String currentTenantId = TenantContext.getCurrentTenant();
 
-        Attire attire1 = attireDao.findById(id)
-                .map(attire -> {
-                    modelMapper.map(attireUpdateDto, attire);
+            if (currentTenantId == null || currentTenantId.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Tenant ID not found. Please ensure you are authenticated.");
+            }
 
-                    Attire updatedAttire = attireDao.save(attire);
-                    return ResponseEntity.ok().body(updatedAttire);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build()).getBody();
-        return ResponseEntity.ok(attire1);
+            return attireDao.findById(id)
+                    .map(attire -> {
+                        // Manually update fields from DTO (only non-null values)
+                        if (attireUpdateDto.getAttireCode() != null) {
+                            attire.setAttireCode(attireUpdateDto.getAttireCode());
+                        }
+                        if (attireUpdateDto.getAttireName() != null) {
+                            attire.setAttireName(attireUpdateDto.getAttireName());
+                        }
+                        if (attireUpdateDto.getAttireDescription() != null) {
+                            attire.setAttireDescription(attireUpdateDto.getAttireDescription());
+                        }
+                        if (attireUpdateDto.getAttirePrice() != null) {
+                            attire.setAttirePrice(attireUpdateDto.getAttirePrice());
+                        }
+                        if (attireUpdateDto.getAttireStatus() != null) {
+                            attire.setAttireStatus(attireUpdateDto.getAttireStatus());
+                        }
+                        if (attireUpdateDto.getAttireStock() != null) {
+                            attire.setAttireStock(attireUpdateDto.getAttireStock());
+                        }
+
+                        // Update category if categoryId is provided
+                        if (attireUpdateDto.getCategoryId() != null) {
+                            Category category = categoryDao.findByCategoryIdAndTenantId(
+                                    attireUpdateDto.getCategoryId(),
+                                    currentTenantId
+                            ).orElseThrow(() -> new RuntimeException(
+                                    "Category not found with id: " + attireUpdateDto.getCategoryId() +
+                                            " and tenantId: " + currentTenantId
+                            ));
+                            attire.setCategory(category);
+                        }
+
+                        // Update image if provided
+                        if (image != null && !image.isEmpty()) {
+                            try {
+                                String imageUrl = s3Service.uploadFile(image);
+                                attire.setImageUrl(imageUrl);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to upload image: " + e.getMessage());
+                            }
+                        }
+
+                        Attire updatedAttire = attireDao.save(attire);
+                        return ResponseEntity.ok().body(updatedAttire);
+                    })
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update attire: " + e.getMessage());
+        }
     }
 
     @Cacheable(key = "'attireById:' + #id")

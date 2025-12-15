@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.config;
 
+import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.service.JWTService;
 import com.example.FabriqBackend.service.userDetailsService;
 import jakarta.servlet.FilterChain;
@@ -58,6 +59,12 @@ public class JwtFilter extends OncePerRequestFilter {
                                 .loadUserByUsername(username);
 
                 if (jwtService.validateToken(token, userDetails)) {
+                    // Extract and set tenant ID from JWT token
+                    String tenantId = jwtService.extractTenantId(token);
+                    if (tenantId != null) {
+                        TenantContext.setCurrentTenant(tenantId);
+                    }
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -74,9 +81,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
             } catch (Exception e) {
                 // Invalid token → user remains unauthenticated
+                TenantContext.clear();
             }
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            // Clear tenant context after request completes
+            TenantContext.clear();
+        }
     }
 }
