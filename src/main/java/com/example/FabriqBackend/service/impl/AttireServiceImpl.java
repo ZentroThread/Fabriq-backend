@@ -89,64 +89,43 @@ public class AttireServiceImpl implements IAttireService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @CachePut(key = "'updatedAttire:' + #id")
-    public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto, MultipartFile image) {
+    @CachePut(key = "'attireById:' + #id")
+    @CacheEvict(value = "create attire", key = "'allAttires'")
+    public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto dto, MultipartFile image) {
         try {
             String currentTenantId = TenantContext.getCurrentTenant();
 
             if (currentTenantId == null || currentTenantId.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Tenant ID not found. Please ensure you are authenticated.");
+                        .body("Tenant ID not found.");
             }
 
             return attireDao.findById(id)
                     .map(attire -> {
-                        // Manually update fields from DTO (only non-null values)
-                        if (attireUpdateDto.getAttireCode() != null) {
-                            attire.setAttireCode(attireUpdateDto.getAttireCode());
-                        }
-                        if (attireUpdateDto.getAttireName() != null) {
-                            attire.setAttireName(attireUpdateDto.getAttireName());
-                        }
-                        if (attireUpdateDto.getAttireDescription() != null) {
-                            attire.setAttireDescription(attireUpdateDto.getAttireDescription());
-                        }
-                        if (attireUpdateDto.getAttirePrice() != null) {
-                            attire.setAttirePrice(attireUpdateDto.getAttirePrice());
-                        }
-                        if (attireUpdateDto.getAttireStatus() != null) {
-                            attire.setAttireStatus(attireUpdateDto.getAttireStatus());
-                        }
-                        if (attireUpdateDto.getAttireStock() != null) {
-                            attire.setAttireStock(attireUpdateDto.getAttireStock());
-                        }
+                        // ✨ Clean one-liner
+                        dto.applyTo(attire);
 
-                        // Update category if categoryId is provided
-                        if (attireUpdateDto.getCategoryId() != null) {
+                        // Handle category separately (needs DAO access)
+                        if (dto.getCategoryId() != null) {
                             Category category = categoryDao.findByCategoryIdAndTenantId(
-                                    attireUpdateDto.getCategoryId(),
-                                    currentTenantId
-                            ).orElseThrow(() -> new RuntimeException(
-                                    "Category not found with id: " + attireUpdateDto.getCategoryId() +
-                                            " and tenantId: " + currentTenantId
-                            ));
+                                            dto.getCategoryId(), currentTenantId)
+                                    .orElseThrow(() -> new RuntimeException("Category not found"));
                             attire.setCategory(category);
                         }
 
-                        // Update image if provided
+                        // Handle image
                         if (image != null && !image.isEmpty()) {
                             try {
-                                String imageUrl = s3Service.uploadFile(image);
-                                attire.setImageUrl(imageUrl);
+                                attire.setImageUrl(s3Service.uploadFile(image));
                             } catch (IOException e) {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }
                         }
 
-                        Attire updatedAttire = attireDao.save(attire);
-                        return ResponseEntity.ok().body(updatedAttire);
+                        return ResponseEntity.ok(attireDao.save(attire));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to update attire: " + e.getMessage());
