@@ -48,7 +48,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
     }
 
 
-    @Cacheable(key = "'allAttireRent'")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
     public ResponseEntity<?> getAllAttireRent() {
         return new ResponseEntity<>(attireRentDao.findAll(), HttpStatus.OK);
     }

@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = "create attire")
+@CacheConfig(cacheNames = "attires")
 public class AttireServiceImpl implements IAttireService {
 
     private final AttireDao attireDao;
@@ -77,32 +76,21 @@ public class AttireServiceImpl implements IAttireService {
         }
     }
 
-//    @Cacheable(value = "attires")
-//    public List<Attire> getAllAttire() {
-//
-//        String tenantId = TenantContext.getCurrentTenant();
-//        return attireDao.findAllByTenantId(tenantId);
-//    }
-@Cacheable(value = "attires")
+@Cacheable(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
 public List<Attire> getAllAttire() {
     String tenantId = TenantContext.getCurrentTenant();
-    System.out.println("🔍 [GET ALL ATTIRES] TenantContext.getCurrentTenant(): " + tenantId);
-    System.out.println("🔍 [GET ALL ATTIRES] Fetching from database...");
-
     List<Attire> attires = attireDao.findAllByTenantId(tenantId);
-    System.out.println("🔍 [GET ALL ATTIRES] Found " + attires.size() + " attires for tenant: " + tenantId);
 
     return attires;
 }
 
-    @CacheEvict(key = "#id + ':deletedAttire'")
+    @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> deleteAttire(Integer id) {
         attireDao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @CachePut(key = "'attireById:' + #id")
-    @CacheEvict(value = "create attire", key = "'allAttires'")
+    @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto dto, MultipartFile image) {
         try {
             String currentTenantId = TenantContext.getCurrentTenant();
@@ -133,7 +121,7 @@ public List<Attire> getAllAttire() {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }
                         }
-
+                        System.out.println("✅ [UPDATE ATTIRE] Attire updated successfully: " + attire.getId());
                         return ResponseEntity.ok(attireDao.save(attire));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -144,7 +132,7 @@ public List<Attire> getAllAttire() {
         }
     }
 
-    @Cacheable(key = "'attireById:' + #id")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':attireById:' + #id")
     public ResponseEntity<?> getAttireById(Integer id) {
         Attire attire = attireDao.findById(id).orElse(null);
         if (attire != null) {
@@ -154,7 +142,7 @@ public List<Attire> getAllAttire() {
         }
     }
 
-    @Cacheable(key = "'attireByCode:' + #attireCode")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':attireByCode:' + #attireCode")
     public ResponseEntity<?> getAttireByAttireCode(String attireCode) {
         Attire attire = attireDao.findByAttireCode(attireCode);
         if (attire != null) {
@@ -164,7 +152,7 @@ public List<Attire> getAllAttire() {
         }
     }
 
-    @Cacheable(key = "'attiresByStatus:' + #status")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':attiresByStatus:' + #status")
     public List<Attire> getAttireByStatus(String status) {
         return attireDao.findByAttireStatus(status);
     }

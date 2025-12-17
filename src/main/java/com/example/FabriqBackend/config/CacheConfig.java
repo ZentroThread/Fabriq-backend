@@ -23,7 +23,7 @@ public class CacheConfig {
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10)) // Increased from 60 seconds
+                .entryTtl(Duration.ofHours(24)) // Cache for 24 hours instead of 10 minutes
                 .disableCachingNullValues()
                 // 🎯 TENANT-AWARE PREFIX: tenant:t002:cache:attires::
                 .computePrefixWith(cacheName -> {

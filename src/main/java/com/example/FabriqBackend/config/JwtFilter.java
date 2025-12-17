@@ -81,14 +81,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
             } catch (Exception e) {
                 // Invalid token → user remains unauthenticated
+                System.err.println("❌ [JWT FILTER] Token validation failed: " + e.getMessage());
                 TenantContext.clear();
             }
+        } else if (token == null) {
+            // No token → ensure tenant context is clear
+            TenantContext.clear();
         }
 
         try {
             filterChain.doFilter(request, response);
         } finally {
-            // Clear tenant context after request completes
+            // 🔥 CRITICAL: Clear tenant context ONLY after response is committed
+            // This prevents race conditions with @Cacheable key evaluation
+            String currentTenant = TenantContext.getCurrentTenant();
+            if (currentTenant != null) {
+                System.out.println("🧹 [JWT FILTER] Clearing tenant context: " + currentTenant);
+            }
             TenantContext.clear();
         }
     }

@@ -60,7 +60,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     }
 
-    @Cacheable(value = "employees", key="#empCode")
+    @Cacheable(value = "employees", key="T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':employee:' + #empCode")
     public EmployeeDto fetchEmployeeById(String empCode){
 
         Employee emp = empDao.findByEmpCode(empCode)
@@ -69,7 +69,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return EmployeeMapper.toDto(emp);
     }
 
-    @Cacheable(value="employeesAll")
+    @Cacheable(value="employeesAll", key="T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allEmployees'")
     public List<EmployeeDto> fetchAllEmployees(){
         List<Employee> empList = empDao.findAll();
 
