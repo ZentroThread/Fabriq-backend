@@ -18,7 +18,7 @@ public class TenantFilter extends OncePerRequestFilter {
 
     private static final List<String> PUBLIC_ENDPOINTS = List.of(
             "/v1/user/login",
-            "/v1/user/register",
+            //"/v1/user/register",
             "/v3/api-docs",
             "/swagger-ui",
             "/swagger-resources",
@@ -41,24 +41,21 @@ public class TenantFilter extends OncePerRequestFilter {
             String tenantId = null;
 
             // PRIORITY 1: Manual override (internal tools / admin use)
-            String headerTenantId = request.getHeader("X-Tenant-ID");
-            if (headerTenantId != null && !headerTenantId.isBlank()) {
-                tenantId = headerTenantId;
-                System.out.println("Tenant ID set from X-Tenant-ID header: " + tenantId);
+//            String headerTenantId = request.getHeader("X-Tenant-ID");
+//            if (headerTenantId != null && !headerTenantId.isBlank()) {
+//                tenantId = headerTenantId;
+//                System.out.println("Tenant ID set from X-Tenant-ID header: " + tenantId);
+//            }
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication != null &&
+                    authentication.getPrincipal() instanceof UserPrincipal userPrincipal) {
+
+                tenantId = userPrincipal.getTenantId();
+                System.out.println("✅ [TENANT FILTER] Tenant from UserPrincipal: " + tenantId);
             }
 
-            // PRIORITY 2: From authenticated user
-            if (tenantId == null) {
-                Authentication authentication =
-                        SecurityContextHolder.getContext().getAuthentication();
-
-                if (authentication != null &&
-                        authentication.getPrincipal() instanceof UserPrincipal userPrincipal) {
-
-                    tenantId = userPrincipal.getTenantId();
-                    System.out.println("Tenant ID set from authenticated user: " + tenantId);
-                }
-            }
 
             // Set tenant context
             if (tenantId != null && !tenantId.isBlank()) {

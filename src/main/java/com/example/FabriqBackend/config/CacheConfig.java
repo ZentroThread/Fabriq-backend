@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.config;
 
+import com.example.FabriqBackend.config.Tenant.TenantContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -22,11 +23,18 @@ public class CacheConfig {
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                // Keep TTL short for demo; adjust as needed or wire from properties
-                .entryTtl(Duration.ofSeconds(60))
+                .entryTtl(Duration.ofMinutes(10)) // Increased from 60 seconds
                 .disableCachingNullValues()
-                // Prefix like: cache::users::
-                .computePrefixWith(cacheName -> "cache::" + cacheName + "::")
+                // 🎯 TENANT-AWARE PREFIX: tenant:t002:cache:attires::
+                .computePrefixWith(cacheName -> {
+                    String tenantId = TenantContext.getCurrentTenant();
+                    String prefix = (tenantId != null && !tenantId.isEmpty())
+                            ? "tenant:" + tenantId + ":"
+                            : "no-tenant:";
+                    System.out.println("🔑 [CACHE KEY] TenantId: " + tenantId + " | CacheName: " + cacheName + " | Prefix: " + prefix);
+
+                    return prefix + "cache:" + cacheName + "::";
+                })
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new GenericJackson2JsonRedisSerializer()
