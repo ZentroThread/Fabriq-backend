@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.controller;
 
+import com.example.FabriqBackend.dto.AttendanceCreateDto;
 import com.example.FabriqBackend.dto.AttendanceDto;
 import com.example.FabriqBackend.dto.ResponseDto;
 import com.example.FabriqBackend.service.IAttendanceService;
@@ -25,7 +26,7 @@ public class AttendanceController {
             description = "This endpoint allows marking attendance for an employee by" +
                     " providing the necessary details in the request body."
     )
-    public ResponseEntity<?> markAttendance(@RequestBody AttendanceDto dto){
+    public ResponseEntity<?> markAttendance(@RequestBody AttendanceCreateDto dto){
         attendanceService.markAttendance(dto);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -2,13 +2,13 @@ package com.example.FabriqBackend.dao;
 
 import com.example.FabriqBackend.model.Employee;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface EmployeeDao extends JpaRepository<Employee,Long> {
+public interface EmployeeDao extends TenantAwareDao<Employee,Long> {
 
     Optional<Employee>  findByEmpCode(String empCode);
     @Transactional
@@ -16,4 +16,8 @@ public interface EmployeeDao extends JpaRepository<Employee,Long> {
     void deleteByEmpCode(String empCode);
 
     Optional<Employee> findByRole(String role);
+
+    @Query("SELECT DISTINCT e.tenantId FROM Employee e")
+    List<String> findAllTenantIds();
+
 }
