@@ -40,6 +40,7 @@ public class UserServiceImpl implements IUserService {
         }
 
         String tenantId = TenantContext.getCurrentTenant();
+        System.out.println("Registering user for tenant: " + tenantId);
         if (!StringUtils.hasText(tenantId)) {
             throw new IllegalArgumentException("Tenant ID is required. Please provide X-Tenant-ID header.");
         }

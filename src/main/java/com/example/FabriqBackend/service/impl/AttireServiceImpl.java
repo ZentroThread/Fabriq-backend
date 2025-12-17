@@ -34,54 +34,66 @@ public class AttireServiceImpl implements IAttireService {
     private final CategoryDao categoryDao;
 
 
-    @CacheEvict(key = "'allAttires'")
+    @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image) {
         try {
-            // Get tenant ID from context (automatically set by JwtFilter from JWT token)
             String currentTenantId = TenantContext.getCurrentTenant();
-
             if (currentTenantId == null || currentTenantId.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Tenant ID not found. Please ensure you are authenticated.");
             }
 
-            Category category = categoryDao.findByCategoryIdAndTenantId(
-                    dto.getCategoryId(),
-                    currentTenantId
-            ).orElseThrow(() -> new RuntimeException(
-                    "Category not found with id: " + dto.getCategoryId() +
-                            " and tenantId: " + currentTenantId
-            ));
+            // Try to find category
+            System.out.println("🔍 [CREATE ATTIRE] Looking for category...");
+            Category category = categoryDao.findByCategoryId(dto.getCategoryId())
+                    .orElseThrow(() -> {
+                        return new RuntimeException("Category not found with id: " + dto.getCategoryId());
+                    });
+
+
             Attire attire = modelMapper.map(dto, Attire.class);
-            attire.setId(null); // Ensure ID is null to force insert instead of update
-
-
+            attire.setId(null);
             attire.setCategory(category);
 
-            // 5. Upload image to S3 if provided
-            if (image != null && !image.isEmpty()) {
 
+            if (image != null && !image.isEmpty()) {
                 String imageUrl = s3Service.uploadFile(image);
                 attire.setImageUrl(imageUrl);
+
             }
 
-            // 6. Save to database
-            Attire savedAttire = attireDao.save(attire);
 
-            // 7. Return success response
+            Attire savedAttire = attireDao.save(attire);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedAttire);
+
         } catch (IOException e) {
+            System.out.println("❌ [CREATE ATTIRE] IOException: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
         } catch (Exception e) {
+            System.out.println("❌ [CREATE ATTIRE] Exception: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to create attire: " + e.getMessage());
         }
-
     }
 
-    @Cacheable(key = "'allAttires'")
-    public List<Attire> getAllAttire() {
-        return attireDao.findAll();
-    }
+//    @Cacheable(value = "attires")
+//    public List<Attire> getAllAttire() {
+//
+//        String tenantId = TenantContext.getCurrentTenant();
+//        return attireDao.findAllByTenantId(tenantId);
+//    }
+@Cacheable(value = "attires")
+public List<Attire> getAllAttire() {
+    String tenantId = TenantContext.getCurrentTenant();
+    System.out.println("🔍 [GET ALL ATTIRES] TenantContext.getCurrentTenant(): " + tenantId);
+    System.out.println("🔍 [GET ALL ATTIRES] Fetching from database...");
+
+    List<Attire> attires = attireDao.findAllByTenantId(tenantId);
+    System.out.println("🔍 [GET ALL ATTIRES] Found " + attires.size() + " attires for tenant: " + tenantId);
+
+    return attires;
+}
 
     @CacheEvict(key = "#id + ':deletedAttire'")
     public ResponseEntity<?> deleteAttire(Integer id) {
@@ -107,8 +119,8 @@ public class AttireServiceImpl implements IAttireService {
 
                         // Handle category separately (needs DAO access)
                         if (dto.getCategoryId() != null) {
-                            Category category = categoryDao.findByCategoryIdAndTenantId(
-                                            dto.getCategoryId(), currentTenantId)
+                            Category category = categoryDao.findByCategoryId(
+                                            dto.getCategoryId())
                                     .orElseThrow(() -> new RuntimeException("Category not found"));
                             attire.setCategory(category);
                         }
