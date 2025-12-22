@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Enable CORS with default configuration
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/v1/user/**",
+                                "/v1/user/*",
                                 "/customer/**",
                                 "/v1/category/**",
                                 "/v1/attire/**",

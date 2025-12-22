@@ -48,18 +48,31 @@ public class TenantFilter extends OncePerRequestFilter {
 //            }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (authentication != null &&
-                    authentication.getPrincipal() instanceof UserPrincipal userPrincipal) {
-
-                tenantId = userPrincipal.getTenantId();
-                System.out.println("✅ [TENANT FILTER] Tenant from UserPrincipal: " + tenantId);
+            System.out.println("🔍 [TENANT FILTER] Request URI: " + request.getRequestURI());
+            System.out.println("🔍 [TENANT FILTER] Authentication present: " + (authentication != null));
+            
+            if (authentication != null) {
+                System.out.println("🔍 [TENANT FILTER] Principal type: " + authentication.getPrincipal().getClass().getName());
+                System.out.println("🔍 [TENANT FILTER] Is UserPrincipal? " + (authentication.getPrincipal() instanceof UserPrincipal));
+                
+                if (authentication.getPrincipal() instanceof UserPrincipal userPrincipal) {
+                    tenantId = userPrincipal.getTenantId();
+                    System.out.println("✅ [TENANT FILTER] Tenant from UserPrincipal: " + tenantId);
+                    
+                    if (tenantId == null) {
+                        System.err.println("❌ [TENANT FILTER] TenantId is NULL in UserPrincipal!");
+                    }
+                }
+            } else {
+                System.out.println("⚠️ [TENANT FILTER] No authentication found - user may not be logged in");
             }
-
 
             // Set tenant context
             if (tenantId != null && !tenantId.isBlank()) {
                 TenantContext.setCurrentTenant(tenantId);
+                System.out.println("✅ [TENANT FILTER] Tenant context set to: " + tenantId);
+            } else {
+                System.err.println("❌ [TENANT FILTER] Cannot set tenant context - tenantId is null or blank");
             }
 
             filterChain.doFilter(request, response);

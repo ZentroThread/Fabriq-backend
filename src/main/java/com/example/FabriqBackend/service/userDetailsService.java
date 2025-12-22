@@ -29,6 +29,9 @@ public class userDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User password not set");
         }
 
+        System.out.println("🔍 [USER DETAILS SERVICE] Loading user: " + username);
+        System.out.println("🔍 [USER DETAILS SERVICE] User tenantId: " + users.getTenantId());
+
         return new UserPrincipal(users);
     }
 }

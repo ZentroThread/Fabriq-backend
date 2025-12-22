@@ -1,6 +1,5 @@
 package com.example.FabriqBackend.config;
 
-import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.service.JWTService;
 import com.example.FabriqBackend.service.userDetailsService;
 import jakarta.servlet.FilterChain;
@@ -38,11 +37,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
-        // Extract JWT from HttpOnly cookie
+        // Extract JWT from HttpOnly cookie (now using accessToken)
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
+                if ("accessToken".equals(cookie.getName())) {
                     token = cookie.getValue();
                     break;
                 }
@@ -58,13 +57,8 @@ public class JwtFilter extends OncePerRequestFilter {
                         context.getBean(userDetailsService.class)
                                 .loadUserByUsername(username);
 
-                if (jwtService.validateToken(token, userDetails)) {
-                    // Extract and set tenant ID from JWT token
-                    String tenantId = jwtService.extractTenantId(token);
-                    if (tenantId != null) {
-                        TenantContext.setCurrentTenant(tenantId);
-                    }
-
+                if (jwtService.validateAccessToken(token, userDetails)) {
+                    // TenantFilter will extract and set tenant from UserPrincipal
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -82,23 +76,10 @@ public class JwtFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 // Invalid token → user remains unauthenticated
                 System.err.println("❌ [JWT FILTER] Token validation failed: " + e.getMessage());
-                TenantContext.clear();
             }
-        } else if (token == null) {
-            // No token → ensure tenant context is clear
-            TenantContext.clear();
         }
 
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            // 🔥 CRITICAL: Clear tenant context ONLY after response is committed
-            // This prevents race conditions with @Cacheable key evaluation
-            String currentTenant = TenantContext.getCurrentTenant();
-            if (currentTenant != null) {
-                System.out.println("🧹 [JWT FILTER] Clearing tenant context: " + currentTenant);
-            }
-            TenantContext.clear();
-        }
+        // Continue filter chain - TenantFilter will handle tenant setup and cleanup
+        filterChain.doFilter(request, response);
     }
 }

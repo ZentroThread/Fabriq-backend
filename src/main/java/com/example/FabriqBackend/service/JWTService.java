@@ -20,6 +20,10 @@ import java.util.function.Function;
 @Component
 public class JWTService {
     private final String secretKey;
+    
+    // Token expiration times
+    private static final long ACCESS_TOKEN_VALIDITY = 60; // 15 minutes
+    private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
     public JWTService() {
         try {
@@ -31,24 +35,59 @@ public class JWTService {
         }
     }
 
-    public String generateToken(String username, String tenantId, Integer userId, String role) {
-
+    /**
+     * Generate access token with 15 minutes expiration
+     */
+    public String generateAccessToken(String username, String tenantId, Integer userId, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("tenantId", tenantId);
         claims.put("userId", userId.toString());
         claims.put("role", role);
+        claims.put("type", "access");
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 hour expiration
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
                 .and()
                 .signWith(getKey())
                 .compact();
+    }
 
+    /**
+     * Generate refresh token with 7 days expiration
+     */
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
 
+        return Jwts.builder()
+                .claims()
+                .add(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
+                .and()
+                .signWith(getKey())
+                .compact();
+    }
+
+    /**
+     * @deprecated Use generateAccessToken instead
+     */
+    @Deprecated
+    public String generateToken(String username, String tenantId, Integer userId, String role) {
+        return generateAccessToken(username, tenantId, userId, role);
+    }
+
+    public long getAccessTokenValidity() {
+        return ACCESS_TOKEN_VALIDITY;
+    }
+
+    public long getRefreshTokenValidity() {
+        return REFRESH_TOKEN_VALIDITY;
     }
 
     private SecretKey getKey() {
@@ -74,6 +113,11 @@ public class JWTService {
         // extract the role from jwt token
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
+    
+    public String extractTokenType(String token) {
+        // extract the token type (access or refresh)
+        return extractClaim(token, claims -> claims.get("type", String.class));
+    }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
@@ -91,6 +135,33 @@ public class JWTService {
     public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    
+    /**
+     * Validate access token - checks both expiration and token type
+     */
+    public boolean validateAccessToken(String token, UserDetails userDetails) {
+        try {
+            final String userName = extractUserName(token);
+            final String tokenType = extractTokenType(token);
+            return userName.equals(userDetails.getUsername()) 
+                && !isTokenExpired(token)
+                && "access".equals(tokenType);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Validate refresh token - checks expiration and token type
+     */
+    public boolean validateRefreshToken(String token) {
+        try {
+            final String tokenType = extractTokenType(token);
+            return !isTokenExpired(token) && "refresh".equals(tokenType);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {
