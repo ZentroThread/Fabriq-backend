@@ -69,6 +69,8 @@ public class AttireServiceImpl implements IAttireService {
 
 @Cacheable(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
 public List<Attire> getAllAttire() {
+    String currentTenantId = TenantContext.getCurrentTenant();
+    System.out.println("Fetching all attires for tenant: " + currentTenantId);
     // Use findAll() from TenantAwareDao which automatically filters by tenant using SpEL
     return attireDao.findAll();
 }
@@ -110,7 +112,6 @@ public List<Attire> getAllAttire() {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }
                         }
-                        System.out.println("✅ [UPDATE ATTIRE] Attire updated successfully: " + attire.getId());
                         return ResponseEntity.ok(attireDao.save(attire));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());

@@ -176,12 +176,6 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("User not found");
         }
 
-        // Log user details before generating new token
-        System.out.println("🔄 REFRESH TOKEN - User loaded: " + user.getUsername() +
-                          ", TenantId: " + user.getTenantId() +
-                          ", UserId: " + user.getId() +
-                          ", Role: " + user.getRole());
-
         // Generate new access token
         String newAccessToken = jwtService.generateAccessToken(
                 user.getUsername(),
@@ -190,7 +184,6 @@ public class UserServiceImpl implements IUserService {
                 user.getRole()
         );
 
-        System.out.println("✅ NEW ACCESS TOKEN GENERATED with TenantId: " + user.getTenantId());
 
         // Rotate refresh token (security best practice)
         RefreshToken newRefreshToken = refreshTokenService.rotateRefreshToken(refreshToken, request);

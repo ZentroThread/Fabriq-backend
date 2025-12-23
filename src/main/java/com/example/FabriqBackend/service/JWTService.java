@@ -5,15 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
@@ -24,10 +20,9 @@ import java.util.function.Function;
 
 @Component
 public class JWTService {
-    private static final Logger logger = LoggerFactory.getLogger(JWTService.class);
-    @Value("${jwt.secret.key}")
-    private String secretKey;
 
+    @Value("${jwt.secret.key:}")
+    private String secretKey;
 
     // Token expiration times
     private static final long ACCESS_TOKEN_VALIDITY = 1 * 60 * 1000; // 15 minutes
@@ -41,9 +36,6 @@ public class JWTService {
             byte[] key = new byte[32];
             new SecureRandom().nextBytes(key);
             secretKey = Base64.getEncoder().encodeToString(key);
-            logger.warn("No 'jwt.secret.key' configured. Generated an ephemeral secret key - tokens will be invalidated on restart.");
-        } else {
-            logger.info("Loaded jwt.secret.key from configuration");
         }
     }
 
@@ -53,7 +45,7 @@ public class JWTService {
     public String generateAccessToken(String username, String tenantId, Integer userId, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("tenantId", tenantId);
-        claims.put("userId", userId.toString());
+        claims.put("userId", userId); // Store as Integer directly
         claims.put("role", role);
         claims.put("type", "access");
 
@@ -102,32 +94,29 @@ public class JWTService {
         return REFRESH_TOKEN_VALIDITY;
     }
 
-    private javax.crypto.SecretKey getKey() {
+    private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String extractUserName(String token) {
-        // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
+
     public String extractTenantId(String token) {
-        // extract the tenantId from jwt token
         return extractClaim(token, claims -> claims.get("tenantId", String.class));
     }
-    
-    public String extractUserId(String token) {
-        // extract the userId from jwt token
-        return extractClaim(token, claims -> claims.get("userId", String.class));
+
+    public Integer extractUserId(String token) {
+        // Extract as Integer to match the type stored in the token
+        return extractClaim(token, claims -> claims.get("userId", Integer.class));
     }
-    
+
     public String extractRole(String token) {
-        // extract the role from jwt token
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
-    
+
     public String extractTokenType(String token) {
-        // extract the token type (access or refresh)
         return extractClaim(token, claims -> claims.get("type", String.class));
     }
 
@@ -148,7 +137,7 @@ public class JWTService {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    
+
     /**
      * Validate access token - checks both expiration and token type
      */
@@ -156,35 +145,26 @@ public class JWTService {
         try {
             final String userName = extractUserName(token);
             final String tokenType = extractTokenType(token);
-            final Date expiration = extractExpiration(token);
             final boolean isExpired = isTokenExpired(token);
 
-            logger.debug("Validating access token for user: {}", userName);
-            logger.debug("Token type: {}, Expiration: {}, Is expired: {}", tokenType, expiration, isExpired);
-
             if (isExpired) {
-                logger.warn("Token is expired for user: {}. Expired at: {}", userName, expiration);
                 return false;
             }
 
             if (!"access".equals(tokenType)) {
-                logger.warn("Invalid token type: {} for user: {}", tokenType, userName);
                 return false;
             }
 
             if (!userName.equals(userDetails.getUsername())) {
-                logger.warn("Username mismatch. Token: {}, UserDetails: {}", userName, userDetails.getUsername());
                 return false;
             }
 
-            logger.debug("Token validated successfully for user: {}", userName);
             return true;
         } catch (Exception e) {
-            logger.error("Token validation failed: {}", e.getMessage());
             return false;
         }
     }
-    
+
     /**
      * Validate refresh token - checks expiration and token type
      */
