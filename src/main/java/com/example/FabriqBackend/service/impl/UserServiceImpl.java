@@ -143,13 +143,15 @@ public class UserServiceImpl implements IUserService {
 
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
+        System.out.println(accessCookie);
+        System.out.println(refreshCookie);
         return "Logout successful";
     }
 
     /**
      * Refresh access token using refresh token
      */
-    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         // Extract refresh token from cookie
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
@@ -162,13 +164,31 @@ public class UserServiceImpl implements IUserService {
             }
         }
 
+        // Fallback: allow refresh token via Authorization Bearer header or X-Refresh-Token header
         if (refreshToken == null) {
-            throw new RuntimeException("Refresh token not found");
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                refreshToken = authHeader.substring(7);
+            }
+        }
+        if (refreshToken == null) {
+            String headerRefresh = request.getHeader("X-Refresh-Token");
+            if (headerRefresh != null && !headerRefresh.isBlank()) {
+                refreshToken = headerRefresh;
+            }
+        }
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).body("Refresh token not found");
         }
 
         // Verify refresh token
         RefreshToken validRefreshToken = refreshTokenService.verifyRefreshToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Invalid or expired refresh token"));
+                .orElse(null);
+
+        if (validRefreshToken == null) {
+            return ResponseEntity.status(401).body("Invalid or expired refresh token");
+        }
 
         // Get user details
         Login user = userDao.findByUsername(validRefreshToken.getUsername());
@@ -188,35 +208,35 @@ public class UserServiceImpl implements IUserService {
         // Rotate refresh token (security best practice)
         RefreshToken newRefreshToken = refreshTokenService.rotateRefreshToken(refreshToken, request);
 
-        // Set new cookies
+        // Set new cookies (note: for cross-site XHR you may need SameSite=None and Secure=true in production)
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
-                .httpOnly(true)
-                .secure(false)  // Set to true in production
-                .path("/")
-                .sameSite("Lax")
-                .maxAge((int) (jwtService.getAccessTokenValidity() / 1000))
-                .build();
+            .httpOnly(true)
+            .secure(false)  // Set to true in production with HTTPS
+            .path("/")
+            .sameSite("Lax")
+            .maxAge((int) (jwtService.getAccessTokenValidity() / 1000))
+            .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken.getToken())
-                .httpOnly(true)
-                .secure(false)  // Set to true in production
-                .path("/")
-                .sameSite("Lax")
-                .maxAge((int) (jwtService.getRefreshTokenValidity() / 1000))
-                .build();
+            .httpOnly(true)
+            .secure(false)  // Set to true in production with HTTPS
+            .path("/")
+            .sameSite("Lax")
+            .maxAge((int) (jwtService.getRefreshTokenValidity() / 1000))
+            .build();
 
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        // Return response with refresh information
-        return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
-            put("message", "Tokens refreshed successfully");
-            put("username", user.getUsername());
-            put("tenantId", user.getTenantId());
-            put("refreshedAt", java.time.Instant.now().toString());
-            put("accessTokenExpiresIn", jwtService.getAccessTokenValidity() / 1000 + " seconds");
-            put("refreshTokenExpiresIn", jwtService.getRefreshTokenValidity() / 1000 + " seconds");
-        }});
+        // Return a JSON payload matching frontend TokenResponse schema so the client can update expiry
+//        java.util.Map<String, Object> body = new java.util.HashMap<>();
+//        body.put("accessToken", newAccessToken);
+//        body.put("refreshToken", newRefreshToken.getToken());
+//        body.put("tokenType", "Bearer");
+//        body.put("accessTokenExpiresIn", jwtService.getAccessTokenValidity());
+//        body.put("refreshTokenExpiresIn", jwtService.getRefreshTokenValidity());
+
+        return ResponseEntity.ok("Token refreshed successfully");
     }
 
     /**

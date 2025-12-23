@@ -26,7 +26,7 @@ public class userDetailsService implements UserDetailsService {
         if (users.getPassword() == null || users.getPassword().isEmpty()) {
             throw new UsernameNotFoundException("User password not set");
         }
-
+        System.out.println("User found: " + users.getUsername());
 
         return new UserPrincipal(users);
     }

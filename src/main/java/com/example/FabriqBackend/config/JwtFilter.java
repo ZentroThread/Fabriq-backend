@@ -50,27 +50,33 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Authenticate only if token exists and user not already authenticated
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            try {
             String username = jwtService.extractUserName(token);
             String tenantIdFromToken = jwtService.extractTenantId(token);
 
             UserDetails userDetails =
-                    context.getBean(userDetailsService.class)
-                            .loadUserByUsername(username);
+                context.getBean(userDetailsService.class)
+                    .loadUserByUsername(username);
 
             if (jwtService.validateAccessToken(token, userDetails)) {
                 // Authentication
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                    new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                    );
 
                 authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
+                    new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+            } catch (Exception e) {
+            // Token is invalid or expired. Do not interrupt the filter chain —
+            // allow requests such as the refresh endpoint to proceed so the
+            // client can obtain a new access token using a valid refresh token.
             }
         }
 

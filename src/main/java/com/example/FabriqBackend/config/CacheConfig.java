@@ -24,11 +24,6 @@ public class CacheConfig {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(24)) // Cache for 24 hours instead of 10 minutes
                 .disableCachingNullValues()
-                // IMPORTANT: cache-level prefix is evaluated when a cache is created. The tenant
-                // context is request-scoped (ThreadLocal) and may be null when caches are first
-                // created, which would permanently bake a "no-tenant" prefix into that cache.
-                // Instead, keep a static cache prefix here and include tenant information in
-                // cache keys (the codebase already uses TenantContext in @Cacheable keys).
                 .computePrefixWith(cacheName -> "cache:" + cacheName + "::")
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(

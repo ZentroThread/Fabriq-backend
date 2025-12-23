@@ -25,7 +25,7 @@ public class JWTService {
     private String secretKey;
 
     // Token expiration times
-    private static final long ACCESS_TOKEN_VALIDITY = 1 * 60 * 1000; // 15 minutes
+    private static final long ACCESS_TOKEN_VALIDITY =   30 * 1000; // 15 minutes
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
     // Initialize secretKey after properties are set. If none provided, generate a 256-bit key and warn.

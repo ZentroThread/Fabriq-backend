@@ -33,26 +33,21 @@ public class TenantFilter extends OncePerRequestFilter {
         return shouldSkip;
     }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI();
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         try {
-            String tenantId = null;
+            String tenantId = request.getHeader("X-Tenant-ID");
 
-            // Get tenant from authenticated user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("🧭 TenantFilter HIT");
+            System.out.println("🧭 URI = " + request.getRequestURI());
+            System.out.println("🧭 X-Tenant-ID = " + tenantId);
 
-            if (authentication != null &&
-                    authentication.getPrincipal() instanceof UserPrincipal userPrincipal) {
-                tenantId = userPrincipal.getTenantId();
-            }
-
-            // Set tenant context
             if (tenantId != null && !tenantId.isBlank()) {
                 TenantContext.setCurrentTenant(tenantId);
             }
@@ -60,8 +55,8 @@ public class TenantFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } finally {
-            // CRITICAL: prevent tenant leakage across threads
             TenantContext.clear();
         }
     }
+
 }
