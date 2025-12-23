@@ -35,18 +35,15 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Enable CORS with default configuration
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/v1/user/*",
-                                "/customer/**",
-                                "/v1/category/**",
-                                "/v1/attire/**",
-                                "/measurement/**",
-                                "/v1/attire-rent/**",
+                                "/v1/user/login",
+                                "/v1/user/register",
+                                "/v1/user/refresh",
+                                "/v1/user/token-status",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
-                                "/webjars/**",
-                                "v1/employees/**"
+                                "/webjars/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

@@ -20,17 +20,13 @@ public class userDetailsService implements UserDetailsService {
 
         Login users = userDao.findByUsername(username);
         if (users == null) {
-            System.out.println("User not found: " + username);
             throw new UsernameNotFoundException("Username not found");
         }
 
         if (users.getPassword() == null || users.getPassword().isEmpty()) {
-            System.out.println("User found but password is null or empty for: " + username);
             throw new UsernameNotFoundException("User password not set");
         }
 
-        System.out.println("🔍 [USER DETAILS SERVICE] Loading user: " + username);
-        System.out.println("🔍 [USER DETAILS SERVICE] User tenantId: " + users.getTenantId());
 
         return new UserPrincipal(users);
     }

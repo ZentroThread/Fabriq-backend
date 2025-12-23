@@ -43,9 +43,7 @@ public class CustomerController {
             summary = "Delete a customer",
             description = "This endpoint allows deleting a customer by their ID."
     )
-
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer custId) {
-        System.out.println("Deleting customer...");
 
         return customerService.deleteCustomer(custId);
     }

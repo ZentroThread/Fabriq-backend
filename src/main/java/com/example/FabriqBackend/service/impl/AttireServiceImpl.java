@@ -42,46 +42,35 @@ public class AttireServiceImpl implements IAttireService {
                         .body("Tenant ID not found. Please ensure you are authenticated.");
             }
 
-            // Try to find category
-            System.out.println("🔍 [CREATE ATTIRE] Looking for category...");
+            // Find category
             Category category = categoryDao.findByCategoryId(dto.getCategoryId())
                     .orElseThrow(() -> {
                         return new RuntimeException("Category not found with id: " + dto.getCategoryId());
                     });
 
-
             Attire attire = modelMapper.map(dto, Attire.class);
             attire.setId(null);
             attire.setCategory(category);
 
-
             if (image != null && !image.isEmpty()) {
                 String imageUrl = s3Service.uploadFile(image);
                 attire.setImageUrl(imageUrl);
-
             }
-
 
             Attire savedAttire = attireDao.save(attire);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedAttire);
 
         } catch (IOException e) {
-            System.out.println("❌ [CREATE ATTIRE] IOException: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("❌ [CREATE ATTIRE] Exception: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to create attire: " + e.getMessage());
         }
     }
 
 @Cacheable(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
 public List<Attire> getAllAttire() {
-    String tenantId = TenantContext.getCurrentTenant();
-    List<Attire> attires = attireDao.findAllByTenantId(tenantId);
-
-    return attires;
+    // Use findAll() from TenantAwareDao which automatically filters by tenant using SpEL
+    return attireDao.findAll();
 }
 
     @CacheEvict(value = "attires", allEntries = true)

@@ -1,6 +1,5 @@
 package com.example.FabriqBackend.controller;
 
-import com.example.FabriqBackend.dto.TokenResponse;
 import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.model.UserPrincipal;
 import com.example.FabriqBackend.service.impl.UserServiceImpl;
@@ -8,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +34,7 @@ public class UserController {
             summary = "Login an existing user",
             description = "This endpoint allows an existing user to log in by providing their credentials in the request body."
     )
-    public TokenResponse login(@RequestBody Login user, HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("login request received for user: " + user.getUsername());
+    public ResponseEntity<?> login(@RequestBody Login user, HttpServletRequest request, HttpServletResponse response) {
         return userService.verify(user, request, response);
     }
 
@@ -68,8 +67,17 @@ public class UserController {
             summary = "Refresh access token",
             description = "This endpoint refreshes the access token using a valid refresh token from the cookie."
     )
-    public TokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response)  {
         return userService.refreshAccessToken(request, response);
+    }
+
+    @GetMapping("/token-status") //check token validity
+    @Operation(
+            summary = "Check token status",
+            description = "This endpoint checks the current access token validity and returns token information."
+    )
+    public ResponseEntity<?> checkTokenStatus(HttpServletRequest request) {
+        return userService.checkTokenStatus(request);
     }
 
 }

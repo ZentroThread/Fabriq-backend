@@ -1,6 +1,5 @@
 package com.example.FabriqBackend.config;
 
-import com.example.FabriqBackend.config.Tenant.TenantContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -25,16 +24,12 @@ public class CacheConfig {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(24)) // Cache for 24 hours instead of 10 minutes
                 .disableCachingNullValues()
-                // 🎯 TENANT-AWARE PREFIX: tenant:t002:cache:attires::
-                .computePrefixWith(cacheName -> {
-                    String tenantId = TenantContext.getCurrentTenant();
-                    String prefix = (tenantId != null && !tenantId.isEmpty())
-                            ? "tenant:" + tenantId + ":"
-                            : "no-tenant:";
-                    System.out.println("🔑 [CACHE KEY] TenantId: " + tenantId + " | CacheName: " + cacheName + " | Prefix: " + prefix);
-
-                    return prefix + "cache:" + cacheName + "::";
-                })
+                // IMPORTANT: cache-level prefix is evaluated when a cache is created. The tenant
+                // context is request-scoped (ThreadLocal) and may be null when caches are first
+                // created, which would permanently bake a "no-tenant" prefix into that cache.
+                // Instead, keep a static cache prefix here and include tenant information in
+                // cache keys (the codebase already uses TenantContext in @Cacheable keys).
+                .computePrefixWith(cacheName -> "cache:" + cacheName + "::")
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new GenericJackson2JsonRedisSerializer()

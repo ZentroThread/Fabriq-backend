@@ -2,7 +2,6 @@ package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
-import com.example.FabriqBackend.dto.TokenResponse;
 import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.model.RefreshToken;
 import com.example.FabriqBackend.service.IUserService;
@@ -16,6 +15,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +46,6 @@ public class UserServiceImpl implements IUserService {
         }
 
         String tenantId = TenantContext.getCurrentTenant();
-        System.out.println("Registering user for tenant: " + tenantId);
         if (!StringUtils.hasText(tenantId)) {
             throw new IllegalArgumentException("Tenant ID is required. Please provide X-Tenant-ID header.");
         }
@@ -57,7 +56,7 @@ public class UserServiceImpl implements IUserService {
         return user;
     }
 
-    public TokenResponse verify(Login user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> verify(Login user, HttpServletRequest request, HttpServletResponse response) {
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
@@ -65,15 +64,15 @@ public class UserServiceImpl implements IUserService {
         if (authentication.isAuthenticated()) {
             // Get the authenticated user's details
             Login authenticatedUser = userDao.findByUsername(user.getUsername());
-            
+
             // Generate access token (15 minutes)
             String accessToken = jwtService.generateAccessToken(
-                user.getUsername(), 
+                user.getUsername(),
                 authenticatedUser.getTenantId(),
                 authenticatedUser.getId(),
                 authenticatedUser.getRole()
             );
-            
+
             // Generate and store refresh token (7 days)
             RefreshToken refreshTokenEntity = refreshTokenService.createRefreshToken(
                 user.getUsername(),
@@ -81,7 +80,7 @@ public class UserServiceImpl implements IUserService {
                 request
             );
             String refreshToken = refreshTokenEntity.getToken();
-            
+
             // Create HttpOnly cookies for both tokens
             // Access Token Cookie (15 minutes)
             ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
@@ -91,7 +90,7 @@ public class UserServiceImpl implements IUserService {
                     .sameSite("Lax") // ✅ CSRF protection
                     .maxAge((int) (jwtService.getAccessTokenValidity() / 1000)) // 15 minutes
                     .build();
-            
+
             // Refresh Token Cookie (7 days)
             ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                     .httpOnly(true)  // ✅ Prevents XSS attacks
@@ -103,16 +102,9 @@ public class UserServiceImpl implements IUserService {
 
             response.addHeader("Set-Cookie", accessCookie.toString());
             response.addHeader("Set-Cookie", refreshCookie.toString());
-            
-            System.out.println("🍪 Access token cookie created (15 min expiry)");
-            System.out.println("🍪 Refresh token cookie created (7 days expiry)");
-            
-            return new TokenResponse(
-                accessToken,
-                refreshToken,
-                jwtService.getAccessTokenValidity(),
-                jwtService.getRefreshTokenValidity()
-            );
+
+
+            return ResponseEntity.ok().build();
         } else {
             throw new RuntimeException("Invalid credentials");
         }
@@ -130,7 +122,6 @@ public class UserServiceImpl implements IUserService {
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
             refreshTokenService.revokeAllUserTokens(username);
-            System.out.println("🔒 Revoked all refresh tokens for user: " + username);
         }
         
         // Clear both access and refresh token cookies
@@ -152,14 +143,13 @@ public class UserServiceImpl implements IUserService {
 
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
-        System.out.println("🍪 Cookies cleared - User logged out");
         return "Logout successful";
     }
 
     /**
      * Refresh access token using refresh token
      */
-    public TokenResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         // Extract refresh token from cookie
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
@@ -186,6 +176,12 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("User not found");
         }
 
+        // Log user details before generating new token
+        System.out.println("🔄 REFRESH TOKEN - User loaded: " + user.getUsername() +
+                          ", TenantId: " + user.getTenantId() +
+                          ", UserId: " + user.getId() +
+                          ", Role: " + user.getRole());
+
         // Generate new access token
         String newAccessToken = jwtService.generateAccessToken(
                 user.getUsername(),
@@ -193,6 +189,8 @@ public class UserServiceImpl implements IUserService {
                 user.getId(),
                 user.getRole()
         );
+
+        System.out.println("✅ NEW ACCESS TOKEN GENERATED with TenantId: " + user.getTenantId());
 
         // Rotate refresh token (security best practice)
         RefreshToken newRefreshToken = refreshTokenService.rotateRefreshToken(refreshToken, request);
@@ -217,14 +215,76 @@ public class UserServiceImpl implements IUserService {
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        System.out.println("🔄 Tokens refreshed for user: " + user.getUsername());
+        // Return response with refresh information
+        return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+            put("message", "Tokens refreshed successfully");
+            put("username", user.getUsername());
+            put("tenantId", user.getTenantId());
+            put("refreshedAt", java.time.Instant.now().toString());
+            put("accessTokenExpiresIn", jwtService.getAccessTokenValidity() / 1000 + " seconds");
+            put("refreshTokenExpiresIn", jwtService.getRefreshTokenValidity() / 1000 + " seconds");
+        }});
+    }
 
-        return new TokenResponse(
-                newAccessToken,
-                newRefreshToken.getToken(),
-                jwtService.getAccessTokenValidity(),
-                jwtService.getRefreshTokenValidity()
-        );
+    /**
+     * Check the status of the current access token
+     */
+    public ResponseEntity<?> checkTokenStatus(HttpServletRequest request) {
+        // Extract access token from cookie
+        String accessToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (accessToken == null) {
+            return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+                put("status", "NO_TOKEN");
+                put("message", "No access token found");
+                put("authenticated", false);
+            }});
+        }
+
+        try {
+            // Extract token information
+            String username = jwtService.extractUserName(accessToken);
+            String tenantId = jwtService.extractTenantId(accessToken);
+            String tokenType = jwtService.extractTokenType(accessToken);
+
+            // Get expiration time
+            java.util.Date expiration = jwtService.extractClaim(accessToken, io.jsonwebtoken.Claims::getExpiration);
+            java.util.Date issuedAt = jwtService.extractClaim(accessToken, io.jsonwebtoken.Claims::getIssuedAt);
+
+            long currentTime = System.currentTimeMillis();
+            long expirationTime = expiration.getTime();
+            long timeRemaining = expirationTime - currentTime;
+            boolean isExpired = timeRemaining <= 0;
+
+            return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+                put("status", isExpired ? "EXPIRED" : "VALID");
+                put("message", isExpired ? "Token has expired" : "Token is valid");
+                put("authenticated", !isExpired);
+                put("username", username);
+                put("tenantId", tenantId);
+                put("tokenType", tokenType);
+                put("issuedAt", issuedAt.toInstant().toString());
+                put("expiresAt", expiration.toInstant().toString());
+                put("timeRemaining", timeRemaining > 0 ? (timeRemaining / 1000) + " seconds" : "0 seconds (expired)");
+                put("needsRefresh", timeRemaining < 60000); // Less than 1 minute remaining
+            }});
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+                put("status", "INVALID");
+                put("message", "Token is invalid or malformed: " + e.getMessage());
+                put("authenticated", false);
+            }});
+        }
     }
 
 }

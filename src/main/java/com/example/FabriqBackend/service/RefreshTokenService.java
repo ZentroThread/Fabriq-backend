@@ -110,10 +110,7 @@ public class RefreshTokenService {
     @Scheduled(cron = "0 0 3 * * ?")
     @Transactional
     public void cleanupExpiredTokens() {
-        int deleted = refreshTokenRepository.deleteByExpiryDateBefore(Instant.now());
-        if (deleted > 0) {
-            System.out.println("🧹 Cleaned up " + deleted + " expired refresh tokens");
-        }
+        refreshTokenRepository.deleteByExpiryDateBefore(Instant.now());
     }
     
     /**
