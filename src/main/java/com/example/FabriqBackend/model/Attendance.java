@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.model;
 
+import com.example.FabriqBackend.enums.AttendanceStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,15 +16,21 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Attendance {
+public class Attendance extends TenantAwareEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "emp_code",nullable = false)
-    private String empCode;
+
     private LocalDate date;
-    private LocalTime time;
-    private String status;  //IN or Out
+    private LocalTime checkIn;
+    private LocalTime checkOut;
+    private Double totalHours;
+    private Long lateMinutes;
+
+    @Enumerated(EnumType.STRING)
+    private AttendanceStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "emp_id")
+    private Employee employee;
 }
-//1, test, 2025-11-01, 09:05, IN
-//1, test, 2025-11-01, 17:33, OUT

@@ -1,9 +1,11 @@
 package com.example.FabriqBackend.service.impl;
 
+import com.example.FabriqBackend.dao.EmployeeBankDetailsDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.EmployeeDto;
 import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
+import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
 import com.example.FabriqBackend.service.IEmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,9 +22,16 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements IEmployeeService {
 
     private final EmployeeDao empDao;
+    private final EmployeeBankDetailsDao empBankDao;
 
-    @CachePut(value="employees", key="#result.empCode")
-    @CacheEvict(value = "employeesAll", allEntries = true)
+    @CachePut(
+            value = "employees",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #result.empCode"
+    )
+    @CacheEvict(
+            value = "employeesAll",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+    )
     public EmployeeDto addEmployee(EmployeeDto dto){
 
         Employee emp = EmployeeMapper.toEntity(dto,new Employee());
@@ -36,31 +45,55 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     }
 
-    @CachePut(value="employees", key = "#result.empCode")
-    @CacheEvict(value = "employeesAll", allEntries = true)
+    @CachePut(
+            value = "employees",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #result.empCode"
+    )
+    @CacheEvict(
+            value = "employeesAll",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+    )
     public EmployeeDto updateEmployee(EmployeeDto dto,String empCode){
 
         Employee existingEmp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
-        Employee updatedEmp = empDao.save( EmployeeMapper.toEntity(dto,existingEmp));
+        EmployeeMapper.toEntity(dto,existingEmp);
 
-        return  EmployeeMapper.toDto(updatedEmp);
+        if (existingEmp.getEmployeeBankDetails() != null) {
+            empBankDao.save(existingEmp.getEmployeeBankDetails());
+        }
+        Employee updatedEmp = empDao.save(existingEmp);
+
+        return EmployeeMapper.toDto(updatedEmp);
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "employees", key = "#empCode"),
-            @CacheEvict(value = "employeesAll", allEntries = true)
+            @CacheEvict(
+                    value = "employees",
+                    key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #empCode"
+            ),
+            @CacheEvict(
+                    value = "employeesAll",
+                    key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+            )
     })
     public void deleteEmployee(String empCode){
 
-        empDao.findByEmpCode(empCode)
+        Employee emp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
+        EmployeeBankDetails bankDetails = emp.getEmployeeBankDetails();
+        if(bankDetails != null){
+            empBankDao.deleteById(bankDetails.getId());
+        }
         empDao.deleteByEmpCode(empCode);
 
     }
 
-    @Cacheable(value = "employees", key="T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':employee:' + #empCode")
+    @Cacheable(
+            value = "employees",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #empCode"
+    )
     public EmployeeDto fetchEmployeeById(String empCode){
 
         Employee emp = empDao.findByEmpCode(empCode)
@@ -69,7 +102,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return EmployeeMapper.toDto(emp);
     }
 
-    @Cacheable(value="employeesAll", key="T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allEmployees'")
+    @Cacheable(
+            value = "employeesAll",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+    )
     public List<EmployeeDto> fetchAllEmployees(){
         List<Employee> empList = empDao.findAll();
 
