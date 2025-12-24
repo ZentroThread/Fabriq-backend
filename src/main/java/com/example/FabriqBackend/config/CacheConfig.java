@@ -22,11 +22,9 @@ public class CacheConfig {
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                // Keep TTL short for demo; adjust as needed or wire from properties
-                .entryTtl(Duration.ofSeconds(60))
+                .entryTtl(Duration.ofHours(24)) // Cache for 24 hours instead of 10 minutes
                 .disableCachingNullValues()
-                // Prefix like: cache::users::
-                .computePrefixWith(cacheName -> "cache::" + cacheName + "::")
+                .computePrefixWith(cacheName -> "cache:" + cacheName + "::")
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new GenericJackson2JsonRedisSerializer()

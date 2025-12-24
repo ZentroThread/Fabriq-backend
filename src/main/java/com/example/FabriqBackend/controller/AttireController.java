@@ -4,7 +4,6 @@ import com.example.FabriqBackend.dto.AttireCreateDto;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.service.IAttireService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -49,13 +48,13 @@ public class AttireController {
         return attireService.deleteAttire(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Update attire details",
             description = "Updates specific fields of an attire record using the provided AttireUpdateDto. Only fields included in the DTO will be modified."
     )
-    public ResponseEntity<?> updateAttire(@PathVariable Integer id, @RequestBody AttireUpdateDto attireUpdateDto) {
-        return attireService.updateAttire(id, attireUpdateDto);
+    public ResponseEntity<?> updateAttire(@PathVariable Integer id,  @ModelAttribute AttireUpdateDto attireUpdateDto, @RequestParam(value = "image", required = false) MultipartFile image) {
+        return attireService.updateAttire(id, attireUpdateDto , image);
     }
 
     @GetMapping("/{id}")

@@ -7,10 +7,9 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "category")
-public class Category extends TenantAwareEntity implements Serializable {
+public class Category  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

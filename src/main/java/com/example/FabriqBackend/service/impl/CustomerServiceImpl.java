@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements ICustomerService {
         return ResponseEntity.ok(savedCustomer);
     }
 
-    @Cacheable(key = "'all'")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public List<Customer> getAllCustomers() {
         return customerDao.findAll();
     }
@@ -55,7 +55,7 @@ public class CustomerServiceImpl implements ICustomerService {
         return ResponseEntity.ok(cust);
     }
 
-    @Cacheable(key = "#custId")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':customer:' + #custId")
     public Customer getCustomerById(Integer custId) {
         return customerDao.findById(custId).orElse(null);
     }
