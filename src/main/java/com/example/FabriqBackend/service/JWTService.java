@@ -25,7 +25,7 @@ public class JWTService {
     private String secretKey;
 
     // Token expiration times
-    private static final long ACCESS_TOKEN_VALIDITY =   30 * 1000; // 15 minutes
+    private static final long ACCESS_TOKEN_VALIDITY =   60 * 60 * 1000; // 1 hour
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
     // Initialize secretKey after properties are set. If none provided, generate a 256-bit key and warn.
@@ -59,6 +59,8 @@ public class JWTService {
                 .signWith(getKey())
                 .compact();
     }
+
+
 
     /**
      * Generate refresh token with 7 days expiration
@@ -146,7 +148,6 @@ public class JWTService {
             final String userName = extractUserName(token);
             final String tokenType = extractTokenType(token);
             final boolean isExpired = isTokenExpired(token);
-
             if (isExpired) {
                 return false;
             }
@@ -171,7 +172,10 @@ public class JWTService {
     public boolean validateRefreshToken(String token) {
         try {
             final String tokenType = extractTokenType(token);
+
+
             return !isTokenExpired(token) && "refresh".equals(tokenType);
+
         } catch (Exception e) {
             return false;
         }
