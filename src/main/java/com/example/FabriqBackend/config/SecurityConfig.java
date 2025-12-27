@@ -56,7 +56,8 @@ public class SecurityConfig {
                                 "/v1/employee-deductions/**",
                                 "/v1/production-records/**",
                                 "/v1/attendance/**",
-                                "/v1/device-attendance/**"
+                                "/v1/device-attendance/**",
+                                "/v1/advance-payments/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

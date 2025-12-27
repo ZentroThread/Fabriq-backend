@@ -17,6 +17,7 @@ public class EmployeeMapper {
 
         dto.setId(employee.getId());
         dto.setEmpCode(employee.getEmpCode());
+        dto.setImgUrl(employee.getImgUrl());
         dto.setEmpFirstName(employee.getEmpFirstName());
         dto.setEmpLastName(employee.getEmpLastName());
         dto.setNicNumber(employee.getNicNumber());
@@ -45,6 +46,7 @@ public class EmployeeMapper {
         if (dto == null) return null;
 
         employee.setEmpCode(dto.getEmpCode());
+        employee.setImgUrl(dto.getImgUrl());
         employee.setEmpFirstName(dto.getEmpFirstName());
         employee.setEmpLastName(dto.getEmpLastName());
         employee.setNicNumber(dto.getNicNumber());

@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/production-records")
@@ -85,11 +87,13 @@ public class ProductionRecordController {
             summary = "Delete Production Record by Employee and Record ID",
             description = "Delete a specific production record for a specific employee."
     )
-    public ResponseEntity<Void> deleteByEmployeeAndRecordId(
+    public ResponseEntity<?> deleteByEmployeeAndRecordId(
             @PathVariable Long recordId) {
 
         ProductionRecordServiceImpl.deleteProductionRecordById(recordId);
-        return ResponseEntity.noContent().build();
+        Map<String, String> response = new HashMap<>();
+        response.put("deletedRecord", recordId.toString() );
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{recordId}")

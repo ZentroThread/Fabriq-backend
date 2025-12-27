@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public class EmployeeDto {
     private Long id;
     private String empCode;
+    private String imgUrl;
     private String empFirstName;
     private String empLastName;
     private String nicNumber;
