@@ -29,6 +29,8 @@ public class EmployeeMapper {
         dto.setJoinedDate(employee.getJoinedDate());
         dto.setEpfNumber(employee.getEpfNumber());
         dto.setBasicSalary(employee.getBasicSalary());
+        dto.setCommissionEligible(employee.isCommissionEligible());
+        dto.setPerformancePoints(employee.getPerformancePoints());
 
         if(employee.getEmployeeBankDetails() != null) {
             dto.setEmployeeBankDetails(EmployeeBankDetailsMapper.toDto(employee.getEmployeeBankDetails()));
@@ -58,6 +60,8 @@ public class EmployeeMapper {
         employee.setJoinedDate(dto.getJoinedDate());
         employee.setEpfNumber(dto.getEpfNumber());
         employee.setBasicSalary(dto.getBasicSalary());
+        employee.setCommissionEligible(dto.isCommissionEligible());
+        employee.setPerformancePoints(dto.getPerformancePoints());
 
         if( dto.getEmployeeBankDetails() != null) {
             employee.setEmployeeBankDetails(EmployeeBankDetailsMapper.toEntity(dto.getEmployeeBankDetails(),

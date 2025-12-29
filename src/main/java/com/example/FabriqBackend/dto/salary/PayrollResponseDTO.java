@@ -20,10 +20,22 @@ public class PayrollResponseDTO {
     private Integer year;
 
     private Double basicSalary;
+
     private Double totalAllowances;
     private Double totalDeductions;
     private Double commission;
+
+    private Double doubleOTRate;
+    private Double doubleOTAmount;
+    private Double doubleOTHours;
+
+    private Double singleOTRate;
+    private Double singleOTHours;
+    private Double singleOTAmount;
+
     private Double overtimePay;
+    private Double extraHolidaysTaken;
+
     private Double salaryAdvance;
     private Double productPay;
 

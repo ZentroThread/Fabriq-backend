@@ -35,6 +35,9 @@ public class Employee extends TenantAwareEntity {
     private String epfNumber;
     private Double basicSalary;
 
+    private boolean commissionEligible;
+    private Integer performancePoints;
+
     //production records relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
     private List<ProductionRecord> productionRecords;

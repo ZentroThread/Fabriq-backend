@@ -23,6 +23,8 @@ public class EmployeeDto {
     private String joinedDate;
     private String epfNumber;
     private Double basicSalary;
+    private boolean commissionEligible;
+    private Integer performancePoints;
     //age - computed field
     private Integer age;
 
