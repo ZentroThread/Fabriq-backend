@@ -28,4 +28,8 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "cust_code", referencedColumnName = "cust_id")
     private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "billing_code", referencedColumnName = "billing_id")
+    private Billing billing;
 }
