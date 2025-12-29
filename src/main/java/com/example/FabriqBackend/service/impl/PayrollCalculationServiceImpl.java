@@ -268,7 +268,7 @@ public class PayrollCalculationServiceImpl {
 
                 .grossSalary(calc.getGrossSalary())
                 .netSalary(calc.getNetSalary())
-
+                .confirmed(true)
                 .generatedAt(calc.getCalculatedAt())
                 .build();
 
