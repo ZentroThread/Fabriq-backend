@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AttireRentDao extends TenantAwareDao<AttireRent, Integer> {
 
+    AttireRent findByIdAndTenantId(Integer id, String tenantId);
+
 }

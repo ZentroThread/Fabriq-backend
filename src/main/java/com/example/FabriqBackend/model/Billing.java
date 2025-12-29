@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -33,7 +33,12 @@ public class Billing  extends TenantAwareEntity implements Serializable {
 
     @PrePersist
     public void generateCode() {
-        this.billingCode = String.format("BIL-%08d", this.billingId);
+        if (this.billingCode == null) {
+            // Generate random unique code: BIL-20251229-XXXX
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String random = String.format("%04d", (int)(Math.random() * 10000));
+            this.billingCode = "BIL-" + timestamp + "-" + random;
+        }
     }
 
 }

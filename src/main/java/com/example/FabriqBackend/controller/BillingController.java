@@ -1,10 +1,10 @@
 package com.example.FabriqBackend.controller;
 
+import com.example.FabriqBackend.dto.CreateBillingWithRentalsDto;
 import com.example.FabriqBackend.model.Billing;
-import com.example.FabriqBackend.service.impl.BillingServiceImpl;
+import com.example.FabriqBackend.service.IBillingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class BillingController {
 
-    private final BillingServiceImpl billingService;
+    private final IBillingService billingService;
 
     @PostMapping("/add")
     @Operation(
@@ -31,5 +31,9 @@ public class BillingController {
     )
     public ResponseEntity<?> getAllBillings() {
         return billingService.getAllBillings();
+    }
+    @PostMapping("/create-with-rentals")
+    public ResponseEntity<?> createBillingWithRentals(@RequestBody CreateBillingWithRentalsDto dto) {
+        return billingService.createBillingWithRentals(dto);
     }
 }
