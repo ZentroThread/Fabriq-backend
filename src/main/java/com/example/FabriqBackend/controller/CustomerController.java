@@ -28,7 +28,7 @@ public class CustomerController {
         return customerService.addCustomer(customer);
     }
 
-    @GetMapping("/rea-customers")
+    @GetMapping("/read-customers")
     @Operation(
             summary = "Retrieve all customers",
             description = "This endpoint retrieves a list of all customers."

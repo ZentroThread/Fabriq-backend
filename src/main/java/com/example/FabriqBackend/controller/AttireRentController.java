@@ -32,6 +32,12 @@ public class AttireRentController {
         return attireRentService.getAllAttireRent();
     }
 
+    @GetMapping("/by-billing/{code}")
+    @Operation(summary = "Get rents by billing code", description = "Fetch rentals for a specific billing code (tenant-scoped)")
+    public ResponseEntity<?> getByBillingCode(@PathVariable String code) {
+        return attireRentService.getAttireRentsByBillingCode(code);
+    }
+
     @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Delete attire rent by ID",

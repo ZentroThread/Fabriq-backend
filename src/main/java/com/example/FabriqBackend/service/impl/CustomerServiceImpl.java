@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service.impl;
 
+import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
@@ -23,7 +24,7 @@ public class CustomerServiceImpl implements ICustomerService {
     private final CustomerDao customerDao;
     private final ModelMapper modelMapper;
 
-    @CachePut(key = "#result.body != null ? #result.body.tenantId + ':' + #result.body.custId : 'null'", condition = "#result.statusCode.is2xxSuccessful()")
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public ResponseEntity<?> addCustomer(Customer customer) {
         Customer savedCustomer = customerDao.save(customer);
         return ResponseEntity.ok(savedCustomer);
@@ -31,16 +32,17 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public List<Customer> getAllCustomers() {
-        return customerDao.findAll();
+        String tenantId = TenantContext.getCurrentTenant();
+        return customerDao.findAllByTenantId(tenantId);
     }
 
-    @CacheEvict(key = "#custId")
+    @CacheEvict(allEntries = true)
     public ResponseEntity<?> deleteCustomer(Integer custId) {
         customerDao.deleteById(custId);
         return ResponseEntity.ok().build();
     }
 
-    @CachePut(key = "#custId")
+    @CacheEvict(allEntries = true)
     public ResponseEntity<?> updateCustomer(Integer custId, CustomerUpdateDto customerUpdateDto) {
         Customer cust = customerDao.findById(custId)
                 .map(customer -> {

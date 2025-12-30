@@ -46,6 +46,9 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers("/v1/attire/**").hasRole("OWNER")
+                        .requestMatchers("/v1/customer/**").permitAll()
+                        .requestMatchers("/v1/attire-rent/**").permitAll()
+                        .requestMatchers("/v1/billing/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
