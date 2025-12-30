@@ -8,4 +8,5 @@ public interface IBillingService {
     ResponseEntity<?> addBilling(Billing billing);
     ResponseEntity<?> getAllBillings();
     ResponseEntity<?> createBillingWithRentals(CreateBillingWithRentalsDto dto);
+    ResponseEntity<?> payBilling(com.example.FabriqBackend.dto.PayBillingDto dto);
 }

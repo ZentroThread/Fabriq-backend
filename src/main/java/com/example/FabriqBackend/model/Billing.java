@@ -22,6 +22,8 @@ public class Billing  extends TenantAwareEntity implements Serializable {
     @Column(name = "billing_code", unique = true)
     private String billingCode;
     private String billingTotal;
+    private String billingStatus;
+    private String billingType;
 
     @CreationTimestamp
     @Column(name = "billing_date", nullable = false, updatable = false)

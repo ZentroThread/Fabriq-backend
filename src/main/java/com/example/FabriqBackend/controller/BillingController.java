@@ -36,4 +36,9 @@ public class BillingController {
     public ResponseEntity<?> createBillingWithRentals(@RequestBody CreateBillingWithRentalsDto dto) {
         return billingService.createBillingWithRentals(dto);
     }
+
+    @PostMapping("/pay")
+    public ResponseEntity<?> payBilling(@RequestBody com.example.FabriqBackend.dto.PayBillingDto dto) {
+        return billingService.payBilling(dto);
+    }
 }

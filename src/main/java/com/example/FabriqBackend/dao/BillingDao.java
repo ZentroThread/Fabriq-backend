@@ -9,4 +9,5 @@ import java.util.List;
 public interface BillingDao extends TenantAwareDao<Billing, Integer> {
 
     List<Billing> findAllByTenantId(String tenatId);
+    Billing findByBillingCode(String billingCode);
 }
