@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 public interface IAttireRentService {
     ResponseEntity<?> addAttireRent(AttireRentAddDto attireRentAddDto);
     ResponseEntity<?> getAllAttireRent();
+    ResponseEntity<?> getAttireRentsByBillingCode(String billingCode);
     ResponseEntity<?> deleteAttireRent(Integer id);
     ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto);
 }
