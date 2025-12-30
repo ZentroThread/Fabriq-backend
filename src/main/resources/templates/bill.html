@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill</title>
+    <style>
+        body {
+            font-family: "Bodoni MT", serif;
+            width: 80mm;
+            margin: 20px auto;
+        }
+        h2 { text-align: center; margin: 0 0 10px 0; }
+        p { margin: 4px 0; font-size: 14px; }
+        hr { border: none; border-top: 1px dashed #333; margin: 8px 0; }
+        table { width: 100%; font-size: 12px; border-collapse: collapse; }
+        th { text-align: left; padding: 4px 0; }
+        td { padding: 4px 0; }
+        .right { text-align: right; }
+        .bold { font-weight: bold; }
+        .center { text-align: center; margin-top: 15px; }
+
+        @media print {
+            body { margin: 0; }
+            @page { margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+<h2>HS Bridal Wares</h2>
+
+<p><strong>Customer:</strong> <span th:text="${customerName}">-</span></p>
+<p><strong>Reference:</strong> <span th:text="${billingCode}">-</span></p>
+<p><strong>Mobile:</strong> <span th:text="${mobile}">-</span></p>
+
+<!-- Added: current date/time for the bill. It will be filled by client-side JS so it reflects the print time. -->
+<p><strong>Date:</strong> <span id="printDate">-</span></p>
+
+<hr/>
+
+<table>
+    <thead>
+    <tr>
+        <th>Item</th>
+        <th class="right">Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.code}">-</td>
+        <td class="right" th:text="'LKR ' + ${#numbers.formatDecimal(item.price, 1, 2)}">0.00</td>
+    </tr>
+    </tbody>
+</table>
+
+<hr/>
+
+<p><span>Subtotal</span><span class="right" th:text="'LKR ' + ${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</span></p>
+<p><span th:text="'Discount (' + ${#numbers.formatDecimal(discountPerc, 1, 2)} + '%)'">Discount</span>
+    <span class="right" th:text="'- LKR ' + ${#numbers.formatDecimal(discountAmount, 1, 2)}">0.00</span></p>
+<p class="bold"><span>Total</span><span class="right" th:text="'LKR ' + ${#numbers.formatDecimal(total, 1, 2)}">0.00</span></p>
+
+<p><strong>Payment Method:</strong> <span th:text="${paymentMethod}">-</span></p>
+
+<hr/>
+
+<p class="center">Thank you!</p>
+
+<!-- Script to insert current date/time into the #printDate element. Runs on load and before printing. -->
+<script>
+    (function () {
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function formatDateForPrint(date) {
+            // Desired format: DD/MM/YYYY hh:mm am/pm (12-hour, lowercase am/pm)
+            try {
+                var d = new Date(date);
+                var day = pad(d.getDate());
+                var month = pad(d.getMonth() + 1);
+                var year = d.getFullYear();
+                var hours = d.getHours();
+                var minutes = pad(d.getMinutes());
+                var ampm = hours >= 12 ? 'pm' : 'am';
+                var hours12 = hours % 12;
+                if (hours12 === 0) hours12 = 12;
+                var hoursStr = pad(hours12);
+                return day + '/' + month + '/' + year + ' ' + hoursStr + ':' + minutes + ' ' + ampm;
+            } catch (e) {
+                // fallback minimal formatting
+                var f = new Date();
+                var dd = pad(f.getDate());
+                var mm = pad(f.getMonth() + 1);
+                var yyyy = f.getFullYear();
+                var hh = f.getHours();
+                var mins = pad(f.getMinutes());
+                var ap = hh >= 12 ? 'pm' : 'am';
+                var h12 = hh % 12; if (h12 === 0) h12 = 12;
+                return dd + '/' + mm + '/' + yyyy + ' ' + String(h12).padStart(2,'0') + ':' + mins + ' ' + ap;
+            }
+        }
+
+        function setPrintDate() {
+            var el = document.getElementById('printDate');
+            if (!el) return;
+            el.textContent = formatDateForPrint(new Date());
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setPrintDate);
+        } else {
+            setPrintDate();
+        }
+
+        // Ensure date is updated right before a print job (useful if user waits and prints later)
+        if (window.matchMedia) {
+            var mql = window.matchMedia('print');
+            if (mql && mql.addEventListener) {
+                mql.addEventListener('change', function (e) { if (e.matches) setPrintDate(); });
+            } else if (mql && mql.addListener) {
+                mql.addListener(function (m) { if (m.matches) setPrintDate(); });
+            }
+        }
+
+        // Older browsers / fallback
+        window.onbeforeprint = setPrintDate;
+    })();
+</script>
+</body>
+</html>
