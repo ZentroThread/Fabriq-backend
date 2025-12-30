@@ -18,6 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "attireRents")
@@ -48,9 +51,9 @@ public class AttireRentServiceImpl implements IAttireRentService {
     }
 
 
-    @Cacheable(key = "'allAttireRent'")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
     public ResponseEntity<?> getAllAttireRent() {
-        return new ResponseEntity<>(attireRentDao.findAll(), HttpStatus.OK);
+        return ResponseEntity.ok(attireRentDao.findAll());
     }
 
     @CacheEvict(key = "'deleteAttireRent'")
@@ -87,6 +90,24 @@ public class AttireRentServiceImpl implements IAttireRentService {
         AttireRent updated = attireRentDao.save(existing);
 
         return ResponseEntity.ok(updated);
+    }
+
+    public ResponseEntity<?> getAttireRentsByBillingCode(String billingCode) {
+        if (billingCode == null) return ResponseEntity.badRequest().body("billingCode required");
+        List<AttireRent> rents = attireRentDao.findAllByBillingCode(billingCode.trim());
+        List<com.example.FabriqBackend.dto.AttireRentDto> list = rents.stream().map(r -> {
+            com.example.FabriqBackend.dto.AttireRentDto dto = new com.example.FabriqBackend.dto.AttireRentDto();
+            dto.setId(r.getId());
+            dto.setAttireCode(r.getAttireCode() != null ? r.getAttireCode() : (r.getAttire() != null ? r.getAttire().getAttireCode() : null));
+            dto.setCustCode(r.getCustCode() != null ? r.getCustCode() : (r.getCustomer() != null ? r.getCustomer().getCustCode() : null));
+            dto.setBillingCode(r.getBillingCode() != null ? r.getBillingCode() : (r.getBilling() != null ? r.getBilling().getBillingCode() : null));
+            dto.setRentDuration(r.getRentDuration());
+            dto.setRentDate(r.getRentDate() != null ? r.getRentDate().toString() : null);
+            dto.setReturnDate(r.getReturnDate() != null ? r.getReturnDate().toString() : null);
+            return dto;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(list);
     }
 
 }

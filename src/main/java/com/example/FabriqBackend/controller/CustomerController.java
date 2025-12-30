@@ -28,7 +28,7 @@ public class CustomerController {
         return customerService.addCustomer(customer);
     }
 
-    @GetMapping("/rea-customers")
+    @GetMapping("/read-customers")
     @Operation(
             summary = "Retrieve all customers",
             description = "This endpoint retrieves a list of all customers."
@@ -43,9 +43,7 @@ public class CustomerController {
             summary = "Delete a customer",
             description = "This endpoint allows deleting a customer by their ID."
     )
-
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer custId) {
-        System.out.println("Deleting customer...");
 
         return customerService.deleteCustomer(custId);
     }

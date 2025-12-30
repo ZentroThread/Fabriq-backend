@@ -11,7 +11,7 @@ import java.util.List;
 public interface IAttireService {
     ResponseEntity<?> createAttire(AttireCreateDto attire, MultipartFile image);
     ResponseEntity<?> deleteAttire(Integer id);
-    ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto);
+    ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto attireUpdateDto, MultipartFile image);
     ResponseEntity<?> getAttireById(Integer id);
     ResponseEntity<?> getAttireByAttireCode(String attireCode);
     List<Attire> getAttireByStatus(String status);

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,9 +25,20 @@ public class Customer extends TenantAwareEntity implements Serializable {
     private String custName;
     private String custEmail;
     private String custAddress;
-    private String custHomePhoneNumber;
+    private String custLandLine;
     private String custMobileNumber;
     private String custWhatsappNumber;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "cust_registration_date", updatable = false)
+    private Date custRegistrationDate;
+
+    @PrePersist
+    public void onCreate() {
+        if (this.custRegistrationDate == null) {
+            this.custRegistrationDate = new Date();
+        }
+    }
 
     @PostPersist
     public void generateId() {

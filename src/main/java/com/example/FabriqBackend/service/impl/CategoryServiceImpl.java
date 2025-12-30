@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements ICategoryService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Cacheable(key = "'allCategories'")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCategories'")
     public ResponseEntity<?> getAllCategories() {
 
         return new ResponseEntity<>(categoryDao.findAll(), HttpStatus.OK);

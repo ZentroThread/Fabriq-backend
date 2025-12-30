@@ -14,10 +14,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5174", "http://localhost:5173")
-                        .allowedMethods("*")
+                        .allowedOrigins("http://localhost:5174", "http://localhost:5173", "http://localhost:5175")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .exposedHeaders("Authorization", "X-Tenant-ID")
+                        .allowCredentials(true); // ✅ REQUIRED for HttpOnly cookies to work with cross-origin requests
             }
         };
     }

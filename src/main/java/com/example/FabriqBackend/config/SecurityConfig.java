@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.config;
 
 import com.example.FabriqBackend.config.Tenant.TenantFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,57 +18,45 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtFilter jwtFilter;
 
-    @Autowired
-    private TenantFilter tenantFilter;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtFilter jwtFilter;
+    private final TenantFilter tenantFilter;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-       return http
-
+        return http
                 .csrf(customizer -> customizer.disable())
+                .cors(Customizer.withDefaults()) // Enable CORS with default configuration
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/user/**",
-                                "/customer/**",
-                                "/v1/category/**",
-                                "/v1/attire/**",
-                                "/measurement/**",
-                                "/v1/attire-rent/**",
+                                "/v1/user/login",
+                                "/v1/user/register",
+                                "/v1/user/refresh",
+                                "/v1/user/token-status",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
-                                "/webjars/**",
-                                "/v1/employees/**",
-                                "/v1/allowance-types/**",
-                                "/v1/deduction-types/**",
-                                "/v1/employee-allowances/**",
-                                "/v1/employee-deductions/**",
-                                "/v1/production-records/**",
-                                "/v1/attendance/**",
-                                "/v1/device-attendance/**",
-                                "/v1/advance-payments/**"
+                                "/webjars/**"
                         ).permitAll()
+                        .requestMatchers("/v1/attire/**").hasRole("OWNER")
+                        .requestMatchers("/v1/customer/**").permitAll()
+                        .requestMatchers("/v1/attire-rent/**").permitAll()
+                        .requestMatchers("/v1/billing/**").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-               .addFilterAfter(tenantFilter, JwtFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(tenantFilter, JwtFilter.class)
                 //create a session only if required
                 .build();
     }
-
 
 
     @Bean
@@ -82,6 +70,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 
-        return  config.getAuthenticationManager();
+        return config.getAuthenticationManager();
     }
 }

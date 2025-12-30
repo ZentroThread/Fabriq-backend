@@ -67,7 +67,7 @@ public class MeasurementServiceImpl implements IMeasurementService {
     }
 
 
-    @Cacheable(key = "'allMeasurements'")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allMeasurements'")
     public ResponseEntity<?> getAllMeasurements() {
         List<Measurement> measurements = measurementDao.findAll();
         if (measurements.isEmpty()) {
@@ -100,7 +100,7 @@ public class MeasurementServiceImpl implements IMeasurementService {
         return ResponseEntity.ok(measurement);
     }
 
-    @Cacheable(key = "'measurementById:' + #id")
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':measurementById:' + #id")
     public ResponseEntity<?> getMeasurementById(Integer id) {
         Measurement measurement = measurementDao.findById(id).orElse(null);
         if (measurement != null) {
