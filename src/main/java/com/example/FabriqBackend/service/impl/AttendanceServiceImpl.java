@@ -157,12 +157,12 @@ public class AttendanceServiceImpl implements IAttendanceService {
         // Status
         if (firstIn == null && lastOut == null)
             attendance.setStatus(AttendanceStatus.ABSENT);
-        else if (lateMinutes > ALLOWED_LATE_MINUTES)
-            attendance.setStatus(AttendanceStatus.LATE);
+//        else if (lateMinutes > ALLOWED_LATE_MINUTES)
+//            attendance.setStatus(AttendanceStatus.LATE);
         else if (workedMinutes < (REQUIRED_HOURS * 30))
             attendance.setStatus(AttendanceStatus.HALF_DAY);
-        else if (workedMinutes < (REQUIRED_HOURS * 60))
-            attendance.setStatus(AttendanceStatus.EARLY_LEAVE);
+//        else if (workedMinutes < (REQUIRED_HOURS * 60))
+//            attendance.setStatus(AttendanceStatus.EARLY_LEAVE);
         else
             attendance.setStatus(AttendanceStatus.PRESENT);
 

@@ -20,4 +20,9 @@ public interface EmployeeDao extends TenantAwareDao<Employee,Long> {
     @Query("SELECT DISTINCT e.tenantId FROM Employee e")
     List<String> findAllTenantIds();
 
+    // private Integer performancePoints;
+    @Query("SELECT SUM(e.performancePoints) FROM Employee e")
+    int sumOfPerformancePointsOfCommissionEligibleEmployees();
+
+
 }

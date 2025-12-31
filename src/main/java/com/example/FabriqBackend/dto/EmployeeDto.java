@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public class EmployeeDto {
     private Long id;
     private String empCode;
+    private String imgUrl;
     private String empFirstName;
     private String empLastName;
     private String nicNumber;
@@ -22,6 +23,8 @@ public class EmployeeDto {
     private String joinedDate;
     private String epfNumber;
     private Double basicSalary;
+    private boolean commissionEligible;
+    private Integer performancePoints;
     //age - computed field
     private Integer age;
 

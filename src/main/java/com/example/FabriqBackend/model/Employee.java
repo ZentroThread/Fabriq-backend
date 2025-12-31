@@ -21,6 +21,7 @@ public class Employee extends TenantAwareEntity {
     @Column(nullable = false,unique = true)
     private String empCode;
 
+    private String imgUrl;
     private String empFirstName;
     private String empLastName;
     private String nicNumber;
@@ -33,6 +34,9 @@ public class Employee extends TenantAwareEntity {
     private String joinedDate;
     private String epfNumber;
     private Double basicSalary;
+
+    private boolean commissionEligible;
+    private Integer performancePoints;
 
     //production records relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
@@ -53,6 +57,10 @@ public class Employee extends TenantAwareEntity {
     //payroll records relationship
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<PayrollRecord> payrollRecords;
+
+    //Advance payments relationship
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<AdvancePayment> advancePayments;
 
     //employee bank details relationship
     @OneToOne(cascade = CascadeType.ALL)

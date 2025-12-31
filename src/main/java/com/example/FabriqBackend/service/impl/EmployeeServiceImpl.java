@@ -7,6 +7,7 @@ import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
 import com.example.FabriqBackend.service.IEmployeeService;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -90,6 +91,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(
             value = "employees",
             key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #empCode"
@@ -102,19 +104,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return EmployeeMapper.toDto(emp);
     }
 
-    @Cacheable(
-            value = "employeesAll",
-            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
-    )
+
+    @Transactional(readOnly = true)
+//    @Cacheable(
+//            value = "employeesAll",
+//            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
+//    )
     public List<EmployeeDto> fetchAllEmployees(){
         List<Employee> empList = empDao.findAll();
-
         return empList
                 .stream()
                 .map(EmployeeMapper::toDto)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<EmployeeDto> fetchEmployeeByRole(String role){
 
         Optional<Employee> empList = empDao.findByRole(role);

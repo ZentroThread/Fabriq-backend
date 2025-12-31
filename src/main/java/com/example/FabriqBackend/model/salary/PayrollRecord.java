@@ -36,6 +36,8 @@ public class PayrollRecord extends TenantAwareEntity {
     private Double grossSalary;
     private Double netSalary;
 
+    private boolean confirmed = false;
+
     private LocalDateTime generatedAt;
 
     @ManyToOne
