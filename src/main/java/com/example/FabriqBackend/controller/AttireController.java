@@ -2,8 +2,11 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttireCreateDto;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
+import com.example.FabriqBackend.dto.ReservationRequest;
+import com.example.FabriqBackend.dto.StockUpdate;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.service.IAttireService;
+import com.example.FabriqBackend.service.StockService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -19,6 +22,7 @@ import java.util.List;
 public class AttireController {
 
     private final IAttireService attireService;
+    private final StockService stockService;
 
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -91,5 +95,24 @@ public class AttireController {
     )
     public List<Attire> getAttireByCategoryId(@PathVariable Integer categoryId) {
         return attireService.getAttireByCategoryId(categoryId);
+    }
+
+//    @PostMapping("/reserve")
+//    public ResponseEntity<?> reserveItem(@RequestBody ReservationRequest req) {
+//        stockService.reserveItem(req.getAttireCode(), req.getCustomerCode());
+//        return ResponseEntity.ok("Reserved");
+//    }
+
+    @PostMapping("/reserve")
+    public ResponseEntity<?> reserveItem(@RequestBody ReservationRequest req) {
+        try {
+            StockUpdate update = stockService.reserveItem(
+                    req.getAttireCode(),
+                    req.getCustomerCode()
+            );
+            return ResponseEntity.ok(update);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
