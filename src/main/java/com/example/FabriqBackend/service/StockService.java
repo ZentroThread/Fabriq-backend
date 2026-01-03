@@ -16,6 +16,7 @@ public class StockService {
         this.messagingTemplate = messagingTemplate;
         this.attireDao = attireDao;
     }
+
     @Transactional
     public StockUpdate reserveItem(String itemCode, String customerCode) {
         Attire attire = attireDao.findByAttireCode(itemCode);
@@ -32,6 +33,24 @@ public class StockService {
 
         StockUpdate update = new StockUpdate(itemCode, attire.getAttireStock(), customerCode);
         messagingTemplate.convertAndSend("/topic/stock-updates", update);
+        return update;
+    }
+
+    @Transactional
+    public StockUpdate unreserveItem(String itemCode, String customerCode) {
+        Attire attire = attireDao.findByAttireCode(itemCode);
+        if (attire == null) {
+            throw new IllegalArgumentException("Attire not found: " + itemCode);
+        }
+
+        attire.setAttireStock(attire.getAttireStock() + 1);
+        attireDao.save(attire);
+
+        StockUpdate update = new StockUpdate(itemCode, attire.getAttireStock(), customerCode);
+
+        System.out.println("📤 Broadcasting unreserve: " + update);
+        messagingTemplate.convertAndSend("/topic/stock-updates", update);
+
         return update;
     }
 }

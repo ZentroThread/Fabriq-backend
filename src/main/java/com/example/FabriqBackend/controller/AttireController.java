@@ -115,4 +115,17 @@ public class AttireController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/unreserve")
+    public ResponseEntity<?> unreserveItem(@RequestBody ReservationRequest req) {
+        try {
+            StockUpdate update = stockService.unreserveItem(
+                    req.getAttireCode(),
+                    req.getCustomerCode()
+            );
+            return ResponseEntity.ok(update);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
