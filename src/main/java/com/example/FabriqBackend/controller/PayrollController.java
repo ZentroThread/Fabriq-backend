@@ -3,6 +3,7 @@ package com.example.FabriqBackend.controller;
 import com.example.FabriqBackend.dto.salary.PayrollResponseDTO;
 import com.example.FabriqBackend.service.IPayrollService;
 import com.example.FabriqBackend.service.impl.PayrollCalculationServiceImpl;
+import com.example.FabriqBackend.service.payroll.PayrollService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PayrollController {
 
-    private final PayrollCalculationServiceImpl payrollCalculationService;
+    private final PayrollService payrollCalculationService;
     private final IPayrollService payrollService;
 
     @GetMapping("/calculate/{empId}/{month}/{year}")
     public ResponseEntity<PayrollResponseDTO> calculatePayroll(@PathVariable  Long empId,@PathVariable Integer month,@PathVariable Integer year) {
-        PayrollResponseDTO payroll = payrollCalculationService.calculatePayroll(empId, month, year);
+        PayrollResponseDTO payroll = payrollCalculationService.calculate(empId, month, year);
         return ResponseEntity.ok(payroll);
     }
 
@@ -30,5 +31,15 @@ public class PayrollController {
     @GetMapping("/{empId}/{year}")
     public ResponseEntity<?> getPayrollRecordsByEmployeeIdAndYear(@PathVariable Long empId, @PathVariable Integer year) {
         return ResponseEntity.ok(payrollService.getPayrollRecordsByEmployeeIdAndYear(empId, year));
+    }
+
+    @GetMapping("/epf-record/{month}/{year}")
+    public ResponseEntity<?> getEpfRecords(@PathVariable Integer month, @PathVariable Integer year) {
+        return ResponseEntity.ok(payrollService.getEpfFormData(month, year));
+    }
+
+    @GetMapping("/etf-record/{month}/{year}")
+    public ResponseEntity<?> getEtfRecords(@PathVariable Integer month, @PathVariable Integer year) {
+        return ResponseEntity.ok(payrollService.getEtfFormData(month, year));
     }
 }
