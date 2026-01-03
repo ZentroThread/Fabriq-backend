@@ -26,7 +26,7 @@ public class AttireController {
 
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Create a new attire")
+    @Operation(summary = "Create a new attire", description = "Create a new attire item with optional image upload and details provided in AttireCreateDto")
     public ResponseEntity<?> createAttire(
             @ModelAttribute AttireCreateDto dto,
             @RequestParam(value = "image", required = false) MultipartFile image) {
@@ -104,6 +104,7 @@ public class AttireController {
 //    }
 
     @PostMapping("/reserve")
+    @Operation(summary = "Reserve an attire item", description = "Reserve an attire item for a customer and return updated stock information")
     public ResponseEntity<?> reserveItem(@RequestBody ReservationRequest req) {
         try {
             StockUpdate update = stockService.reserveItem(
@@ -117,6 +118,7 @@ public class AttireController {
     }
 
     @PostMapping("/unreserve")
+    @Operation(summary = "Unreserve an attire item", description = "Release a previously reserved attire item for a customer and return updated stock info")
     public ResponseEntity<?> unreserveItem(@RequestBody ReservationRequest req) {
         try {
             StockUpdate update = stockService.unreserveItem(
