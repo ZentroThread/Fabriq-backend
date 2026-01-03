@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,5 +68,9 @@ public class DeviceAttendanceServiceImpl {
             return LocalDateTime.parse(input, f);
         }
     }
+
+//    public List<DeviceAttendanceLog> getLatestLogs(LocalDateTime sinceTime) {
+//       // return deviceAttendanceLogDao.findByPunchTimeAfter(sinceTime);
+//    }
 
 }
