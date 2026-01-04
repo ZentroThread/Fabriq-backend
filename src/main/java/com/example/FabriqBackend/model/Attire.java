@@ -1,10 +1,12 @@
 package com.example.FabriqBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
@@ -32,5 +34,7 @@ public class Attire extends TenantAwareEntity implements Serializable {
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
 
-
+    @OneToMany(mappedBy = "attire", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<AttireRent> rentals; // ← ADD THIS
 }

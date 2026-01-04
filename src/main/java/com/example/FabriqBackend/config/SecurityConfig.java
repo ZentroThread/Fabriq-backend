@@ -43,8 +43,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/ws/**",
+                                "/topic/**"
                         ).permitAll()
+                        // allow public access to websocket handshake and topics
+                        .requestMatchers("/topic/**").permitAll()
                         .requestMatchers("/v1/attire/**").hasRole("OWNER")
                         .requestMatchers("/v1/customer/**").permitAll()
                         .requestMatchers("/v1/attire-rent/**").permitAll()
