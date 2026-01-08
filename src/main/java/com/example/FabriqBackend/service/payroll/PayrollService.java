@@ -32,7 +32,7 @@ public class PayrollService {
     public PayrollResponseDTO calculate(Long empId, int month, int year) {
 
         Employee employee = employeeDao.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new RuntimeException("Employee not found with Id: " + empId));
 
         YearMonth period = YearMonth.of(year, month);
 
@@ -48,7 +48,7 @@ public class PayrollService {
 
         OvertimeResultDTO ot = overtimeService.calculate(employee, period);
 
-        double commission = commissionService.calculate(employee);
+        double commission = commissionService.calculate(employee,period);
 
         double epfEmp = statutoryService.epfEmployee(basic);
         double epfEmpr = statutoryService.epfEmployer(basic);
