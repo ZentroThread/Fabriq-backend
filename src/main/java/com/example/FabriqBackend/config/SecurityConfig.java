@@ -45,7 +45,9 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/ws/**",
-                                "/topic/**"
+                                "/topic/**",
+                                "/v1/device-attendance/punch",
+                                "/v1/attendance/**"
                         ).permitAll()
                         // allow public access to websocket handshake and topics
                         .requestMatchers("/topic/**").permitAll()
@@ -53,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/customer/**").permitAll()
                         .requestMatchers("/v1/attire-rent/**").permitAll()
                         .requestMatchers("/v1/billing/**").permitAll()
+                        .requestMatchers("/v1/payroll/payslip/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

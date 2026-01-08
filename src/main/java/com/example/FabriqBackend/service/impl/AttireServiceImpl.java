@@ -11,6 +11,7 @@ import com.example.FabriqBackend.service.IAttireService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,6 +33,8 @@ public class AttireServiceImpl implements IAttireService {
     private final S3Service s3Service;
     private final CategoryDao categoryDao;
 
+    @Value("${aws.s3.bucket.name}")
+    private String attireBucketName;
 
     @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image) {
@@ -53,7 +56,7 @@ public class AttireServiceImpl implements IAttireService {
             attire.setCategory(category);
 
             if (image != null && !image.isEmpty()) {
-                String imageUrl = s3Service.uploadFile(image);
+                String imageUrl = s3Service.uploadFile(image,attireBucketName);
                 attire.setImageUrl(imageUrl);
             }
 
@@ -107,7 +110,7 @@ public List<Attire> getAllAttire() {
                         // Handle image
                         if (image != null && !image.isEmpty()) {
                             try {
-                                attire.setImageUrl(s3Service.uploadFile(image));
+                                attire.setImageUrl(s3Service.uploadFile(image,attireBucketName));
                             } catch (IOException e) {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }
