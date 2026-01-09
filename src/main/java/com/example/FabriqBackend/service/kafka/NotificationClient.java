@@ -5,14 +5,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-public class NotificationClient {
-    private final RestTemplate restTemplate;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 @Slf4j
-                "http://notification-service:8081/api/notifications/send",
+public class NotificationClient {
 
     private final KafkaTemplate<String, NotificationRequest> kafkaTemplate;
 
-    @Value("${kafka.topic.notifications:notifications}")
+    @Value("${kafka.topic.notifications:notification-events}")
     private String notificationTopic;
+
+    public void sendNotification(NotificationRequest request) {
+        try {
+            kafkaTemplate.send(notificationTopic, request.getUserId(), request);
+            log.info("Notification sent to Kafka: {}", request);
+        } catch (Exception ex) {
+            log.error("Failed to send notification: {}", ex.getMessage());
+        }
+    }
+}
