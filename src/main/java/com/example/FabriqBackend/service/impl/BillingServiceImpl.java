@@ -15,6 +15,7 @@ import com.example.FabriqBackend.model.Customer;
 import com.example.FabriqBackend.service.IBillingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheConfig;
@@ -24,12 +25,14 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.TemplateEngine;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "billings")
 public class BillingServiceImpl implements IBillingService {
@@ -40,6 +43,7 @@ public class BillingServiceImpl implements IBillingService {
     public final AttireDao attireDao;
     public final AttireRentDao attireRentDao;
     public  final TemplateEngine templateEngine;
+    private final com.example.FabriqBackend.service.kafka.NotificationClient notificationClient;
 
     public ResponseEntity<?> addBilling(Billing billing) {
         billingDao.save(billing);
@@ -180,6 +184,48 @@ public class BillingServiceImpl implements IBillingService {
         resp.put("billing", billing);
         resp.put("items", rents);
         resp.put("billHtml", billHtml);
+
+        // Publish a notification event so the notification-service can send WhatsApp/email
+        try {
+            Map<String, Object> event = new HashMap<>();
+            event.put("eventId", UUID.randomUUID().toString());
+            event.put("eventType", "PAYMENT_CONFIRMED");
+
+            String phone = billing.getCustomer() != null && billing.getCustomer().getCustWhatsappNumber() != null && !billing.getCustomer().getCustWhatsappNumber().isBlank()
+                    ? billing.getCustomer().getCustWhatsappNumber()
+                    : (billing.getCustomer() != null ? billing.getCustomer().getCustMobileNumber() : null);
+
+            event.put("recipientPhone", phone);
+            event.put("recipientEmail", billing.getCustomer() != null ? billing.getCustomer().getCustEmail() : null);
+            event.put("recipientName", billing.getCustomer() != null ? billing.getCustomer().getCustName() : null);
+
+            Map<String, String> templateData = new HashMap<>();
+            templateData.put("billingCode", billing.getBillingCode() == null ? "" : billing.getBillingCode());
+            // Add amount/orderId keys expected by notification-service
+            templateData.put("amount", String.valueOf(total));
+            templateData.put("orderId", billing.getBillingCode() == null ? "" : billing.getBillingCode());
+            templateData.put("total", String.valueOf(total));
+            templateData.put("paymentMethod", dto.getPaymentMethod() == null ? "" : dto.getPaymentMethod());
+
+            // Build a short items summary for notifications
+            StringBuilder itemsSb = new StringBuilder();
+            if (rents != null) {
+                for (AttireRent r : rents) {
+                    String code = r.getAttireCode() != null ? r.getAttireCode() : (r.getAttire() != null ? r.getAttire().getAttireCode() : "-");
+                    double price = r.getAttire() != null && r.getAttire().getAttirePrice() != null ? r.getAttire().getAttirePrice() : 0.0;
+                    itemsSb.append(code).append(":Rs.").append((long)price).append("; ");
+                }
+            }
+            templateData.put("items", itemsSb.toString());
+            event.put("templateData", templateData);
+
+            event.put("priority", 1);
+            event.put("timestamp", LocalDateTime.now().toString());
+
+            notificationClient.sendNotification(event);
+        } catch (Exception e) {
+            log.error("Failed to publish billing paid notification: {}", e.getMessage());
+        }
 
         return ResponseEntity.ok(resp);
     }
