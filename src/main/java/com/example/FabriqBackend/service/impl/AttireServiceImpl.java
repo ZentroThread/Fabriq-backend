@@ -77,8 +77,22 @@ public List<Attire> getAllAttire() {
 
     @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> deleteAttire(Integer id) {
-        attireDao.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return attireDao.findById(id)
+                .map(attire -> {
+                    String imageUrl = attire.getImageUrl();
+                    if (imageUrl != null && !imageUrl.isBlank()) {
+                        try {
+                            s3Service.deleteFile(imageUrl);
+                        } catch (Exception e) {
+                            // Log the error and continue with deletion of DB record
+                            System.err.println("Failed to delete image from S3: " + e.getMessage());
+                        }
+                    }
+
+                    attireDao.deleteById(id);
+                    return new ResponseEntity<>(HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attire not found"));
     }
 
     @CacheEvict(value = "attires", allEntries = true)
@@ -104,10 +118,23 @@ public List<Attire> getAllAttire() {
                             attire.setCategory(category);
                         }
 
-                        // Handle image
+                        // Handle image: upload new image and remove previous one from S3 to avoid orphaned files
                         if (image != null && !image.isEmpty()) {
+                            String previousImageUrl = attire.getImageUrl();
                             try {
-                                attire.setImageUrl(s3Service.uploadFile(image));
+                                String newImageUrl = s3Service.uploadFile(image);
+                                attire.setImageUrl(newImageUrl);
+
+                                // If there was a previous image and it's different from the new one, try to delete it
+                                if (previousImageUrl != null && !previousImageUrl.isBlank()
+                                        && !previousImageUrl.equals(newImageUrl)) {
+                                    try {
+                                        s3Service.deleteFile(previousImageUrl);
+                                    } catch (Exception e) {
+                                        // Log failure but don't abort the update (optional: change to abort if desired)
+                                        System.err.println("Failed to delete previous image from S3: " + e.getMessage());
+                                    }
+                                }
                             } catch (IOException e) {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }

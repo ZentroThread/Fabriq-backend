@@ -56,10 +56,32 @@ public class S3Service {
     }
 
     public void deleteFile(String fileUrl) {
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        if (fileUrl == null || fileUrl.isBlank()) return;
+
+        String key = null;
+        try {
+            java.net.URI uri = new java.net.URI(fileUrl);
+            String path = uri.getPath(); // e.g. /images/123_name.jpg
+            if (path != null && !path.isEmpty()) {
+                key = path.startsWith("/") ? path.substring(1) : path;
+            }
+        } catch (Exception e) {
+            // fallback to extracting after amazonaws.com/
+            String marker = ".amazonaws.com/";
+            int idx = fileUrl.indexOf(marker);
+            if (idx >= 0) {
+                key = fileUrl.substring(idx + marker.length());
+            }
+        }
+
+        if (key == null || key.isEmpty()) {
+            // as a last resort, take substring after last '/'
+            key = fileUrl.substring(Math.max(fileUrl.lastIndexOf('/') + 1, 0));
+        }
+
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
+                .key(key)
                 .build();
         s3Client.deleteObject(deleteObjectRequest);
     }
