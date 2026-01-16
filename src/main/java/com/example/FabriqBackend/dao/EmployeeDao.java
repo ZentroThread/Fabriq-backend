@@ -21,7 +21,11 @@ public interface EmployeeDao extends TenantAwareDao<Employee,Long> {
     List<String> findAllTenantIds();
 
     // private Integer performancePoints;
-    @Query("SELECT SUM(e.performancePoints) FROM Employee e")
+    @Query("""
+        SELECT COALESCE(SUM(e.performancePoints), 0)
+        FROM Employee e
+        WHERE e.commissionEligible = true
+    """)
     int sumOfPerformancePointsOfCommissionEligibleEmployees();
 
 

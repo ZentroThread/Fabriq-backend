@@ -6,8 +6,11 @@ import com.example.FabriqBackend.dto.T52PunchDto;
 import com.example.FabriqBackend.model.DeviceAttendanceLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +69,13 @@ public class DeviceAttendanceServiceImpl {
             DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             return LocalDateTime.parse(input, f);
         }
+    }
+
+    public List<DeviceAttendanceLog> getLatestLogs() {
+        LocalDate date = LocalDate.now();
+        LocalDateTime startTime = date.atTime(8, 0);
+        LocalDateTime endTime   = date.atTime(17, 0); // 05:00 PM
+        return deviceAttendanceLogDao.findByPunchTimeBetween(startTime, endTime);
     }
 
 }

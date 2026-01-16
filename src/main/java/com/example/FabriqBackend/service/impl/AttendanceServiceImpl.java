@@ -90,17 +90,18 @@ public class AttendanceServiceImpl implements IAttendanceService {
     //get attendance for all employees for a date
     public List<AttendanceDto> fetchAllAttendanceForDate(String date) {
         LocalDate localDate = LocalDate.parse(date);
-        Optional<List<AttendanceDto>> attendanceList = attendanceDao.findByDate(localDate)
-                .map(attendances -> attendances.stream()
-                        .map(attendance ->  AttendanceMapper.toDto(attendance,new AttendanceDto()))
-                        .toList());
 
-        if (attendanceList.isEmpty()) {
-            throw new RuntimeException("Attendance not found for date: " + date);
-        } else {
-            return attendanceList.get();
+        List<Attendance> attendances = attendanceDao.findByDate(localDate);
+
+        if (attendances.isEmpty()) {
+            return List.of();
         }
+
+        return attendances.stream()
+                .map(attendance -> AttendanceMapper.toDto(attendance, new AttendanceDto()))
+                .toList();
     }
+
 
     @Transactional
     public void updateDailyAttendance(String empCode, LocalDate date) {
@@ -112,9 +113,19 @@ public class AttendanceServiceImpl implements IAttendanceService {
         List<DeviceAttendanceLog> logs =
                 deviceAttendanceLogDao.findByEmpCodeAndPunchTimeBetween(empCode, start, end);
 
-        if (logs.isEmpty()) {
-            System.out.println("No logs found for empCode: " + empCode + " on date: " + date);
-            return;
+        List<DeviceAttendanceLog> allLogs =
+                deviceAttendanceLogDao.findByPunchTimeBetween(start,end);
+
+        if (logs.isEmpty() && !allLogs.isEmpty()) {
+            if(attendanceDao.findByEmployee_EmpCodeAndDate(empCode, date).isPresent()){
+                return;
+            }
+            Attendance attendance = new Attendance();
+            attendance.setEmployee(employeeDao.findByEmpCode(empCode)
+                    .orElseThrow(() -> new RuntimeException("Employee not found")));
+            attendance.setDate(date);
+            attendance.setStatus(AttendanceStatus.ABSENT);
+            attendanceDao.save(attendance);
         };
 
         System.out.println("Logs for " + empCode + ": " + logs.size());

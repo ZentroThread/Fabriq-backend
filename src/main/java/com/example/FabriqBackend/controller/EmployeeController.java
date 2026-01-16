@@ -7,8 +7,10 @@ import com.example.FabriqBackend.service.impl.EmployeeServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,19 +21,19 @@ import java.util.Map;
 @RequestMapping("/v1/employees")
 public class EmployeeController {
 
-    private IEmployeeService employeeService;
+    private final IEmployeeService employeeService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Add a new employee",
             description = "This endpoint allows adding a new employee by providing the necessary details in the request body."
     )
-    public ResponseEntity<?> addEmployee(@RequestBody EmployeeDto dto){
-        employeeService.addEmployee(dto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(dto);
+    public ResponseEntity<?> addEmployee(@ModelAttribute EmployeeDto dto,
+                                         @RequestParam(value = "image", required = false) MultipartFile image) {
+        EmployeeDto savedDto = employeeService.addEmployee(dto, image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
     }
+
 
     @GetMapping("/{empCode}")
     @Operation(
@@ -57,17 +59,18 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{empCode}")
+    @PutMapping(value = "/{empCode}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Update an employee's details",
             description = "This endpoint allows updating the details of an existing employee by their employee code."
     )
-    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDto dto, @PathVariable String empCode){
-        employeeService.updateEmployee(dto,empCode);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(dto);
+    public ResponseEntity<?> updateEmployee(@ModelAttribute EmployeeDto dto,
+                                            @PathVariable String empCode,
+                                            @RequestParam(value = "image", required = false) MultipartFile image) {
+        EmployeeDto updatedDto = employeeService.updateEmployee(dto, empCode, image);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
+
 
     @GetMapping
     @Operation(

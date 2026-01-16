@@ -24,7 +24,8 @@ public class S3Service {
     private String secretAccessKey;
 
     @Value("${aws.s3.bucket.name}")
-    private String bucketName;
+    private String attireBucketName;
+
 
     @Value("${aws.s3.region}")
     private String region;
@@ -40,7 +41,7 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file,String bucketName) throws IOException {
        // String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         String fileName = "images/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
@@ -55,7 +56,7 @@ public class S3Service {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
     }
 
-    public void deleteFile(String fileUrl) {
+    public void deleteFile(String fileUrl, String bucketName) {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)

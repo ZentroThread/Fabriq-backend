@@ -13,4 +13,10 @@ public interface DeviceAttendanceLogDao extends TenantAwareDao<DeviceAttendanceL
             LocalDateTime endTime
     );
 
+    List<DeviceAttendanceLog> findByPunchTimeBetween(
+            LocalDateTime startOfDay,
+            LocalDateTime endOfDay
+    );
+
+
 }
