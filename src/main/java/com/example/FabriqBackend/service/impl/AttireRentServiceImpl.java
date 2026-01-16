@@ -4,6 +4,7 @@ import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.AttireRentAddDto;
+import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Customer;
@@ -52,8 +53,22 @@ public class AttireRentServiceImpl implements IAttireRentService {
 
 
     @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
-    public ResponseEntity<?> getAllAttireRent() {
-        return ResponseEntity.ok(attireRentDao.findAll());
+    public List<AttireRentDto> getAllAttireRent() {
+        return attireRentDao.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private AttireRentDto convertToDto(AttireRent rent) {
+        AttireRentDto dto = new AttireRentDto();
+        dto.setId(rent.getId());
+        dto.setAttireCode(rent.getAttireCode());
+        dto.setCustCode(rent.getCustCode());
+        dto.setBillingCode(rent.getBillingCode());
+        dto.setRentDuration(rent.getRentDuration());
+        dto.setRentDate(rent.getRentDate() != null ? rent.getRentDate().toString() : null);
+        dto.setReturnDate(rent.getReturnDate() != null ? rent.getReturnDate().toString() : null);
+        return dto;
     }
 
     @CacheEvict(key = "'deleteAttireRent'")
