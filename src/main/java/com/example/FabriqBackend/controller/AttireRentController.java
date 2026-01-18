@@ -1,11 +1,14 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttireRentAddDto;
+import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.service.IAttireRentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/attire-rent")// Base URL for attire rent-related operations
@@ -28,8 +31,8 @@ public class AttireRentController {
             summary = "Get all attire rent records",
             description = "Fetches a complete list of all attire rental records stored in the system."
     )
-    public ResponseEntity<?> getAllAttireRent() {
-        return attireRentService.getAllAttireRent();
+    public ResponseEntity<List<AttireRentDto>> getAllAttireRent() {
+        return ResponseEntity.ok(attireRentService.getAllAttireRent());
     }
 
     @GetMapping("/by-billing/{code}")

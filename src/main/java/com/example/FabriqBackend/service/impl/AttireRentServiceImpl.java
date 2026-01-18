@@ -4,6 +4,7 @@ import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.AttireRentAddDto;
+import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Customer;
