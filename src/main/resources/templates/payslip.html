@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payslip</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .payslip-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            padding: 30px 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .company-address {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .payslip-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 3px;
+        }
+        .payslip-period {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .employee-info {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            margin: 8px 0;
+        }
+        .info-row .label {
+            width: 160px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .info-row .value {
+            color: #34495e;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #bdc3c7;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            margin: 4px 0;
+        }
+        .row:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .row .label {
+            color: #555;
+        }
+        .row .amount {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .subtotal-row {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .total-row {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 11px;
+            color: #7f8c8d;
+            border-top: 1px solid #bdc3c7;
+            padding-top: 15px;
+        }
+        @media print {
+            body { background-color: white; margin: 0; padding: 0; }
+            .payslip-container { box-shadow: none; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="payslip-container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="company-name">Hiru Sandu Bridal Wears</div>
+        <div class="company-address">Hirusandu Bridal Wear, No. 02, Shanthi Road, Negombo</div>
+        <div class="payslip-title">PAYSLIP</div>
+        <div class="payslip-period">
+            <span th:text="${monthName + ' ' + p.year}"></span>
+        </div>
+    </div>
+
+    <!-- Employee Info -->
+    <div class="employee-info">
+        <div class="info-row">
+            <span class="label">Employee No:</span>
+            <span class="value" th:text="${e.empCode}"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">EPF No:</span>
+            <span class="value" th:text="${e.epfNumber}"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">Employee Name:</span>
+            <span class="value" th:text="${e.empFirstName + ' ' + e.empLastName}"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">Designation:</span>
+            <span class="value" th:text="${e.role}"></span>
+        </div>
+    </div>
+
+    <!-- Earnings -->
+    <div class="section-title">EARNINGS</div>
+    <div class="row">
+        <span class="label">Basic Salary</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.basicSalary, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">Single OT</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.singleOTAmount, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">Double OT</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.doubleOTAmount, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">Attendance Allowances</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.totalAllowances, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">Production Income</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.productPay, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">Sales Commission</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.commission, 1, 2)}"></span>
+    </div>
+
+    <div class="row subtotal-row">
+        <span class="label">Gross Salary</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.grossSalary, 1, 2)}"></span>
+    </div>
+
+    <!-- Deductions -->
+    <div class="section-title">DEDUCTIONS</div>
+    <div class="row">
+        <span class="label">EPF (Employee)</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.epfEmployee, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">Salary Advance</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.salaryAdvance, 1, 2)}"></span>
+    </div>
+
+    <div class="row total-row">
+        <span class="label">Net Salary</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.netSalary, 1, 2)}"></span>
+    </div>
+
+    <!-- Employer Contributions -->
+    <div class="section-title">EMPLOYER CONTRIBUTIONS</div>
+    <div class="row">
+        <span class="label">EPF (Employer)</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.epfEmployer, 1, 2)}"></span>
+    </div>
+    <div class="row">
+        <span class="label">ETF</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.etf, 1, 2)}"></span>
+    </div>
+
+    <div class="row subtotal-row">
+        <span class="label">Total Cost to Company</span>
+        <span class="amount" th:text="${'Rs. ' + #numbers.formatDecimal(p.netSalary + p.epfEmployer + p.etf, 1, 2)}"></span>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        This is a computer-generated payslip and does not require a signature.<br/>
+        For any queries, please contact the HR Department.
+    </div>
+
+</div>
+
+<script>
+    window.print();
+</script>
+
+</body>
+</html>
