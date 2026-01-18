@@ -16,8 +16,6 @@ import com.example.FabriqBackend.service.IBillingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,6 +56,8 @@ public class BillingServiceImpl implements IBillingService {
     @Transactional
     public ResponseEntity<?> createBillingWithRentals(CreateBillingWithRentalsDto dto) {
 
+        log.info("createBillingWithRentals received dto: {}", dto);
+
         // 1. Find customer
         Customer customer = customerDao.findByCustCode(dto.getCustomerCode().trim())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
@@ -73,8 +73,18 @@ public class BillingServiceImpl implements IBillingService {
         // 3. Create rentals
         for (AttireRentItemDto item : dto.getItems()) {
 
+            // 🔍 ADD THIS LOGGING
+            System.out.println("═══════════════════════════════════════");
+            System.out.println("📥 RECEIVED FROM FRONTEND:");
+            System.out.println("   attireCode: " + item.getAttireCode());
+            System.out.println("   rentDate: " + item.getRentDate());
+            System.out.println("   returnDate: " + item.getReturnDate());
+            System.out.println("   rentDate type: " + (item.getRentDate() != null ? item.getRentDate().getClass() : "null"));
+            System.out.println("═══════════════════════════════════════");
+
             Attire attire = attireDao.findByAttireCode(item.getAttireCode().trim());
             if (attire == null) continue;
+
 
             AttireRent rent = new AttireRent();
             rent.setAttire(attire);
@@ -86,9 +96,25 @@ public class BillingServiceImpl implements IBillingService {
             rent.setCustCode(customer.getCustCode());
             rent.setBillingCode(billing.getBillingCode());
 
-            // Dates
-            LocalDateTime start = item.getRentDate() != null ? item.getRentDate() : LocalDateTime.now();
-            LocalDateTime end = item.getReturnDate() != null ? item.getReturnDate() : start.plusDays(1);
+            // Handle dates properly - frontend sends date-only strings (yyyy-MM-dd)
+            LocalDateTime start;
+            if (item.getRentDate() != null) {
+                // Use the date from frontend and set time to 00:00:00
+                start = item.getRentDate().atStartOfDay();
+            } else {
+                // If no date provided, use current date at 00:00:00
+                start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+            }
+
+            LocalDateTime end;
+            if (item.getReturnDate() != null) {
+                // Use the date from frontend and set time to 23:59:59
+                end = item.getReturnDate().atTime(23, 59, 59);
+            } else {
+                // Default to 3 days after start
+                end = start.plusDays(3).withHour(23).withMinute(59).withSecond(59);
+            }
+
             rent.setRentDate(start);
             rent.setReturnDate(end);
 

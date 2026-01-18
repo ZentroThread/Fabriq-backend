@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,10 +49,24 @@ public class AttireRentServiceImpl implements IAttireRentService {
         return new ResponseEntity<>(attireRent, HttpStatus.CREATED);
     }
 
-
-    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
+    //@Cacheable(key = "T(com.example.FabriqBackend.tenant.TenantContext).getCurrentTenantId() + ':all'")
     public ResponseEntity<?> getAllAttireRent() {
-        return ResponseEntity.ok(attireRentDao.findAll());
+        List<AttireRent> rents = attireRentDao.findAll();
+
+        // Convert to DTO to avoid LocalDateTime serialization issue
+        List<com.example.FabriqBackend.dto.AttireRentDto> dtoList = rents.stream().map(r -> {
+            com.example.FabriqBackend.dto.AttireRentDto dto = new com.example.FabriqBackend.dto.AttireRentDto();
+            dto.setId(r.getId());
+            dto.setAttireCode(r.getAttireCode() != null ? r.getAttireCode() : (r.getAttire() != null ? r.getAttire().getAttireCode() : null));
+            dto.setCustCode(r.getCustCode() != null ? r.getCustCode() : (r.getCustomer() != null ? r.getCustomer().getCustCode() : null));
+            dto.setBillingCode(r.getBillingCode() != null ? r.getBillingCode() : (r.getBilling() != null ? r.getBilling().getBillingCode() : null));
+            dto.setRentDuration(r.getRentDuration());
+            dto.setRentDate(r.getRentDate() != null ? r.getRentDate().toString() : null);
+            dto.setReturnDate(r.getReturnDate() != null ? r.getReturnDate().toString() : null);
+            return dto;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtoList);
     }
 
     @CacheEvict(key = "'deleteAttireRent'")
@@ -108,6 +121,42 @@ public class AttireRentServiceImpl implements IAttireRentService {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
+    }
+
+    public ResponseEntity<?> getStatsByAttireCode(String attireCode) {
+        if (attireCode == null || attireCode.trim().isEmpty())
+            return ResponseEntity.badRequest().body("attireCode required");
+
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        List<AttireRent> all = attireRentDao.findAllByAttireCode(attireCode.trim());
+
+        long rentalCount = all.stream()
+                .filter(r -> r.getRentDate() != null && !r.getRentDate().isAfter(now))
+                .map(r -> r.getCustCode() != null ? r.getCustCode() : (r.getCustomer() != null ? r.getCustomer().getCustCode() : null))
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .count();
+
+        List<com.example.FabriqBackend.dto.AttireRentDto> wishlist = all.stream()
+                .filter(r -> r.getRentDate() != null && r.getRentDate().isAfter(now))
+                .map(r -> {
+                    com.example.FabriqBackend.dto.AttireRentDto dto = new com.example.FabriqBackend.dto.AttireRentDto();
+                    dto.setId(r.getId());
+                    dto.setAttireCode(r.getAttireCode() != null ? r.getAttireCode() : (r.getAttire() != null ? r.getAttire().getAttireCode() : null));
+                    dto.setCustCode(r.getCustCode() != null ? r.getCustCode() : (r.getCustomer() != null ? r.getCustomer().getCustCode() : null));
+                    dto.setBillingCode(r.getBillingCode() != null ? r.getBillingCode() : (r.getBilling() != null ? r.getBilling().getBillingCode() : null));
+                    dto.setRentDate(r.getRentDate() != null ? r.getRentDate().toString() : null);
+                    dto.setReturnDate(r.getReturnDate() != null ? r.getReturnDate().toString() : null);
+                    return dto;
+                }).collect(Collectors.toList());
+
+        java.util.Map<String, Object> resp = new java.util.HashMap<>();
+        resp.put("rentalCount", rentalCount);
+        resp.put("wishlistCount", wishlist.size());
+        resp.put("wishlist", wishlist);
+
+        return ResponseEntity.ok(resp);
     }
 
 }
