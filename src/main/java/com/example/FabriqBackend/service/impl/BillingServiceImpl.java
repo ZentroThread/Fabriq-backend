@@ -291,8 +291,15 @@ public class BillingServiceImpl implements IBillingService {
             }
             double lineTotal = price;
 
+            // Format return date for display
+            String returnDateStr = "-";
+            if (r.getReturnDate() != null) {
+                returnDateStr = r.getReturnDate().toLocalDate().toString();
+            }
+
             item.put("code", code);
             item.put("price", lineTotal);
+            item.put("returnDate", returnDateStr);
             itemList.add(item);
         }
         context.setVariable("items", itemList);
