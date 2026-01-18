@@ -15,4 +15,9 @@ public class AttireRentItemDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate returnDate;
+    
+    // Fields for customized items
+    private Boolean isCustomItem;
+    private String customItemName;
+    private Double customPrice;
 }

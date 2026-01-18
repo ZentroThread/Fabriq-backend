@@ -38,6 +38,12 @@ public class BillingController {
         return billingService.createBillingWithRentals(dto);
     }
 
+    @PostMapping("/create-and-pay")
+    @Operation(summary = "Create billing with rentals and pay", description = "Create a billing entry with rentals and process payment in one operation")
+    public ResponseEntity<?> createBillingAndPay(@RequestBody com.example.FabriqBackend.dto.CreateBillingAndPayDto dto) {
+        return billingService.createBillingAndPay(dto);
+    }
+
     @PostMapping("/pay")
     @Operation(summary = "Pay billing", description = "Process a payment for a billing record")
     public ResponseEntity<?> payBilling(@RequestBody com.example.FabriqBackend.dto.PayBillingDto dto) {

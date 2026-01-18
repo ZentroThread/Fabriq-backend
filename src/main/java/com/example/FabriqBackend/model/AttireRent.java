@@ -45,5 +45,15 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "billing_id", referencedColumnName = "billing_id")
     private Billing billing;
+    
+    // Fields for customized items (when attire is null)
+    @Column(name = "is_custom_item")
+    private Boolean isCustomItem;
+    
+    @Column(name = "custom_item_name")
+    private String customItemName;
+    
+    @Column(name = "custom_price")
+    private Double customPrice;
 }
 
