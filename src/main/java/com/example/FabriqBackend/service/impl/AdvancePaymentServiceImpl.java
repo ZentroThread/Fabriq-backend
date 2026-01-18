@@ -77,7 +77,7 @@ public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
         LocalDate end = LocalDate.parse(endDate);
         List<AdvancePayment> advancePayment = advancePaymentDao.findByEmployeeIdAndDateBetween(empId, start, end);
         if(advancePayment.isEmpty()){
-            throw new RuntimeException("No Advance Payments found for Employee id: " + empId + " in the given date range.");
+            return List.of();
         }
 
         return  advancePayment.stream().map(AdvancePaymentMapper::toDto).collect(Collectors.toList());

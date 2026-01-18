@@ -6,6 +6,7 @@ import com.example.FabriqBackend.enums.*;
 import com.example.FabriqBackend.model.Attendance;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.*;
+import com.example.FabriqBackend.service.payroll.CommissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Service
+
 @RequiredArgsConstructor
 public class PayrollCalculationServiceImpl {
 
@@ -118,7 +119,7 @@ public class PayrollCalculationServiceImpl {
         }
         // Commission
         double salesEarned = 0.0;
-        double totalCommissionAmount = CommissionCalculationService.calculateCommission(salesEarned);
+        double totalCommissionAmount = 0.0;
         double commission =calculateCommission(
                 employee,
                 employeeDao.sumOfPerformancePointsOfCommissionEligibleEmployees(),
