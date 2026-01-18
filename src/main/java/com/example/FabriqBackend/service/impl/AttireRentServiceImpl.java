@@ -50,7 +50,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
     }
 
     //@Cacheable(key = "T(com.example.FabriqBackend.tenant.TenantContext).getCurrentTenantId() + ':all'")
-    public ResponseEntity<?> getAllAttireRent() {
+    public List<com.example.FabriqBackend.dto.AttireRentDto> getAllAttireRent() {
         List<AttireRent> rents = attireRentDao.findAll();
 
         // Convert to DTO to avoid LocalDateTime serialization issue
@@ -66,7 +66,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
             return dto;
         }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(dtoList);
+        return dtoList;
     }
 
     @CacheEvict(key = "'deleteAttireRent'")

@@ -40,9 +40,8 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
-       // String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        String fileName = "images/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+    public String uploadFile(MultipartFile file, String folder) throws IOException {
+        String fileName = folder + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -53,6 +52,10 @@ public class S3Service {
         s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
+    }
+
+    public String uploadFile(MultipartFile file) throws IOException {
+        return uploadFile(file, "images");
     }
 
     public void deleteFile(String fileUrl) {
