@@ -24,8 +24,7 @@ public class S3Service {
     private String secretAccessKey;
 
     @Value("${aws.s3.bucket.name}")
-    private String attireBucketName;
-
+    private String bucketName;
 
     @Value("${aws.s3.region}")
     private String region;
@@ -41,9 +40,8 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadFile(MultipartFile file,String bucketName) throws IOException {
-       // String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        String fileName = "images/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+    public String uploadFile(MultipartFile file, String folder) throws IOException {
+        String fileName = folder + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -56,11 +54,37 @@ public class S3Service {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
     }
 
-    public void deleteFile(String fileUrl, String bucketName) {
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+    public String uploadFile(MultipartFile file) throws IOException {
+        return uploadFile(file, "images");
+    }
+
+    public void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) return;
+
+        String key = null;
+        try {
+            java.net.URI uri = new java.net.URI(fileUrl);
+            String path = uri.getPath(); // e.g. /images/123_name.jpg
+            if (path != null && !path.isEmpty()) {
+                key = path.startsWith("/") ? path.substring(1) : path;
+            }
+        } catch (Exception e) {
+            // fallback to extracting after amazonaws.com/
+            String marker = ".amazonaws.com/";
+            int idx = fileUrl.indexOf(marker);
+            if (idx >= 0) {
+                key = fileUrl.substring(idx + marker.length());
+            }
+        }
+
+        if (key == null || key.isEmpty()) {
+            // as a last resort, take substring after last '/'
+            key = fileUrl.substring(Math.max(fileUrl.lastIndexOf('/') + 1, 0));
+        }
+
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
+                .key(key)
                 .build();
         s3Client.deleteObject(deleteObjectRequest);
     }

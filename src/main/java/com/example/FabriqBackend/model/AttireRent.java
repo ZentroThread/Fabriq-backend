@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @Entity
@@ -19,9 +18,10 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime rentDate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime returnDate;
     private Integer rentDuration; // number of days
 
@@ -45,5 +45,15 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "billing_id", referencedColumnName = "billing_id")
     private Billing billing;
+    
+    // Fields for customized items (when attire is null)
+    @Column(name = "is_custom_item")
+    private Boolean isCustomItem;
+    
+    @Column(name = "custom_item_name")
+    private String customItemName;
+    
+    @Column(name = "custom_price")
+    private Double customPrice;
 }
 

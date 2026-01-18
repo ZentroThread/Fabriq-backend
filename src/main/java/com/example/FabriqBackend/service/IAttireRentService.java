@@ -12,4 +12,5 @@ public interface IAttireRentService {
     ResponseEntity<?> getAttireRentsByBillingCode(String billingCode);
     ResponseEntity<?> deleteAttireRent(Integer id);
     ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto);
+    ResponseEntity<?> getStatsByAttireCode(String attireCode);
 }
