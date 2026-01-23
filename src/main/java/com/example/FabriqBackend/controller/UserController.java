@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.controller;
 
+import com.example.FabriqBackend.dto.ChangePasswordDto;
 import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.model.UserPrincipal;
 import com.example.FabriqBackend.service.impl.UserServiceImpl;
@@ -78,6 +79,15 @@ public class UserController {
     )
     public ResponseEntity<?> checkTokenStatus(HttpServletRequest request) {
         return userService.checkTokenStatus(request);
+    }
+
+    @PostMapping("/change-password") //change user password
+    @Operation(
+            summary = "Change user password",
+            description = "This endpoint allows the authenticated user to change their password."
+    )
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
+        return userService.changePassword(changePasswordDto);
     }
 
 }

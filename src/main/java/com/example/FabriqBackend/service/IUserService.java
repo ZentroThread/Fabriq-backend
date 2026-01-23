@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service;
 
+import com.example.FabriqBackend.dto.ChangePasswordDto;
 import com.example.FabriqBackend.model.Login;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,4 +13,5 @@ public interface IUserService {
     String logout(HttpServletResponse response);
     ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response);
     ResponseEntity<?> checkTokenStatus(HttpServletRequest request);
+    ResponseEntity<?> changePassword(ChangePasswordDto changePasswordDto);
 }
