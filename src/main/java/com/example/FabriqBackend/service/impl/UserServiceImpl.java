@@ -2,8 +2,10 @@ package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
+import com.example.FabriqBackend.dto.ChangePasswordDto;
 import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.model.RefreshToken;
+import com.example.FabriqBackend.model.UserPrincipal;
 import com.example.FabriqBackend.service.IUserService;
 import com.example.FabriqBackend.service.JWTService;
 import com.example.FabriqBackend.service.RefreshTokenService;
@@ -298,6 +300,61 @@ public class UserServiceImpl implements IUserService {
                 put("authenticated", false);
             }});
         }
+    }
+
+    /**
+     * Change user password
+     */
+    public ResponseEntity<?> changePassword(ChangePasswordDto changePasswordDto) {
+        // Get current authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("User not authenticated");
+        }
+
+        if (!(authentication.getPrincipal() instanceof UserPrincipal)) {
+            return ResponseEntity.status(401).body("Invalid authentication principal");
+        }
+
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String username = userPrincipal.getUsername();
+
+        // Get user from database
+        Login user = userDao.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        // Verify current password
+        if (!encoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
+            return ResponseEntity.status(400).body("Current password is incorrect");
+        }
+
+        // Validate new password
+        if (!StringUtils.hasText(changePasswordDto.getNewPassword())) {
+            return ResponseEntity.status(400).body("New password cannot be blank");
+        }
+
+        if (changePasswordDto.getNewPassword().length() < 6) {
+            return ResponseEntity.status(400).body("New password must be at least 6 characters long");
+        }
+
+        // Ensure new password is different from current password
+        if (encoder.matches(changePasswordDto.getNewPassword(), user.getPassword())) {
+            return ResponseEntity.status(400).body("New password must be different from current password");
+        }
+
+        // Update password
+        user.setPassword(encoder.encode(changePasswordDto.getNewPassword()));
+        userDao.save(user);
+
+        // Revoke all refresh tokens for security
+        refreshTokenService.revokeAllUserTokens(username);
+
+        return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+            put("message", "Password changed successfully");
+            put("success", true);
+        }});
     }
 
 }
