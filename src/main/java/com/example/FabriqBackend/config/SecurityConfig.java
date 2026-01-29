@@ -51,11 +51,28 @@ public class SecurityConfig {
                         ).permitAll()
                         // allow public access to websocket handshake and topics
                         .requestMatchers("/topic/**").permitAll()
-                        .requestMatchers("/v1/attire/**").hasRole("OWNER")
-                        .requestMatchers("/v1/customer/**").permitAll()
-                        .requestMatchers("/v1/attire-rent/**").permitAll()
-                        .requestMatchers("/v1/billing/**").permitAll()
-                        .requestMatchers("/v1/payroll/payslip/**").permitAll()
+                        .requestMatchers(
+                                "/v1/attire/**",
+                                "/v1/category/**"
+                        ).permitAll()
+                        .requestMatchers("/v1/billing/**",
+                                "/v1/attire-rent/**" ,
+                                "/v1/customer/**" ,
+                                "/v1/payroll/payslip/**"
+                        ).hasAnyRole("OWNER", "CASHIER")
+                        .requestMatchers(
+                                "/v1/employees/**",
+                                "/v1/employee-allowances/**" ,
+                                "/v1/advance-payments/**" ,
+                                "/v1/allowance-types/**" ,
+                                "/v1/attendance/**" ,
+                                "/v1/deduction-types/**" ,
+                                "/v1/device-attendance/**",
+                                "/v1/employee-deductions/**" ,
+                                "/v1/holidays/**" ,
+                                "/v1/payroll/**" ,
+                                "/v1/production-records/**"
+                        ).hasRole("OWNER")
                         .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
