@@ -17,6 +17,7 @@ public class CorsConfig {
                         .allowedOrigins("http://localhost:5174"
                                 , "http://localhost:5173"
                                 , "http://localhost:5175"
+                                , "http://16.171.152.162"
                                 , "https://fabriq-frontend.vercel.app/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
