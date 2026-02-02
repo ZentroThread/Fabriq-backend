@@ -1,15 +1,16 @@
-# Use the Java 21 Alpine image (Lightweight)
-FROM eclipse-temurin:21-jdk-alpine
-
-# Set working directory
+# Stage 1: Build the application
+FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
+COPY . .
+# Give permission to execute mvnw
+RUN chmod +x mvnw
+# Run the build inside the container (skipping tests for speed)
+RUN ./mvnw clean package -DskipTests
 
-# Copy the built JAR file into the image
-# Ensure your local build actually produced a jar in /target
-COPY target/*.jar app.jar
-
-# Expose the port Spring runs on
+# Stage 2: Run the application
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+# Copy only the built JAR from Stage 1
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8081
-
-# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
