@@ -1,43 +1,29 @@
 services:
   # 1. Your Spring Boot Application
   backend:
-    build: .
+    build: .                  # Builds from your Dockerfile in this folder
     container_name: fabriq-backend
     restart: always
     ports:
-      - "8081:8081" # Optional: Access backend directly if needed for debugging
+      - "3000:8081"           # CONNECTS HOST(3000) -> CONTAINER(8081)
     environment:
-        # Map the .env variables to the Spring Boot variables
-        - AWS_RDS_DB_URL=${AWS_RDS_DB_URL}
-        - AWS_RDS_DB_USER=${AWS_RDS_DB_USER}
-        - AWS_RDS_DB_PASSWORD=${AWS_RDS_DB_PASSWORD}
-        - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-        - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-        - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
-        - AWS_S3_EMP_BUCKET_NAME=${AWS_S3_EMP_BUCKET_NAME}
-        - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-        - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}
+      - AWS_RDS_DB_URL=${AWS_RDS_DB_URL}
+      - AWS_RDS_DB_USER=${AWS_RDS_DB_USER}
+      - AWS_RDS_DB_PASSWORD=${AWS_RDS_DB_PASSWORD}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_S3_EMP_BUCKET_NAME=${AWS_S3_EMP_BUCKET_NAME}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}   # This tells the app to look for the service named 'redis' below
     depends_on:
       - redis
 
-  # 2. Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: fabriq-nginx
-    restart: always
-    ports:
-      - "80:80"  # Map EC2 port 80 to container port 80
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - backend
-
-  # 3. Your Existing Redis Service
+  # 2. Redis Service
   redis:
     image: redis:7-alpine
     container_name: fabriq-redis
-    restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
+    restart: always
     ports:
       - "6379:6379"
     volumes:
