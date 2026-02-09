@@ -18,7 +18,7 @@ public class CorsConfig {
                                 , "http://localhost:5173"
                                 , "http://localhost:5175"
                                 , "https://myapp.social"
-                                , "https://fabriq-frontend.vercel.app/")
+                                , "https://fabriq-frontend.vercel.app")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization", "X-Tenant-ID")
