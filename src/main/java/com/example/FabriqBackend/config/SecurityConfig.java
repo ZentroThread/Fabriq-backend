@@ -2,8 +2,10 @@ package com.example.FabriqBackend.config;
 
 import com.example.FabriqBackend.config.Tenant.TenantFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -17,11 +19,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 @Configuration
 @RequiredArgsConstructor
@@ -36,7 +38,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(customizer -> customizer.disable())
-                // ✅ This Line tells Spring to look for the "corsConfigurationSource" bean below
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
@@ -85,34 +86,42 @@ public class SecurityConfig {
                 .build();
     }
 
+    // 🔥 THE NUCLEAR FIX: High Priority Cors Filter
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+    public FilterRegistrationBean<CorsFilter> corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
 
-        // 1. Allowed Origins (No trailing slashes!)
-        configuration.setAllowedOrigins(Arrays.asList(
+        // 1. Allow Credentials
+        config.setAllowCredentials(true);
+
+        // 2. Allow Origins
+        config.setAllowedOrigins(Arrays.asList(
                 "https://fabriq-frontend.vercel.app",
+                "https://myapp.social",
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://localhost:5174",
-                "https://myapp.social"
+                "http://localhost:5174"
         ));
 
-        // 2. Allowed Methods
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        // 3. Allow Headers (Explicitly add your custom header)
+        config.setAllowedHeaders(Arrays.asList(
+                "Origin", "Content-Type", "Accept", "Authorization",
+                "x-tenant-id", "X-Tenant-ID", "Access-Control-Allow-Origin"
+        ));
 
-        // 3. Allowed Headers ("*" allows x-tenant-id and everything else)
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 4. Allowed Methods
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
-        // 4. Exposed Headers (Crucial so frontend can read x-tenant-id)
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "x-tenant-id"));
+        // 5. Expose Headers
+        config.setExposedHeaders(Arrays.asList("Authorization", "x-tenant-id", "X-Tenant-ID"));
 
-        // 5. Allow Credentials (for cookies)
-        configuration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", config);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        // Register the filter with HIGHEST precedence
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
     }
 
     @Bean
