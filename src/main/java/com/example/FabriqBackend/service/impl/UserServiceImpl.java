@@ -89,7 +89,7 @@ public class UserServiceImpl implements IUserService {
                     .httpOnly(true)  // ✅ Prevents XSS attacks
                     .secure(false)   // ⚠️ Set to true in production with HTTPS
                     .path("/")       // ✅ Available for all endpoints
-                    .domain("myapp.social") // ✅ CRITICAL: Set cookie domain for cross-subdomain access
+                    //.domain("myapp.social") // ✅ CRITICAL: Set cookie domain for cross-subdomain access
                     .sameSite("Lax") // ✅ CSRF protection
                     .maxAge((int) (jwtService.getAccessTokenValidity() / 1000)) // 15 minutes
                     .build();
@@ -99,7 +99,7 @@ public class UserServiceImpl implements IUserService {
                     .httpOnly(true)  // ✅ Prevents XSS attacks
                     .secure(false)   // ⚠️ Set to true in production with HTTPS
                     .path("/")       // ✅ Available for all endpoints
-                    .domain("myapp.social") // ✅ CRITICAL: Set cookie domain for cross-subdomain access
+                    //.domain("myapp.social") // ✅ CRITICAL: Set cookie domain for cross-subdomain access
                     .sameSite("Lax") // ✅ CSRF protection
                     .maxAge((int) (jwtService.getRefreshTokenValidity() / 1000)) // 7 days
                     .build();
