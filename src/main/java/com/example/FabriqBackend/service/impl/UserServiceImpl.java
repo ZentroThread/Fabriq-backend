@@ -87,20 +87,20 @@ public class UserServiceImpl implements IUserService {
             // Access Token Cookie (15 minutes)
             ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                     .httpOnly(true)  // ✅ Prevents XSS attacks
-                    .secure(false)   // ⚠️ Set to true in production with HTTPS
+                    .secure(true)   // ⚠️ Set to true in production with HTTPS
                     .path("/")       // ✅ Available for all endpoints
                     //.domain("myapp.social") // ✅ CRITICAL: Set cookie domain for cross-subdomain access
-                    .sameSite("Lax") // ✅ CSRF protection
+                    .sameSite("None") // ✅ CSRF protection
                     .maxAge((int) (jwtService.getAccessTokenValidity() / 1000)) // 15 minutes
                     .build();
 
             // Refresh Token Cookie (7 days)
             ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                     .httpOnly(true)  // ✅ Prevents XSS attacks
-                    .secure(false)   // ⚠️ Set to true in production with HTTPS
+                    .secure(true)   // ⚠️ Set to true in production with HTTPS
                     .path("/")       // ✅ Available for all endpoints
                     //.domain("myapp.social") // ✅ CRITICAL: Set cookie domain for cross-subdomain access
-                    .sameSite("Lax") // ✅ CSRF protection
+                    .sameSite("None") // ✅ CSRF protection
                     .maxAge((int) (jwtService.getRefreshTokenValidity() / 1000)) // 7 days
                     .build();
 
