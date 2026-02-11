@@ -36,3 +36,21 @@ build/
 
 ### VS Code ###
 .vscode/
+
+*.tfvars
+
+# Local provider configurations
+.terraform/
+
+# State files (They contain your AWS resource IDs and secrets in plain text)
+*.tfstate
+*.tfstate.backup
+
+# Sensitive variables (Where you might put your actual AWS keys)
+*.tfvars
+*.tfvars.json
+
+# Your private SSH keys
+*.pem
+
+kafka_server_jass.conf
