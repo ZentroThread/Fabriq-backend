@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 1. Main Backend Application
+#  backend:
+#    build: .  # Builds from the Dockerfile in THIS current folder
+#    container_name: fabriq-backend
+#    restart: always
+#    ports:
+#      - "8081:8081"  # Host Port 3000 -> Container Port 8081
+#    environment:
+#      - SERVER_PORT=8081
+#      - SPRING_REDIS_HOST=redis
+#      - SPRING_REDIS_PORT=6379
+#      - AWS_RDS_DB_URL=${AWS_RDS_DB_URL}
+#      - AWS_RDS_DB_USER=${AWS_RDS_DB_USER}
+#      - AWS_RDS_DB_PASSWORD=${AWS_RDS_DB_PASSWORD}
+#      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+#    depends_on:
+#      - redis
+#    networks:
+#      - fabriq-network
+
+  # 2. Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: fabriq-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - fabriq-network
+
+volumes:
+  redis_data:
+
+networks:
+  fabriq-network:
+    driver: bridge
