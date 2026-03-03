@@ -1,30 +1,33 @@
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: fabriq-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: fabriq
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      # PGDATA can be set explicitly if you ever need to relocate data dir inside the container
-      # PGDATA: /var/lib/postgresql/data/pgdata
+  # 1. Your Spring Boot Application
+  backend:
+    build: .                  # Builds from your Dockerfile in this folder
+    container_name: fabriq-backend
+    restart: always
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "3000:8081"           # CONNECTS HOST(3000) -> CONTAINER(8081)
+    environment:
+      - AWS_RDS_DB_URL=${AWS_RDS_DB_URL}
+      - AWS_RDS_DB_USER=${AWS_RDS_DB_USER}
+      - AWS_RDS_DB_PASSWORD=${AWS_RDS_DB_PASSWORD}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_S3_EMP_BUCKET_NAME=${AWS_S3_EMP_BUCKET_NAME}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}   # This tells the app to look for the service named 'redis' below
+    depends_on:
+      - redis
 
+  # 2. Redis Service
   redis:
     image: redis:7-alpine
     container_name: fabriq-redis
-    restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
+    restart: always
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
-
+        - redis_data:/data
 
 volumes:
-  postgres_data:
-  redis_data:
+    redis_data:

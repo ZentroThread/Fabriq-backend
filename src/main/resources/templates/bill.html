@@ -17,7 +17,10 @@
         td { padding: 4px 0; }
         .right { text-align: right; }
         .bold { font-weight: bold; }
-        .center { text-align: center; margin-top: 15px; }
+        /* Center text utility used by table headers and the footer message.
+           Keep alignment for all, but only add top margin specifically for the paragraph. */
+        .center { text-align: center; }
+        p.center { margin-top: 15px; }
 
         @media print {
             body { margin: 0; }
@@ -41,12 +44,14 @@
     <thead>
     <tr>
         <th>Item</th>
+        <th class="center">Return Date</th>
         <th class="right">Price</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="item : ${items}">
         <td th:text="${item.code}">-</td>
+        <td class="center" th:text="${item.returnDate ?: '-'}">-</td>
         <td class="right" th:text="'LKR ' + ${#numbers.formatDecimal(item.price, 1, 2)}">0.00</td>
     </tr>
     </tbody>
@@ -54,12 +59,27 @@
 
 <hr/>
 
-<p><span>Subtotal</span><span class="right" th:text="'LKR ' + ${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</span></p>
-<p><span th:text="'Discount (' + ${#numbers.formatDecimal(discountPerc, 1, 2)} + '%)'">Discount</span>
-    <span class="right" th:text="'- LKR ' + ${#numbers.formatDecimal(discountAmount, 1, 2)}">0.00</span></p>
-<p class="bold"><span>Total</span><span class="right" th:text="'LKR ' + ${#numbers.formatDecimal(total, 1, 2)}">0.00</span></p>
-
-<p><strong>Payment Method:</strong> <span th:text="${paymentMethod}">-</span></p>
+<!-- Summary replaced with a two-column table for better alignment -->
+<table>
+    <tbody>
+    <tr>
+        <td>Subtotal</td>
+        <td class="right" th:text="'LKR ' + ${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</td>
+    </tr>
+    <tr>
+        <td th:text="'Discount (' + ${#numbers.formatDecimal(discountPerc, 1, 2)} + '%)'">Discount</td>
+        <td class="right" th:text="'- LKR ' + ${#numbers.formatDecimal(discountAmount, 1, 2)}">0.00</td>
+    </tr>
+    <tr>
+        <td class="bold">Total</td>
+        <td class="right bold" th:text="'LKR ' + ${#numbers.formatDecimal(total, 1, 2)}">0.00</td>
+    </tr>
+    <tr>
+        <td>Payment Method</td>
+        <td class="right" th:text="${paymentMethod}">-</td>
+    </tr>
+    </tbody>
+</table>
 
 <hr/>
 

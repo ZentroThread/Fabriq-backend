@@ -1,14 +1,23 @@
 package com.example.FabriqBackend.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class AttireRentItemDto {
 
     private String attireCode;
-    private LocalDateTime rentDate;      // ← Keep LocalDateTime but accept alias mapping on parent DTO
-    private LocalDateTime returnDate;
+    // Frontend sends plain dates (yyyy-MM-dd) — use LocalDate to match that
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate rentDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate returnDate;
+    
+    // Fields for customized items
+    private Boolean isCustomItem;
+    private String customItemName;
+    private Double customPrice;
 }

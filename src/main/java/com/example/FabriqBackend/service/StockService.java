@@ -4,13 +4,18 @@ import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dto.StockUpdate;
 import com.example.FabriqBackend.model.Attire;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class StockService {
     private final SimpMessagingTemplate messagingTemplate;
     private final AttireDao attireDao;
+    private final Logger log = LoggerFactory.getLogger(StockService.class);
 
     public StockService(SimpMessagingTemplate messagingTemplate, AttireDao attireDao) {
         this.messagingTemplate = messagingTemplate;
@@ -32,7 +37,27 @@ public class StockService {
         attireDao.save(attire);
 
         StockUpdate update = new StockUpdate(itemCode, attire.getAttireStock(), customerCode);
-        messagingTemplate.convertAndSend("/topic/stock-updates", update);
+
+        log.info("Reserved item {} for {}. New stock: {}", itemCode, customerCode, attire.getAttireStock());
+
+        // Send the websocket update only after the surrounding transaction commits
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    try {
+                        messagingTemplate.convertAndSend("/topic/stock-updates", update);
+                        log.info("Broadcasted stock update after commit: {} -> {}", itemCode, update.getAttireStock());
+                    } catch (Exception ex) {
+                        log.error("Failed to broadcast stock update after commit", ex);
+                    }
+                }
+            });
+        } else {
+            // Fallback: if no transaction active, send immediately
+            messagingTemplate.convertAndSend("/topic/stock-updates", update);
+        }
+
         return update;
     }
 
@@ -48,8 +73,23 @@ public class StockService {
 
         StockUpdate update = new StockUpdate(itemCode, attire.getAttireStock(), customerCode);
 
-        System.out.println("📤 Broadcasting unreserve: " + update);
-        messagingTemplate.convertAndSend("/topic/stock-updates", update);
+        log.info("Unreserved item {} for {}. New stock: {}", itemCode, customerCode, attire.getAttireStock());
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    try {
+                        messagingTemplate.convertAndSend("/topic/stock-updates", update);
+                        log.info("Broadcasted unreserve update after commit: {} -> {}", itemCode, update.getAttireStock());
+                    } catch (Exception ex) {
+                        log.error("Failed to broadcast unreserve update after commit", ex);
+                    }
+                }
+            });
+        } else {
+            messagingTemplate.convertAndSend("/topic/stock-updates", update);
+        }
 
         return update;
     }

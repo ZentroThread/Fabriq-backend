@@ -17,4 +17,5 @@ public interface IAttireRentService {
     ResponseEntity<?> deleteAttireRent(Integer id);
     ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto);
     AttireAvailableResponseDto checkAvailability(String attireCode, LocalDateTime rentDate);
+    ResponseEntity<?> getStatsByAttireCode(String attireCode);
 }

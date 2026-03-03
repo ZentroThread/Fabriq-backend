@@ -41,6 +41,12 @@ public class AttireRentController {
         return attireRentService.getAttireRentsByBillingCode(code);
     }
 
+    @GetMapping("/stats/{attireCode}")
+    @Operation(summary = "Get stats and wishlist for an attire code", description = "Returns distinct customer rental count and future wishlist entries for the given attire code")
+    public ResponseEntity<?> getStats(@PathVariable String attireCode) {
+        return attireRentService.getStatsByAttireCode(attireCode);
+    }
+
     @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Delete attire rent by ID",

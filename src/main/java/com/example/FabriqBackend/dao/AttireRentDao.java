@@ -29,4 +29,10 @@ public interface AttireRentDao extends TenantAwareDao<AttireRent, Integer> {
             @Param("attireCode") String attireCode,
             @Param("blockedFrom") LocalDateTime blockedFrom
     );
+
+    List<AttireRent> findAllByAttireCode(String attireCode);
+
+//    List<AttireRent> findAllByAttireCodeAndRentDateAfter(String attireCode, java.time.LocalDateTime dateTime);
+//
+//    List<AttireRent> findAllByAttireCodeAndRentDateBefore(String attireCode, java.time.LocalDateTime dateTime);
 }
