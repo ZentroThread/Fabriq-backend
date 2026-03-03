@@ -47,7 +47,9 @@ public class SecurityConfig {
                                 "/ws/**",
                                 "/topic/**",
                                 "/v1/device-attendance/punch",
-                                "/v1/attendance/**"
+                                "/v1/attendance/**",
+                                "/v1/public/**",
+                                "/api/v1/tenant/all"
                         ).permitAll()
                         // allow public access to websocket handshake and topics
                         .requestMatchers("/topic/**").permitAll()

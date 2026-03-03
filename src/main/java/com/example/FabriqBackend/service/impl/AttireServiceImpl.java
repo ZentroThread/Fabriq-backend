@@ -56,7 +56,7 @@ public class AttireServiceImpl implements IAttireService {
             attire.setCategory(category);
 
             if (image != null && !image.isEmpty()) {
-                String imageUrl = s3Service.uploadFile(image,attireBucketName);
+                String imageUrl = s3Service.uploadFile(image, attireBucketName);
                 attire.setImageUrl(imageUrl);
             }
 
@@ -70,13 +70,13 @@ public class AttireServiceImpl implements IAttireService {
         }
     }
 
-@Cacheable(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
-public List<Attire> getAllAttire() {
-    String currentTenantId = TenantContext.getCurrentTenant();
-    System.out.println("Fetching all attires for tenant: " + currentTenantId);
-    // Use findAll() from TenantAwareDao which automatically filters by tenant using SpEL
-    return attireDao.findAll();
-}
+    @Cacheable(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
+    public List<Attire> getAllAttire() {
+        String currentTenantId = TenantContext.getCurrentTenant();
+        System.out.println("Fetching all attires for tenant: " + currentTenantId);
+        // Use findAll() from TenantAwareDao which automatically filters by tenant using SpEL
+        return attireDao.findAll();
+    }
 
     @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> deleteAttire(Integer id) {
@@ -110,7 +110,7 @@ public List<Attire> getAllAttire() {
                         // Handle image
                         if (image != null && !image.isEmpty()) {
                             try {
-                                attire.setImageUrl(s3Service.uploadFile(image,attireBucketName));
+                                attire.setImageUrl(s3Service.uploadFile(image, attireBucketName));
                             } catch (IOException e) {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }
@@ -125,15 +125,15 @@ public List<Attire> getAllAttire() {
         }
     }
 
-    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':attireById:' + #id")
-    public ResponseEntity<?> getAttireById(Integer id) {
-        Attire attire = attireDao.findById(id).orElse(null);
-        if (attire != null) {
-            return ResponseEntity.ok(attire);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attire not found");
-        }
+    @Cacheable(
+            value = "attireById",
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #id"
+    )
+    public Attire getAttireById(Integer id) {
+        return attireDao.findById(id)
+                .orElseThrow(() -> new RuntimeException("Attire not found"));
     }
+
 
     @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':attireByCode:' + #attireCode")
     public ResponseEntity<?> getAttireByAttireCode(String attireCode) {
@@ -153,5 +153,4 @@ public List<Attire> getAllAttire() {
     public List<Attire> getAttireByCategoryId(Integer categoryId) {
         return attireDao.findByCategoryCategoryId(categoryId);
     }
-
 }

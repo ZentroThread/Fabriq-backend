@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -32,15 +31,14 @@ public class AttendanceServiceImpl implements IAttendanceService {
     private final EmployeeDao employeeDao;
     private final DeviceAttendanceLogDao deviceAttendanceLogDao;
 
-    //attendance policy constants
+    // Attendance policy constants
     private static final LocalTime SHIFT_START = LocalTime.of(9, 0); // 9:00 AM
-    private static final LocalTime SHIFT_END = LocalTime.of(17, 0); // 5:00 PM
+    private static final LocalTime SHIFT_END = LocalTime.of(17, 0);  // 5:00 PM
     private static final int ALLOWED_LATE_MINUTES = 10;
     private static final int REQUIRED_HOURS = 8;
 
-    //mark attendance
+    // MARK ATTENDANCE MANUALLY
     public void markAttendance(AttendanceCreateDto dto) {
-
         if (dto.getEmpId() == null || dto.getEmpId() <= 0) {
             throw new RuntimeException("empCode is required to mark attendance");
         }
@@ -49,88 +47,63 @@ public class AttendanceServiceImpl implements IAttendanceService {
 
         Attendance attendance = AttendanceMapper.toEntity(dto, new Attendance());
         attendance.setEmployee(employee);
-
         attendanceDao.save(attendance);
     }
 
-
-    //get attendance for an employee for a month
+    // FETCH MONTHLY ATTENDANCE BY EMPLOYEE
     public List<AttendanceDto> getMonthlyAttendanceByEmpCode(String empCode, int year, int month) {
-
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-        List<Attendance> attendanceList = attendanceDao.findByEmployee_EmpCodeAndDateBetweenOrderByDateAsc(empCode, start, end);
-        if (attendanceList.isEmpty()) {
-            throw new RuntimeException("Attendance not found for empCode:" + empCode + "for month: " + month + " and year: " + year);
-        }
-        return attendanceList
-                .stream()
-                .map(attendance -> AttendanceMapper.toDto(attendance,new AttendanceDto()))
-                .toList();
+        List<Attendance> attendanceList = attendanceDao
+                .findByEmployee_EmpCodeAndDateBetweenOrderByDateAsc(empCode, start, end);
 
+        if (attendanceList.isEmpty()) {
+            throw new RuntimeException("Attendance not found for empCode:" + empCode + " month: " + month);
+        }
+
+        return attendanceList.stream()
+                .map(att -> AttendanceMapper.toDto(att, new AttendanceDto()))
+                .toList();
     }
 
-    //get attendance for all employees for a month
+    // FETCH MONTHLY ATTENDANCE FOR ALL
     public List<AttendanceDto> fetchAllAttendanceForMonth(int year, int month) {
-
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+
         List<Attendance> attendanceList = attendanceDao.findByDateBetweenOrderByDateAsc(start, end);
 
-        if (attendanceList.isEmpty()) {
-            throw new RuntimeException("Attendance not found for month: " + month + " and year: " + year);
-        }
-        return attendanceList
-                .stream()
-                .map(attendance ->  AttendanceMapper.toDto(attendance,new AttendanceDto()))
+        return attendanceList.stream()
+                .map(att -> AttendanceMapper.toDto(att, new AttendanceDto()))
                 .toList();
     }
 
-    //get attendance for all employees for a date
+    // FETCH DAILY ATTENDANCE
     public List<AttendanceDto> fetchAllAttendanceForDate(String date) {
         LocalDate localDate = LocalDate.parse(date);
 
         List<Attendance> attendances = attendanceDao.findByDate(localDate);
 
-        if (attendances.isEmpty()) {
-            return List.of();
-        }
-
         return attendances.stream()
-                .map(attendance -> AttendanceMapper.toDto(attendance, new AttendanceDto()))
+                .map(att -> AttendanceMapper.toDto(att, new AttendanceDto()))
                 .toList();
     }
 
-
+    // UPDATE DAILY ATTENDANCE BASED ON DEVICE LOGS
     @Transactional
     public void updateDailyAttendance(String empCode, LocalDate date) {
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(23, 59, 59);
 
-        // Fetch logs for the whole date
+        // FETCH DEVICE LOGS FOR THE DAY
         List<DeviceAttendanceLog> logs =
                 deviceAttendanceLogDao.findByEmpCodeAndPunchTimeBetween(empCode, start, end);
 
-        List<DeviceAttendanceLog> allLogs =
-                deviceAttendanceLogDao.findByPunchTimeBetween(start,end);
-
-        if (logs.isEmpty() && !allLogs.isEmpty()) {
-            if(attendanceDao.findByEmployee_EmpCodeAndDate(empCode, date).isPresent()){
-                return;
-            }
-            Attendance attendance = new Attendance();
-            attendance.setEmployee(employeeDao.findByEmpCode(empCode)
-                    .orElseThrow(() -> new RuntimeException("Employee not found")));
-            attendance.setDate(date);
-            attendance.setStatus(AttendanceStatus.ABSENT);
-            attendanceDao.save(attendance);
-        };
-
-        System.out.println("Logs for " + empCode + ": " + logs.size());
-
-        Attendance attendance = attendanceDao.findByEmployee_EmpCodeAndDate(empCode, date)
+        // GET OR CREATE ATTENDANCE RECORD
+        Attendance attendance = attendanceDao
+                .findByEmployee_EmpCodeAndDate(empCode, date)
                 .orElseGet(() -> {
                     Attendance a = new Attendance();
                     a.setEmployee(employeeDao.findByEmpCode(empCode)
@@ -139,49 +112,75 @@ public class AttendanceServiceImpl implements IAttendanceService {
                     return a;
                 });
 
-        // Extract firstIn and lastOut
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime shiftStartTime = date.atTime(SHIFT_START);
+        LocalDateTime graceEndTime = shiftStartTime.plusMinutes(ALLOWED_LATE_MINUTES);
+
+        // CASE 1: NO LOGS
+        if (logs.isEmpty()) {
+            attendance.setCheckIn(null);
+            attendance.setCheckOut(null);
+            attendance.setTotalHours(0.0);
+            attendance.setLateMinutes(0L);
+
+            if (date.isBefore(LocalDate.now())) {
+                attendance.setStatus(AttendanceStatus.ABSENT); // past date, no IN → ABSENT
+            } else if (date.isEqual(LocalDate.now()) && now.isAfter(graceEndTime)) {
+                attendance.setStatus(AttendanceStatus.ABSENT); // today after grace → ABSENT
+            } else {
+                attendance.setStatus(null); // before shift start → no status yet
+            }
+
+            attendanceDao.save(attendance);
+            return;
+        }
+
+        // CASE 2: LOGS EXIST → FIND FIRST IN / LAST OUT
         LocalDateTime firstIn = logs.stream()
-                .filter(l -> l.getDirection().equals("IN"))
+                .filter(l -> "IN".equalsIgnoreCase(l.getDirection()))
                 .map(DeviceAttendanceLog::getPunchTime)
                 .min(LocalDateTime::compareTo)
                 .orElse(null);
 
         LocalDateTime lastOut = logs.stream()
-                .filter(l -> l.getDirection().equals("OUT"))
+                .filter(l -> "OUT".equalsIgnoreCase(l.getDirection()))
                 .map(DeviceAttendanceLog::getPunchTime)
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
 
-        // Set checkIn / checkOut always
         attendance.setCheckIn(firstIn != null ? firstIn.toLocalTime() : null);
         attendance.setCheckOut(lastOut != null ? lastOut.toLocalTime() : null);
 
-        // Worked minutes
-        long workedMinutes = firstIn != null && lastOut != null
-                ? Duration.between(firstIn, lastOut).toMinutes()
-                : 0;
-
-        // Late minutes
-        long lateMinutes = firstIn != null
-                ? Duration.between(date.atTime(SHIFT_START), firstIn).toMinutes()
-                : 0;
-        // Status
-        if (firstIn == null && lastOut == null)
-            attendance.setStatus(AttendanceStatus.ABSENT);
-//        else if (lateMinutes > ALLOWED_LATE_MINUTES)
-//            attendance.setStatus(AttendanceStatus.LATE);
-        else if (workedMinutes < (REQUIRED_HOURS * 30))
-            attendance.setStatus(AttendanceStatus.HALF_DAY);
-//        else if (workedMinutes < (REQUIRED_HOURS * 60))
-//            attendance.setStatus(AttendanceStatus.EARLY_LEAVE);
-        else
+        // CASE 3: ONLY IN (no OUT yet)
+        if (firstIn != null && lastOut == null) {
+            attendance.setTotalHours(0.0);
+            long lateMinutes = Duration.between(shiftStartTime, firstIn).toMinutes();
+            attendance.setLateMinutes(lateMinutes > ALLOWED_LATE_MINUTES ? lateMinutes : 0L);
             attendance.setStatus(AttendanceStatus.PRESENT);
+            attendanceDao.save(attendance);
+            return;
+        }
 
-        long totalHours = workedMinutes / 60;
-        attendance.setTotalHours((double) totalHours);
+        // CASE 4: IN + OUT EXISTS
+        if (firstIn != null && lastOut != null && lastOut.isAfter(firstIn)) {
+            long workedMinutes = Duration.between(firstIn, lastOut).toMinutes();
+            double totalHours = workedMinutes / 60.0;
 
-        attendance.setLateMinutes(lateMinutes > ALLOWED_LATE_MINUTES ? lateMinutes : 0);
+            attendance.setTotalHours(totalHours);
 
-        attendanceDao.save(attendance);
+            long lateMinutes = Duration.between(shiftStartTime, firstIn).toMinutes();
+            attendance.setLateMinutes(lateMinutes > ALLOWED_LATE_MINUTES ? lateMinutes : 0L);
+
+            // STATUS DECISION
+            if (workedMinutes < (REQUIRED_HOURS * 60) / 2) {
+                attendance.setStatus(AttendanceStatus.HALF_DAY);
+            } else if (workedMinutes < (REQUIRED_HOURS * 60)) {
+                attendance.setStatus(AttendanceStatus.HALF_DAY);
+            } else {
+                attendance.setStatus(AttendanceStatus.PRESENT);
+            }
+
+            attendanceDao.save(attendance);
+        }
     }
 }

@@ -3,6 +3,8 @@ package com.example.FabriqBackend.service.impl;
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.CustomerDao;
+import com.example.FabriqBackend.dto.AttireAvailabilityRequestDto;
+import com.example.FabriqBackend.dto.AttireAvailableResponseDto;
 import com.example.FabriqBackend.dto.AttireRentAddDto;
 import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.model.Attire;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,9 @@ public class AttireRentServiceImpl implements IAttireRentService {
     private final ModelMapper modelMapper;
     private final CustomerDao customerDao;
     private final AttireDao attireDao;
+
+    private static final int DEFAULT_RENT_DAYS = 3;
+    private static final int BUFFER_DAYS = 3;
 
     @CachePut(key = "'attire added for rent.'")
     public ResponseEntity<?> addAttireRent(AttireRentAddDto attireRentAddDto) {
@@ -123,6 +129,37 @@ public class AttireRentServiceImpl implements IAttireRentService {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
+    }
+
+
+    @Override
+    public AttireAvailableResponseDto checkAvailability(String attireCode, LocalDateTime rentDate) {
+
+        // expected return date
+        LocalDateTime returnDate = rentDate.plusDays(DEFAULT_RENT_DAYS);
+
+        // block period start
+        LocalDateTime blockedFrom = rentDate.minusDays(BUFFER_DAYS);
+
+        List<AttireRent> conflicts =
+                attireRentDao.findConflictingRents(
+                        attireCode,
+                        blockedFrom
+                );
+
+        if (!conflicts.isEmpty()) {
+            return new AttireAvailableResponseDto(
+                    false,
+                    returnDate,
+                    "Attire not available (in cleaning / rented period)"
+            );
+        }
+
+        return new AttireAvailableResponseDto(
+                true,
+                returnDate,
+                "Attire available"
+        );
     }
 
 }
