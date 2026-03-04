@@ -67,7 +67,7 @@ public class AttireController {
             description = "Fetches the attire details for the given attire ID."
     )
     public ResponseEntity<?> getAttireById(@PathVariable Integer id) {
-        return attireService.getAttireById(id);
+        return ResponseEntity.ok(attireService.getAttireById(id));
     }
 
     @GetMapping("/code/{attireCode}")

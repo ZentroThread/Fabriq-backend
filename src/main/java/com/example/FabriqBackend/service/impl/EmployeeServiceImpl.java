@@ -47,7 +47,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee savedEmp = empDao.save(emp);
         if (image != null && !image.isEmpty()) {
             try {
-                String imageUrl = s3Service.uploadFile(image,empBucketName);
+                String imageUrl = s3Service.uploadFile(image);
                 savedEmp.setImgUrl(imageUrl);
                 empDao.save(savedEmp);
             } catch (Exception e) {
@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         if (image != null && !image.isEmpty()) {
             try {
-                String imageUrl = s3Service.uploadFile(image, empBucketName);
+                String imageUrl = s3Service.uploadFile(image);
                 existingEmp.setImgUrl(imageUrl);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to upload image: " + e.getMessage());

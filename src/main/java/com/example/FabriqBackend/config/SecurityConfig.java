@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "/ws/**",
                                 "/topic/**",
                                 "/v1/device-attendance/punch",
-                                "/v1/attendance/**"
+                                "/v1/public/**",
+                                "/api/v1/tenant/all"
                         ).permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers(
@@ -75,7 +76,8 @@ public class SecurityConfig {
                                 "/v1/employee-deductions/**",
                                 "/v1/holidays/**",
                                 "/v1/payroll/**",
-                                "/v1/production-records/**"
+                                "/v1/production-records/**",
+                                "/v1/attendance/**"
                         ).hasRole("OWNER")
                         .anyRequest().authenticated())
                 .sessionManagement(session ->

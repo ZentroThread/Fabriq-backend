@@ -11,17 +11,16 @@ public class Tenant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "tenantId", nullable = false, unique = true)
-    private String tenantId; // e.g., "hiru_sandu_001"
+    @Column(name = "tenant_id", nullable = false, unique = true)
+    private String tenantId; // e.g. T001, T002
 
     @Column(name = "name", nullable = false)
-    private String name; // Business name: "Hiru Sandu Bridal Wear"
+    private String name;
 
     @Column(name = "branch")
-    private String branch; // Branch name if multiple locations
+    private String branch;
 
     @Column(name = "email")
     private String email;
@@ -35,21 +34,14 @@ public class Tenant {
     @Column(name = "city")
     private String city;
 
-
     @Column(name = "active", nullable = false)
     private Boolean active = true;
-
-
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-
+        this.createdAt = LocalDateTime.now();
     }
-
-
 }

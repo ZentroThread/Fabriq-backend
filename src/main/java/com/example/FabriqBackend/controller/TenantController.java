@@ -68,4 +68,13 @@ public class TenantController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/all")
+    @Operation(
+        summary = "Get all tenants",
+        description = "Returns a list of all tenants (Admin only)"
+    )
+    public ResponseEntity<Iterable<Tenant>> getAllTenants() {
+        return ResponseEntity.ok(tenantService.getAllTenants());
+    }
 }

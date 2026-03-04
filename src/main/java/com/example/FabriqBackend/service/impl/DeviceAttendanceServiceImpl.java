@@ -1,9 +1,9 @@
 package com.example.FabriqBackend.service.impl;
 
-import com.example.FabriqBackend.dao.AttendanceDao;
 import com.example.FabriqBackend.dao.DeviceAttendanceLogDao;
 import com.example.FabriqBackend.dto.T52PunchDto;
 import com.example.FabriqBackend.model.DeviceAttendanceLog;
+import com.example.FabriqBackend.service.IAttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class DeviceAttendanceServiceImpl {
 
     private final DeviceAttendanceLogDao deviceAttendanceLogDao;
+    private final AttendanceServiceImpl attendanceService;
 
     // Process punch data from T52 device
     public void processPunch(T52PunchDto dto){
@@ -42,8 +43,14 @@ public class DeviceAttendanceServiceImpl {
         attendanceLog.setPunchTime(punchTime);
         attendanceLog.setDirection(direction);
 
+        // Save device log
         deviceAttendanceLogDao.save(attendanceLog);
 
+        // Immediately update attendance
+        attendanceService.updateDailyAttendance(
+                empCode,
+                punchTime.toLocalDate()
+        );
     }
 
     // Normalize direction to "IN" or "OUT"
@@ -52,11 +59,14 @@ public class DeviceAttendanceServiceImpl {
         if(dir == null){
             return "IN";
         }
+
         if(dir.equalsIgnoreCase("IN") || dir.equals("0")){
             return "IN";
-        } else if(dir.equalsIgnoreCase("OUT") || dir.equals("1") || dir.equals("2")){
+        }
+        else if(dir.equalsIgnoreCase("OUT") || dir.equals("1") || dir.equals("2")){
             return "OUT";
-        } else {
+        }
+        else {
             return "IN";
         }
     }
@@ -74,8 +84,7 @@ public class DeviceAttendanceServiceImpl {
     public List<DeviceAttendanceLog> getLatestLogs() {
         LocalDate date = LocalDate.now();
         LocalDateTime startTime = date.atTime(8, 0);
-        LocalDateTime endTime   = date.atTime(17, 0); // 05:00 PM
+        LocalDateTime endTime   = date.atTime(17, 0);
         return deviceAttendanceLogDao.findByPunchTimeBetween(startTime, endTime);
     }
-
 }

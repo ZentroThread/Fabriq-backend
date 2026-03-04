@@ -18,7 +18,7 @@ public class AttendanceScheduler {
     private final AttendanceServiceImpl attendanceService;
     private final EmployeeDao employeeDao;
 
-    @Scheduled(cron = "0 0 23 * * *")
+    @Scheduled(cron = "* * * * * *")
     // daily at 11:00 PM  second minute hour day-of-month month day-of-week
    //@Scheduled(cron = "0 */1 * * * *")
     public void autoProcessAllTenants() {

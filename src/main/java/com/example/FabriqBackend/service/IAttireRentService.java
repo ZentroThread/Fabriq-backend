@@ -1,9 +1,13 @@
 package com.example.FabriqBackend.service;
 
+import com.example.FabriqBackend.dto.AttireAvailabilityRequestDto;
+import com.example.FabriqBackend.dto.AttireAvailableResponseDto;
 import com.example.FabriqBackend.dto.AttireRentAddDto;
 import com.example.FabriqBackend.dto.AttireRentDto;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IAttireRentService {
@@ -12,5 +16,6 @@ public interface IAttireRentService {
     ResponseEntity<?> getAttireRentsByBillingCode(String billingCode);
     ResponseEntity<?> deleteAttireRent(Integer id);
     ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto);
+    AttireAvailableResponseDto checkAvailability(String attireCode, LocalDateTime rentDate);
     ResponseEntity<?> getStatsByAttireCode(String attireCode);
 }

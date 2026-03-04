@@ -3,7 +3,10 @@ package com.example.FabriqBackend.service.impl;
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.CustomerDao;
+import com.example.FabriqBackend.dto.AttireAvailabilityRequestDto;
+import com.example.FabriqBackend.dto.AttireAvailableResponseDto;
 import com.example.FabriqBackend.dto.AttireRentAddDto;
+import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Customer;
@@ -13,10 +16,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,9 @@ public class AttireRentServiceImpl implements IAttireRentService {
     private final ModelMapper modelMapper;
     private final CustomerDao customerDao;
     private final AttireDao attireDao;
+
+    private static final int DEFAULT_RENT_DAYS = 3;
+    private static final int BUFFER_DAYS = 3;
 
     @CachePut(key = "'attire added for rent.'")
     public ResponseEntity<?> addAttireRent(AttireRentAddDto attireRentAddDto) {
@@ -49,24 +57,24 @@ public class AttireRentServiceImpl implements IAttireRentService {
         return new ResponseEntity<>(attireRent, HttpStatus.CREATED);
     }
 
-    //@Cacheable(key = "T(com.example.FabriqBackend.tenant.TenantContext).getCurrentTenantId() + ':all'")
-    public List<com.example.FabriqBackend.dto.AttireRentDto> getAllAttireRent() {
-        List<AttireRent> rents = attireRentDao.findAll();
 
-        // Convert to DTO to avoid LocalDateTime serialization issue
-        List<com.example.FabriqBackend.dto.AttireRentDto> dtoList = rents.stream().map(r -> {
-            com.example.FabriqBackend.dto.AttireRentDto dto = new com.example.FabriqBackend.dto.AttireRentDto();
-            dto.setId(r.getId());
-            dto.setAttireCode(r.getAttireCode() != null ? r.getAttireCode() : (r.getAttire() != null ? r.getAttire().getAttireCode() : null));
-            dto.setCustCode(r.getCustCode() != null ? r.getCustCode() : (r.getCustomer() != null ? r.getCustomer().getCustCode() : null));
-            dto.setBillingCode(r.getBillingCode() != null ? r.getBillingCode() : (r.getBilling() != null ? r.getBilling().getBillingCode() : null));
-            dto.setRentDuration(r.getRentDuration());
-            dto.setRentDate(r.getRentDate() != null ? r.getRentDate().toString() : null);
-            dto.setReturnDate(r.getReturnDate() != null ? r.getReturnDate().toString() : null);
-            return dto;
-        }).collect(Collectors.toList());
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
+    public List<AttireRentDto> getAllAttireRent() {
+        return attireRentDao.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 
-        return dtoList;
+    private AttireRentDto convertToDto(AttireRent rent) {
+        AttireRentDto dto = new AttireRentDto();
+        dto.setId(rent.getId());
+        dto.setAttireCode(rent.getAttireCode());
+        dto.setCustCode(rent.getCustCode());
+        dto.setBillingCode(rent.getBillingCode());
+        dto.setRentDuration(rent.getRentDuration());
+        dto.setRentDate(rent.getRentDate() != null ? rent.getRentDate().toString() : null);
+        dto.setReturnDate(rent.getReturnDate() != null ? rent.getReturnDate().toString() : null);
+        return dto;
     }
 
     @CacheEvict(key = "'deleteAttireRent'")
@@ -121,6 +129,37 @@ public class AttireRentServiceImpl implements IAttireRentService {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
+    }
+
+
+    @Override
+    public AttireAvailableResponseDto checkAvailability(String attireCode, LocalDateTime rentDate) {
+
+        // expected return date
+        LocalDateTime returnDate = rentDate.plusDays(DEFAULT_RENT_DAYS);
+
+        // block period start
+        LocalDateTime blockedFrom = rentDate.minusDays(BUFFER_DAYS);
+
+        List<AttireRent> conflicts =
+                attireRentDao.findConflictingRents(
+                        attireCode,
+                        blockedFrom
+                );
+
+        if (!conflicts.isEmpty()) {
+            return new AttireAvailableResponseDto(
+                    false,
+                    returnDate,
+                    "Attire not available (in cleaning / rented period)"
+            );
+        }
+
+        return new AttireAvailableResponseDto(
+                true,
+                returnDate,
+                "Attire available"
+        );
     }
 
     public ResponseEntity<?> getStatsByAttireCode(String attireCode) {
