@@ -53,7 +53,8 @@ public class SecurityConfig {
                                 "/topic/**",
                                 "/v1/device-attendance/punch",
                                 "/v1/public/**",
-                                "/api/v1/tenant/all"
+                                "/api/v1/tenant/all",
+                                "/v1/rag/**"
                         ).permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers(
