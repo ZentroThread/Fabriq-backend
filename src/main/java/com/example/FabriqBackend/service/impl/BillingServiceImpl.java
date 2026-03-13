@@ -24,11 +24,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.TemplateEngine;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -487,5 +483,11 @@ public class BillingServiceImpl implements IBillingService {
         }
 
         return ResponseEntity.ok(resp);
+    }
+
+    @Override
+    public ResponseEntity<List<Billing>> getBillingByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Billing> billings = billingDao.findByBillingDateBetween(startDate, endDate);
+        return ResponseEntity.ok(billings);
     }
 }
