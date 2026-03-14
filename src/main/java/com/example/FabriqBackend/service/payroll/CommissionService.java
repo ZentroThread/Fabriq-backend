@@ -4,7 +4,7 @@ import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.model.Billing;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.CommissionSlab;
-import com.example.FabriqBackend.service.impl.BillingServiceImpl;
+import com.example.FabriqBackend.service.IBillingService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 public class CommissionService {
 
     private final EmployeeDao employeeDao;
-    private final BillingServiceImpl billingService;
+    private final IBillingService billingService;
 
     private static final List<CommissionSlab> slabs = List.of(
             new CommissionSlab(0, 1_000_000, 2),
