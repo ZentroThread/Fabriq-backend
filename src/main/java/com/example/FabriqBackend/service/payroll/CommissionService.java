@@ -1,13 +1,16 @@
 package com.example.FabriqBackend.service.payroll;
 
 import com.example.FabriqBackend.dao.EmployeeDao;
+import com.example.FabriqBackend.model.Billing;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.CommissionSlab;
+import com.example.FabriqBackend.service.impl.BillingServiceImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import java.util.List;
 public class CommissionService {
 
     private final EmployeeDao employeeDao;
+    private final BillingServiceImpl billingService;
 
     private static final List<CommissionSlab> slabs = List.of(
             new CommissionSlab(0, 1_000_000, 2),
@@ -24,8 +28,17 @@ public class CommissionService {
     );
 
     public  double calculateTotalCommission(YearMonth period) {
-         double salesAmount = 0.0;
+
+        LocalDateTime start = period.atDay(1).atStartOfDay();
+        LocalDateTime end = period.atEndOfMonth().atTime(23,59,59);
+        List<Billing> billings = billingService.getBillingByDateRange(start, end).getBody();
+        assert billings != null;
+        double salesAmount = billings.stream()
+                .mapToDouble(b -> Double.parseDouble(b.getBillingTotal()))
+                .sum();
+
         double totalCommission = 0.0;
+
         double remainingAmount = salesAmount;
 
         for (CommissionSlab slab : slabs) {
