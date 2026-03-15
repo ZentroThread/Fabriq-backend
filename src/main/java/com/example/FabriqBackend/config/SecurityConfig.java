@@ -59,7 +59,8 @@ public class SecurityConfig {
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers(
                                 "/v1/attire/**",
-                                "/v1/category/**"
+                                "/v1/category/**",
+                                "/v1/payment/**"
                         ).permitAll()
                         .requestMatchers("/v1/billing/**",
                                 "/v1/attire-rent/**",
