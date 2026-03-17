@@ -34,7 +34,7 @@ public class AttendanceScheduler {
                 employeeDao.findAll()
                         .forEach(emp -> attendanceService.updateDailyAttendance(emp.getEmpCode(), today));
 
-                System.out.println("Processed attendance for tenant: " + tenantId + " on date: " + today);
+//                System.out.println("Processed attendance for tenant: " + tenantId + " on date: " + today);
 
             } finally {
                 TenantContext.clear();
