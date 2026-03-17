@@ -93,8 +93,7 @@ public class SecurityConfig {
 
         // Origins
         configuration.setAllowedOrigins(Arrays.asList(
-                "https://fabriq-frontend.vercel.app",
-                "https://myapp.social",
+
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:5174"
