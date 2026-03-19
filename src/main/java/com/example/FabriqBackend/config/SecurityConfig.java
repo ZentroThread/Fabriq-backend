@@ -31,6 +31,7 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final TenantFilter tenantFilter;
     private final UserDetailsService userDetailsService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,6 +41,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
+                                "/oauth2/**",
+                                "/login/**",
                                 "/v1/user/login",
                                 "/v1/user/register",
                                 "/v1/user/refresh",
@@ -81,6 +84,9 @@ public class SecurityConfig {
                                 "/v1/attendance/**"
                         ).hasRole("OWNER")
                         .anyRequest().authenticated())
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2SuccessHandler)
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -131,4 +137,5 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
 }
