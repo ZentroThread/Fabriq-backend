@@ -62,7 +62,7 @@ public class FeedbackController {
     public List<Feedback> getAll() {
         return feedbackService.getAllFeedback();
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Delete Feedback",
             description = "Allows an admin to delete a specific feedback entry by its ID. This endpoint requires admin authentication."
