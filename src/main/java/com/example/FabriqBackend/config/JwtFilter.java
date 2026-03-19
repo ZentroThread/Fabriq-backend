@@ -37,16 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = null;
 
-//        // Extract JWT from HttpOnly cookie (now using accessToken)
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if ("accessToken".equals(cookie.getName())) {
-//                    token = cookie.getValue();
-//                    break;
-//                }
-//            }
-//        }
         // Try Authorization header first
         String authHeader = request.getHeader("Authorization");
 

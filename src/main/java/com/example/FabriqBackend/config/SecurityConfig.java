@@ -86,7 +86,7 @@ public class SecurityConfig {
                                 "/v1/attendance/**",
                                 "/v1/feedback/approve/**",
                                 "/v1/feedback/all/**",
-                                "/v1/feedback/**"
+                                "/v1/feedback/delete/**"
                         ).hasRole("OWNER")
                         .requestMatchers("/v1/feedback").authenticated()
                         .anyRequest().authenticated())
