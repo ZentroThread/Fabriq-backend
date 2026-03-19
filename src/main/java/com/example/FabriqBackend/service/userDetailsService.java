@@ -45,7 +45,7 @@ public class userDetailsService implements UserDetailsService {
 
             return new org.springframework.security.core.userdetails.User(
                     customer.getEmail(),
-                    "", // no password for OAuth users
+                    customer.getPassword() != null ? customer.getPassword() : "N/A",
                     List.of(new SimpleGrantedAuthority("ROLE_" + customer.getRole()))
             );
         }

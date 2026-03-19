@@ -59,7 +59,8 @@ public class SecurityConfig {
                                 "/v1/public/**",
                                 "/api/v1/tenant/all",
                                 "/v1/rag/**",
-                                "/v1/feedback/approved"
+                                "/v1/feedback/approved",
+                                "/v1/customer/auth/**"
                         ).permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers(
