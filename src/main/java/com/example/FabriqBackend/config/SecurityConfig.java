@@ -70,7 +70,7 @@ public class SecurityConfig {
                                 "/v1/attire-rent/**",
                                 "/v1/customer/**",
                                 "/v1/payroll/payslip/**"
-                        ).hasAnyRole("OWNER", "CASHIER")
+                        ).permitAll()
                         .requestMatchers(
                                 "/v1/employees/**",
                                 "/v1/employee-allowances/**",
@@ -117,7 +117,8 @@ public class SecurityConfig {
                 "https://myapp.social",
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "https://client-frontend-azure.vercel.app"
 
         ));
 

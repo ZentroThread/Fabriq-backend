@@ -7,8 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,42 +18,27 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-
-    @Autowired
-    private JWTService jwtService;
-
-    @Autowired
-    private ApplicationContext context;
+    private final JWTService jwtService;
+    private final userDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI();
-
         String token = null;
 
-//        // Extract JWT from HttpOnly cookie (now using accessToken)
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if ("accessToken".equals(cookie.getName())) {
-//                    token = cookie.getValue();
-//                    break;
-//                }
-//            }
-//        }
-        // Try Authorization header first
+        //  Get from Authorization header
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
 
-        //  If not found, fallback to cookies
+        //  Fallback to cookies
         if (token == null) {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
@@ -67,44 +51,44 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        // Authenticate only if token exists and user not already authenticated
+        //   Authenticate
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-            String username = jwtService.extractUserName(token);
-            //String tenantIdFromToken = jwtService.extractTenantId(token);
 
-            UserDetails userDetails =
-                context.getBean(userDetailsService.class)
-                    .loadUserByUsername(username);
+                System.out.println("🔐 Token: " + token);
 
-            if (jwtService.validateAccessToken(token, userDetails)) {
-                // Authentication
-                UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                String username = jwtService.extractUserName(token);
+                System.out.println("👤 Username from JWT: " + username);
+
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                if (jwtService.validateAccessToken(token, userDetails)) {
+
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
                     );
 
-                authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-//                System.out.println("Authorization Header: " + request.getHeader("Authorization"));
-//                System.out.println("Extracted Token: " + token);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+                    //System.out.println(" Authentication SUCCESS");
+
+                } else {
+                   // System.out.println(" Token validation failed");
+                }
+
             } catch (Exception e) {
-            // Token is invalid or expired. Do not interrupt the filter chain —
-            // allow requests such as the refresh endpoint to proceed so the
-            // client can obtain a new access token using a valid refresh token.
-//                System.out.println("JWT Error: " + e.getMessage());
-//                System.out.println("Authorization Header: " + request.getHeader("Authorization"));
-//                System.out.println("Extracted Token: " + token);
+                //System.out.println(" JWT ERROR: " + e.getMessage());
+                e.printStackTrace(); //  IMPORTANT
             }
         }
 
-        // Continue filter chain - TenantFilter will handle tenant cleanup after request
         filterChain.doFilter(request, response);
     }
 }
