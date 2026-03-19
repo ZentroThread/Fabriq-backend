@@ -1,0 +1,33 @@
+name: Backend CD
+
+# Trigger the deployment only when code is merged or pushed to main/master
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: # Allows you to trigger it manually from the GitHub UI if needed
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Execute deployment commands via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            
+            cd ~/app
+            
+            
+            git pull origin main
+            
+            
+            sudo docker-compose up -d --build
+            
+            
+            sudo docker image prune -f
