@@ -1,6 +1,7 @@
 package com.example.FabriqBackend.config;
 
 import com.example.FabriqBackend.config.Tenant.TenantFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +58,8 @@ public class SecurityConfig {
                                 "/v1/device-attendance/punch",
                                 "/v1/public/**",
                                 "/api/v1/tenant/all",
-                                "/v1/rag/**"
+                                "/v1/rag/**",
+                                "/v1/feedback/approved"
                         ).permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers(
@@ -81,11 +83,22 @@ public class SecurityConfig {
                                 "/v1/holidays/**",
                                 "/v1/payroll/**",
                                 "/v1/production-records/**",
-                                "/v1/attendance/**"
+                                "/v1/attendance/**",
+                                "/v1/feedback/approve/**",
+                                "/v1/feedback/all/**",
+                                "/v1/feedback/**"
                         ).hasRole("OWNER")
+                        .requestMatchers("/v1/feedback").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2SuccessHandler)
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                        })
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

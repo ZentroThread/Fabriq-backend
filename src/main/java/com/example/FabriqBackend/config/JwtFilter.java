@@ -37,13 +37,32 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        // Extract JWT from HttpOnly cookie (now using accessToken)
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("accessToken".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
+//        // Extract JWT from HttpOnly cookie (now using accessToken)
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if ("accessToken".equals(cookie.getName())) {
+//                    token = cookie.getValue();
+//                    break;
+//                }
+//            }
+//        }
+        // Try Authorization header first
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+
+        //  If not found, fallback to cookies
+        if (token == null) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
                 }
             }
         }
@@ -70,6 +89,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 authToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)
                 );
+//                System.out.println("Authorization Header: " + request.getHeader("Authorization"));
+//                System.out.println("Extracted Token: " + token);
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -77,6 +98,9 @@ public class JwtFilter extends OncePerRequestFilter {
             // Token is invalid or expired. Do not interrupt the filter chain —
             // allow requests such as the refresh endpoint to proceed so the
             // client can obtain a new access token using a valid refresh token.
+//                System.out.println("JWT Error: " + e.getMessage());
+//                System.out.println("Authorization Header: " + request.getHeader("Authorization"));
+//                System.out.println("Extracted Token: " + token);
             }
         }
 

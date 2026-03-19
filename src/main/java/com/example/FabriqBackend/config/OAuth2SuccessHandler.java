@@ -19,8 +19,8 @@ import java.util.List;
 
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final CustDao custDao;        // ✅ Injected
-    private final JWTService jwtService;  // ✅ Injected
+    private final CustDao custDao;
+    private final JWTService jwtService;
 
 
     @Override
@@ -33,7 +33,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        // ✅ Check if user exists
+
         User user = custDao.findByEmail(email)
                 .orElseGet(() -> {
                     User newUser = new User();
@@ -44,12 +44,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     return custDao.save(newUser);
                 });
 
-        // ✅ Restrict only CUSTOMER
+        //  Restrict only CUSTOMER
         if (!"CUSTOMER".equals(user.getRole())) {
             throw new RuntimeException("Only customers can login with Google");
         }
 
-        // ✅ Generate JWT
+        //  Generate JWT
         String token = jwtService.generateToken(user);
 
         // ✅ Redirect to frontend
