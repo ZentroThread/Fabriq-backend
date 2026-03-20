@@ -53,25 +53,21 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String token = jwtService.generateToken(user);
 
         String state = request.getParameter("state");
-        String redirectUrl = null;
+        //String redirectUrl = null;
 
-        if (state != null) {
-            try {
-                redirectUrl = new String(java.util.Base64.getDecoder().decode(state));
-            } catch (Exception e) {
-                redirectUrl = null;
-            }
-        }
+        String redirectUrl = (String) request.getSession().getAttribute("REDIRECT_URL");
 
         List<String> allowedUrls = List.of(
                 "http://localhost:5174",
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "https://fabriq-frontend.vercel.app"
+                "https://client-frontend-azure.vercel.app/"
         );
-        System.out.println("REDIRECT_URI FROM FRONTEND: " + redirectUrl);
+
+        System.out.println("REDIRECT FROM SESSION: " + redirectUrl);
+
         if (redirectUrl == null || allowedUrls.stream().noneMatch(redirectUrl::startsWith)) {
-            redirectUrl = "http://localhost:5173"; // safer default
+            redirectUrl = "https://client-frontend-azure.vercel.app/";
         }
 
         response.sendRedirect(redirectUrl + "/oauth-success?token=" + token);
