@@ -41,7 +41,7 @@ public class userDetailsService implements UserDetailsService {
         User customer = custDao.findByEmail(username).orElse(null);
 
         if (customer != null) {
-            System.out.println(" Found CUSTOMER user: " + customer.getEmail());
+            //System.out.println(" Found CUSTOMER user: " + customer.getEmail());
 
             return new org.springframework.security.core.userdetails.User(
                     customer.getEmail(),

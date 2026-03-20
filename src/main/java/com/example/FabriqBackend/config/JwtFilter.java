@@ -55,10 +55,10 @@ public class JwtFilter extends OncePerRequestFilter {
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
 
-                System.out.println("🔐 Token: " + token);
+                //System.out.println("🔐 Token: " + token);
 
                 String username = jwtService.extractUserName(token);
-                System.out.println("👤 Username from JWT: " + username);
+                //System.out.println("👤 Username from JWT: " + username);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 

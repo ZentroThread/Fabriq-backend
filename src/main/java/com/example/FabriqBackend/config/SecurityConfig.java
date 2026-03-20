@@ -87,9 +87,12 @@ public class SecurityConfig {
                                 "/v1/attendance/**",
                                 "/v1/feedback/approve/**",
                                 "/v1/feedback/all/**",
-                                "/v1/feedback/delete/**"
+                                "/v1/feedback/delete/**",
+                                "/v1/bookings/tenant/**",
+                                "/v1/bookings/{requestId}/approve",
+                                "/v1/bookings/{requestId}/reject"
                         ).hasRole("OWNER")
-                        .requestMatchers("/v1/feedback").authenticated()
+                        .requestMatchers("/v1/feedback","/v1/bookings/request","/v1/bookings/user","/v1/bookings/delete").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2SuccessHandler)
