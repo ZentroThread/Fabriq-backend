@@ -52,8 +52,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         //  Generate JWT
         String token = jwtService.generateToken(user);
 
-        // ✅ Redirect to frontend
-        String redirectUrl = request.getParameter("state");
+        String state = request.getParameter("state");
+        String redirectUrl = null;
+
+        if (state != null) {
+            try {
+                redirectUrl = new String(java.util.Base64.getDecoder().decode(state));
+            } catch (Exception e) {
+                redirectUrl = null;
+            }
+        }
 
         List<String> allowedUrls = List.of(
                 "http://localhost:5174",
@@ -61,9 +69,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 "http://localhost:3000",
                 "https://fabriq-frontend.vercel.app"
         );
-
-        if (redirectUrl == null || !allowedUrls.contains(redirectUrl)) {
-            redirectUrl = "http://localhost:5174";
+        System.out.println("REDIRECT_URI FROM FRONTEND: " + redirectUrl);
+        if (redirectUrl == null || allowedUrls.stream().noneMatch(redirectUrl::startsWith)) {
+            redirectUrl = "http://localhost:5173"; // safer default
         }
 
         response.sendRedirect(redirectUrl + "/oauth-success?token=" + token);
