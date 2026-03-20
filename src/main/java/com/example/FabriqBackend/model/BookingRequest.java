@@ -1,12 +1,11 @@
 package com.example.FabriqBackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
@@ -25,5 +24,9 @@ public class BookingRequest {
     private String status = "PENDING"; // PENDING, APPROVED, REJECTED
     private String customerName;
     private String userEmail;
+
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 }
