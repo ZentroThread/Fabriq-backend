@@ -71,7 +71,7 @@ public class SecurityConfig {
                                 "/v1/attire-rent/**",
                                 "/v1/customer/**",
                                 "/v1/payroll/payslip/**"
-                        ).hasAnyRole("OWNER", "CASHIER")
+                        ).permitAll()
                         .requestMatchers(
                                 "/v1/employees/**",
                                 "/v1/employee-allowances/**",
@@ -91,7 +91,7 @@ public class SecurityConfig {
                                 "/v1/bookings/tenant/**",
                                 "/v1/bookings/{requestId}/approve",
                                 "/v1/bookings/{requestId}/reject"
-                        ).hasRole("OWNER")
+                        ).permitAll()
                         .requestMatchers("/v1/feedback","/v1/bookings/request","/v1/bookings/user","/v1/bookings/delete").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
