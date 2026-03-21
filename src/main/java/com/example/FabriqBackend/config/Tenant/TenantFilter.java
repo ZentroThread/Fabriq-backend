@@ -20,7 +20,11 @@ public class TenantFilter extends OncePerRequestFilter {
             "/swagger-ui",
             "/swagger-resources",
             "/webjars",
-            "/v1/rag//customer/chat"
+            "/v1/rag//customer/chat",
+            "/v1/rag/feedback",
+            "/v1/feedback/approved",
+            "/v1/customer/auth/login",
+            "/v1/customer/auth/register"
     );
 
     @Override

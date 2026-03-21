@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service;
 
+import com.example.FabriqBackend.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -187,5 +188,9 @@ public class JWTService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String generateToken(User user) {
+        return generateAccessToken(user.getEmail(), "PUBLIC", user.getId().intValue(), user.getRole());
     }
 }
