@@ -71,7 +71,7 @@ public class SecurityConfig {
                                 "/v1/attire-rent/**",
                                 "/v1/customer/**",
                                 "/v1/payroll/payslip/**"
-                        ).permitAll()
+                        ).hasAnyRole("OWNER", "CASHIER")
                         .requestMatchers(
                                 "/v1/employees/**",
                                 "/v1/employee-allowances/**",
