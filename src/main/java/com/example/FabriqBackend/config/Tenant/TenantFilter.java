@@ -24,7 +24,10 @@ public class TenantFilter extends OncePerRequestFilter {
             "/v1/rag/feedback",
             "/v1/feedback/approved",
             "/v1/customer/auth/login",
-            "/v1/customer/auth/register"
+            "/v1/customer/auth/register",
+            "/v1/bookings/request",
+            "/v1/bookings/user",
+            "/v1/bookings"
     );
 
     @Override
