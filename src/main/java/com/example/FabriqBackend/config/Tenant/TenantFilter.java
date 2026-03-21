@@ -46,6 +46,11 @@ public class TenantFilter extends OncePerRequestFilter {
         try {
             String tenantId = request.getHeader("X-Tenant-ID");
 
+            // Look for tenantId in query parameters (e.g. for WebSocket connections)
+            if (tenantId == null || tenantId.isBlank()) {
+                tenantId = request.getParameter("tenantId");
+            }
+
             // 🌍 If header missing → resolve from public URL
             if (tenantId == null || tenantId.isBlank()) {
                 tenantId = resolveTenantFromRequest(request);
