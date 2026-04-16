@@ -6,7 +6,6 @@ import com.example.FabriqBackend.service.impl.DeviceAttendanceServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class DeviceAttendanceController {
     }
 
     @GetMapping("/today")
-    public  ResponseEntity<List<DeviceAttendanceLog>> getByDate(){
+    public ResponseEntity<List<DeviceAttendanceLog>> getByDate() {
         List<DeviceAttendanceLog> log = deviceAttendanceService.getLatestLogs();
         return ResponseEntity.ok(log);
     }

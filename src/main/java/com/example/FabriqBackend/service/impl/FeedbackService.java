@@ -34,10 +34,10 @@ public class FeedbackService implements IFeedbackService {
 
     @Override
     public Feedback approveFeedback(Long id) {
-            Feedback feedback = feedbackRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
-            feedback.setApproved(true);
-            return feedbackRepository.save(feedback);
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
+        feedback.setApproved(true);
+        return feedbackRepository.save(feedback);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class FeedbackService implements IFeedbackService {
 
     @Override
     public void removeFeedback(Long id) {
-            feedbackRepository.deleteById(id);
+        feedbackRepository.deleteById(id);
     }
 }

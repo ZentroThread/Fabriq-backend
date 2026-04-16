@@ -19,8 +19,6 @@ public class AttendanceScheduler {
     private final EmployeeDao employeeDao;
 
     @Scheduled(cron = "* * * * * *")
-    // daily at 11:00 PM  second minute hour day-of-month month day-of-week
-   //@Scheduled(cron = "0 */1 * * * *")
     public void autoProcessAllTenants() {
 
         List<String> tenantIds = employeeDao.findAllTenantIds();
@@ -33,8 +31,6 @@ public class AttendanceScheduler {
 
                 employeeDao.findAll()
                         .forEach(emp -> attendanceService.updateDailyAttendance(emp.getEmpCode(), today));
-
-//                System.out.println("Processed attendance for tenant: " + tenantId + " on date: " + today);
 
             } finally {
                 TenantContext.clear();

@@ -17,12 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,9 +31,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(customizer -> customizer.disable())
+                .csrf(csrf -> csrf.disable())
                 // Connects to the bean below
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(new CorsConfig().corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 "/oauth2/**",
@@ -92,49 +86,17 @@ public class SecurityConfig {
                                 "/v1/bookings/{requestId}/approve",
                                 "/v1/bookings/{requestId}/reject"
                         ).permitAll()
-                        .requestMatchers("/v1/feedback","/v1/bookings/request","/v1/bookings/user","/v1/bookings/delete").authenticated()
+                        .requestMatchers("/v1/feedback", "/v1/bookings/request", "/v1/bookings/user", "/v1/bookings/delete").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2SuccessHandler)
                 )
-
+                .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(tenantFilter, JwtFilter.class)
                 .build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        // Origins
-        configuration.setAllowedOrigins(Arrays.asList(
-                "https://fabriq-frontend.vercel.app",
-                "https://myapp.social",
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "https://client-frontend-azure.vercel.app"
-
-        ));
-
-        // Methods
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-
-        // Headers - Allow ALL
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-
-        // Exposed Headers
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "x-tenant-id", "X-Tenant-ID"));
-
-        // Credentials
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     @Bean
@@ -151,3 +113,4 @@ public class SecurityConfig {
     }
 
 }
+

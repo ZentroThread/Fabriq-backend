@@ -3,7 +3,6 @@ package com.example.FabriqBackend.service.impl;
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.CustomerDao;
-import com.example.FabriqBackend.dto.AttireAvailabilityRequestDto;
 import com.example.FabriqBackend.dto.AttireAvailableResponseDto;
 import com.example.FabriqBackend.dto.AttireRentAddDto;
 import com.example.FabriqBackend.dto.AttireRentDto;
@@ -135,10 +134,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
     @Override
     public AttireAvailableResponseDto checkAvailability(String attireCode, LocalDateTime rentDate) {
 
-        // expected return date
         LocalDateTime returnDate = rentDate.plusDays(DEFAULT_RENT_DAYS);
-
-        // block period start
         LocalDateTime blockedFrom = rentDate.minusDays(BUFFER_DAYS);
 
         List<AttireRent> conflicts =

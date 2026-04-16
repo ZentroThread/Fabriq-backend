@@ -64,12 +64,11 @@ public class S3Service {
         String key = null;
         try {
             java.net.URI uri = new java.net.URI(fileUrl);
-            String path = uri.getPath(); // e.g. /images/123_name.jpg
+            String path = uri.getPath();
             if (path != null && !path.isEmpty()) {
                 key = path.startsWith("/") ? path.substring(1) : path;
             }
         } catch (Exception e) {
-            // fallback to extracting after amazonaws.com/
             String marker = ".amazonaws.com/";
             int idx = fileUrl.indexOf(marker);
             if (idx >= 0) {
@@ -78,7 +77,6 @@ public class S3Service {
         }
 
         if (key == null || key.isEmpty()) {
-            // as a last resort, take substring after last '/'
             key = fileUrl.substring(Math.max(fileUrl.lastIndexOf('/') + 1, 0));
         }
 

@@ -2,7 +2,6 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.salary.EmployeeAllowanceRequestDTO;
 import com.example.FabriqBackend.dto.salary.EmployeeAllowanceResponseDTO;
-import com.example.FabriqBackend.model.salary.EmployeeAllowance;
 import com.example.FabriqBackend.service.impl.EmployeeAllowanceServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

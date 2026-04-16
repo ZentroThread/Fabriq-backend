@@ -11,6 +11,7 @@ import com.example.FabriqBackend.service.IAttireService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +45,6 @@ public class AttireServiceImpl implements IAttireService {
                         .body("Tenant ID not found. Please ensure you are authenticated.");
             }
 
-            // Find category
             Category category = categoryDao.findByCategoryId(dto.getCategoryId())
                     .orElseThrow(() -> {
                         return new RuntimeException("Category not found with id: " + dto.getCategoryId());
@@ -56,7 +55,6 @@ public class AttireServiceImpl implements IAttireService {
             attire.setCategory(category);
 
             if (image != null && !image.isEmpty()) {
-                //String imageUrl = s3Service.uploadFile(image, attireBucketName);
                 String imageUrl = s3Service.uploadFile(image);
                 attire.setImageUrl(imageUrl);
             }
@@ -75,7 +73,6 @@ public class AttireServiceImpl implements IAttireService {
     public List<Attire> getAllAttire() {
         String currentTenantId = TenantContext.getCurrentTenant();
         System.out.println("Fetching all attires for tenant: " + currentTenantId);
-        // Use findAll() from TenantAwareDao which automatically filters by tenant using SpEL
         return attireDao.findAll();
     }
 
@@ -88,7 +85,6 @@ public class AttireServiceImpl implements IAttireService {
                         try {
                             s3Service.deleteFile(imageUrl);
                         } catch (Exception e) {
-                            // Log the error and continue with deletion of DB record
                             System.err.println("Failed to delete image from S3: " + e.getMessage());
                         }
                     }
@@ -111,10 +107,8 @@ public class AttireServiceImpl implements IAttireService {
 
             return attireDao.findById(id)
                     .map(attire -> {
-                        // ✨ Clean one-liner
                         dto.applyTo(attire);
 
-                        // Handle category separately (needs DAO access)
                         if (dto.getCategoryId() != null) {
                             Category category = categoryDao.findByCategoryId(
                                             dto.getCategoryId())
@@ -122,20 +116,17 @@ public class AttireServiceImpl implements IAttireService {
                             attire.setCategory(category);
                         }
 
-                        // Handle image: upload new image and remove previous one from S3 to avoid orphaned files
                         if (image != null && !image.isEmpty()) {
                             String previousImageUrl = attire.getImageUrl();
                             try {
                                 String newImageUrl = s3Service.uploadFile(image);
                                 attire.setImageUrl(newImageUrl);
 
-                                // If there was a previous image and it's different from the new one, try to delete it
                                 if (previousImageUrl != null && !previousImageUrl.isBlank()
                                         && !previousImageUrl.equals(newImageUrl)) {
                                     try {
                                         s3Service.deleteFile(previousImageUrl);
                                     } catch (Exception e) {
-                                        // Log failure but don't abort the update (optional: change to abort if desired)
                                         System.err.println("Failed to delete previous image from S3: " + e.getMessage());
                                     }
                                 }

@@ -22,7 +22,6 @@ public class ProductionRecordServiceImpl implements IProductionRecordService {
     private final EmployeeDao employeeDao;
 
     @Override
-    // Create Production Record
     public ProductionRecordRequestDTO createProductionRecord(ProductionRecordRequestDTO productionRecordRequestDTO) {
 
         Employee employee = employeeDao.findById(productionRecordRequestDTO.getEmpId())
@@ -37,7 +36,6 @@ public class ProductionRecordServiceImpl implements IProductionRecordService {
     }
 
     @Override
-    // Get Production Records by Employee ID
     public List<ProductionRecordResponseDTO> getRecordsByEmployeeId(Long employeeId) {
 
         List<ProductionRecord> records = productionRecordDao.findByEmployee_Id(employeeId)
@@ -49,7 +47,6 @@ public class ProductionRecordServiceImpl implements IProductionRecordService {
     }
 
     @Override
-    // Get Production Records by Date Range
     public List<ProductionRecordResponseDTO> getRecordsByDateRange(String startDate, String endDate) {
 
         List<ProductionRecord> records = productionRecordDao.findByDateBetween(
@@ -63,7 +60,6 @@ public class ProductionRecordServiceImpl implements IProductionRecordService {
     }
 
     @Override
-    // Get All Production Records
     public List<ProductionRecordResponseDTO> getAllProductionRecords() {
 
         List<ProductionRecord> records = productionRecordDao.findAll();
@@ -74,7 +70,6 @@ public class ProductionRecordServiceImpl implements IProductionRecordService {
     }
 
     @Override
-    // Get Production Records by Date Range and Employee ID
     public List<ProductionRecordResponseDTO> getRecordsByDataRangeAndEmpId(String startDate, String endDate, Long empId) {
 
         List<ProductionRecord> records = productionRecordDao.findByDateBetweenAndEmployee_Id(

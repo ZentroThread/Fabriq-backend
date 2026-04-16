@@ -24,7 +24,6 @@ public class EmployeeAllowanceServiceImpl implements IEmployeeAllowanceService {
     private final AllowanceTypeDao allowanceTypeDao;
     private final EmployeeAllowanceDao employeeAllowanceDao;
 
-    // Create Employee Allowance
     public EmployeeAllowanceRequestDTO createEmployeeAllowance(EmployeeAllowanceRequestDTO requestDTO) {
 
         Employee employee = employeeDao.findById(requestDTO.getEmpId())
@@ -41,7 +40,6 @@ public class EmployeeAllowanceServiceImpl implements IEmployeeAllowanceService {
         return requestDTO;
     }
 
-    // Get Employee Allowances by Employee ID
     public List<EmployeeAllowanceResponseDTO> getEmployeeAllowancesByEmpId(Long empId) {
 
         Employee employee = employeeDao.findById(empId)
@@ -54,7 +52,6 @@ public class EmployeeAllowanceServiceImpl implements IEmployeeAllowanceService {
                 .toList();
     }
 
-    // Get All Employee Allowances
     public List<EmployeeAllowanceResponseDTO> getAllEmployeeAllowances() {
 
         List<EmployeeAllowance> employeeAllowances = employeeAllowanceDao.findAll();
@@ -65,8 +62,7 @@ public class EmployeeAllowanceServiceImpl implements IEmployeeAllowanceService {
 
     }
 
-    // Delete Employee Allowance
-    public void deleteEmployeeAllowance(Long id,Long empId) {
+    public void deleteEmployeeAllowance(Long id, Long empId) {
         Employee employee = employeeDao.findById(empId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
         EmployeeAllowance employeeAllowance = employeeAllowanceDao.findById(id)

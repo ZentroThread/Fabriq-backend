@@ -11,5 +11,5 @@ public class AttireRentAddDto {
     private Date returnDate;
     private String customerCode;
     private String attireCode;
-    private String billingCode; // new field to carry billing code
+    private String billingCode;
 }

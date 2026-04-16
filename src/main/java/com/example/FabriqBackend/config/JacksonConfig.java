@@ -12,8 +12,8 @@ public class JacksonConfig {
     @Bean
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        builder.modules(new JavaTimeModule()); // Support LocalDateTime
-        builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO format
+        builder.modules(new JavaTimeModule());
+        builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return builder;
     }
 }

@@ -25,20 +25,16 @@ public class JwtFilter extends OncePerRequestFilter {
     private final userDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String token = null;
 
-        // Try Authorization header first
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
 
-        //  Fallback to cookies
         if (token == null) {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
@@ -51,41 +47,28 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        //   Authenticate
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
 
-                //System.out.println("🔐 Token: " + token);
-
                 String username = jwtService.extractUserName(token);
-                //System.out.println("👤 Username from JWT: " + username);
-
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.validateAccessToken(token, userDetails)) {
 
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                    //System.out.println(" Authentication SUCCESS");
 
                 } else {
-                   // System.out.println(" Token validation failed");
+
+                    System.out.println("Invalid or expired JWT token");
                 }
 
             } catch (Exception e) {
-                //System.out.println(" JWT ERROR: " + e.getMessage());
-                e.printStackTrace(); //  IMPORTANT
+                e.printStackTrace();
             }
         }
 

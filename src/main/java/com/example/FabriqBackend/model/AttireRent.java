@@ -23,15 +23,15 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime returnDate;
-    private Integer rentDuration; // number of days
+    private Integer rentDuration;
 
-    @Column(name = "attire_code")  // ← Add this
+    @Column(name = "attire_code")
     private String attireCode;
 
-    @Column(name = "cust_code")    // ← Add this
+    @Column(name = "cust_code")
     private String custCode;
 
-    @Column(name = "billing_code") // ← Add this
+    @Column(name = "billing_code")
     private String billingCode;
 
     @ManyToOne
@@ -45,8 +45,7 @@ public class AttireRent extends TenantAwareEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "billing_id", referencedColumnName = "billing_id")
     private Billing billing;
-    
-    // Fields for customized items (when attire is null)
+
     @Column(name = "is_custom_item")
     private Boolean isCustomItem;
     

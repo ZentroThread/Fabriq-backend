@@ -4,9 +4,7 @@ import com.example.FabriqBackend.dao.CustDao;
 import com.example.FabriqBackend.model.User;
 import com.example.FabriqBackend.service.JWTService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +29,7 @@ public class CustomerRegisterController {
 
         return "User registered";
     }
+
     @PostMapping("/login")
     public String login(@RequestBody User loginRequest) {
 

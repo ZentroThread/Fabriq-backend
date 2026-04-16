@@ -14,7 +14,7 @@ public class Tenant {
     private Integer id;
 
     @Column(name = "tenant_id", nullable = false, unique = true)
-    private String tenantId; // e.g. T001, T002
+    private String tenantId;
 
     @Column(name = "name", nullable = false)
     private String name;

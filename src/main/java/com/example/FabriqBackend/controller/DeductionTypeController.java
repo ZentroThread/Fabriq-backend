@@ -16,8 +16,8 @@ public class DeductionTypeController {
 
     @PostMapping
     @Operation(
-        summary = "Create Deduction Type",
-        description = "Creates a new deduction type with the provided details."
+            summary = "Create Deduction Type",
+            description = "Creates a new deduction type with the provided details."
     )
     public ResponseEntity<DeductionTypeDto> create(@RequestBody DeductionTypeDto deductionTypeDto) {
         return deductionTypeService.createDeductionType(deductionTypeDto);
@@ -25,8 +25,8 @@ public class DeductionTypeController {
 
     @PutMapping("/{id}")
     @Operation(
-        summary = "Update Deduction Type",
-        description = "Updates the deduction type identified by the given ID with the provided details."
+            summary = "Update Deduction Type",
+            description = "Updates the deduction type identified by the given ID with the provided details."
     )
     public ResponseEntity<DeductionTypeDto> update(@PathVariable Long id, @RequestBody DeductionTypeDto deductionTypeDto) {
         return deductionTypeService.updateDeductionType(id, deductionTypeDto);
@@ -34,8 +34,8 @@ public class DeductionTypeController {
 
     @DeleteMapping("/{id}")
     @Operation(
-        summary = "Delete Deduction Type",
-        description = "Deletes the deduction type identified by the given ID."
+            summary = "Delete Deduction Type",
+            description = "Deletes the deduction type identified by the given ID."
     )
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return deductionTypeService.deleteDeductionType(id);
@@ -43,8 +43,8 @@ public class DeductionTypeController {
 
     @GetMapping("/{id}")
     @Operation(
-        summary = "Get Deduction Type by ID",
-        description = "Retrieves the deduction type identified by the given ID."
+            summary = "Get Deduction Type by ID",
+            description = "Retrieves the deduction type identified by the given ID."
     )
     public ResponseEntity<DeductionTypeDto> getById(@PathVariable Long id) {
         return deductionTypeService.getDeductionTypeById(id);
@@ -52,8 +52,8 @@ public class DeductionTypeController {
 
     @GetMapping
     @Operation(
-        summary = "Get All Deduction Types",
-        description = "Retrieves a list of all deduction types."
+            summary = "Get All Deduction Types",
+            description = "Retrieves a list of all deduction types."
     )
     public ResponseEntity<java.util.List<DeductionTypeDto>> getAll() {
         return deductionTypeService.getAllDeductionTypes();

@@ -21,7 +21,6 @@ public class NotificationSubscriber implements MessageListener {
             String messageBody = new String(message.getBody());
             NotificationRequest event = objectMapper.readValue(messageBody, NotificationRequest.class);
             log.info("Received notification: {}", event);
-            // Process notification here
         } catch (Exception e) {
             log.error("Error processing notification: {}", e.getMessage());
         }

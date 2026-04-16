@@ -10,5 +10,5 @@ public class AttireAvailabilityRequestDto {
     private String attireCode;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime rentDate; // only this comes from client
+    private LocalDateTime rentDate;
 }

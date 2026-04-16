@@ -21,7 +21,7 @@ public class RAGController {
 
     @PostMapping("/chat")
     public ResponseEntity<?> chat(@RequestBody ChatRequest req,
-                                  Authentication authentication){
+                                  Authentication authentication) {
 
         String role = authentication.getAuthorities()
                 .iterator().next().getAuthority()
@@ -35,7 +35,7 @@ public class RAGController {
     }
 
     @PostMapping("/customer/chat")
-    public ResponseEntity<?> CustomerChat(@RequestBody ChatRequest req){
+    public ResponseEntity<?> CustomerChat(@RequestBody ChatRequest req) {
 
         String answer = ragService.askRag(req.getQuestion(), "CUSTOMER");
 

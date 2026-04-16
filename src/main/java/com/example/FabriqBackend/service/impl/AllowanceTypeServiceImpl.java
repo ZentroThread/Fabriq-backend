@@ -20,7 +20,6 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
 
 
     @Override
-    // Create Allowance Type
     public ResponseEntity<AllowanceTypeDTO> createAllowanceType(AllowanceTypeDTO allowanceTypeDTO) {
 
         AllowanceType allowanceType = modelMapper.map(allowanceTypeDTO, AllowanceType.class);
@@ -31,7 +30,6 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
-    // Update Allowance Type
     public ResponseEntity<AllowanceTypeDTO> updateAllowanceType(Long id, AllowanceTypeDTO allowanceTypeDTO) {
 
         AllowanceType allowanceType = allowanceTypeDao.findById(id)
@@ -47,7 +45,6 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
-    // Get Allowance Type by ID
     public ResponseEntity<AllowanceTypeDTO> getAllowanceTypeById(Long id) {
 
         AllowanceType allowanceType = allowanceTypeDao.findById(id)
@@ -59,7 +56,6 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
-    // Get All Allowance Types
     public ResponseEntity<List<AllowanceTypeDTO>> getAllAllowanceTypes() {
 
         List<AllowanceType> allowanceTypes = allowanceTypeDao.findAll();
@@ -71,7 +67,6 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
-    // Delete Allowance Type
     public ResponseEntity<?> deleteAllowanceType(Long id) {
 
         AllowanceType allowanceType = allowanceTypeDao.findById(id)

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/attire-rent")// Base URL for attire rent-related operations
+@RequestMapping("/v1/attire-rent")
 @RequiredArgsConstructor
 public class AttireRentController {
 

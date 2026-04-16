@@ -17,7 +17,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // enable SockJS fallback so browsers without native websocket support can connect
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
     }
 }

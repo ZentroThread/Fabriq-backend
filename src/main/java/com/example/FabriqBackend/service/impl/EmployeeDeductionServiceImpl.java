@@ -24,7 +24,6 @@ public class EmployeeDeductionServiceImpl implements IEmployeeDeductionService {
     private final EmployeeDao employeeDao;
     private final DeductionTypeDao deductionTypeDao;
 
-    // Create Employee Deduction
     public EmployeeDeductionRequestDTO createEmployeeDeduction(EmployeeDeductionRequestDTO requestDTO) {
 
         Employee employee = employeeDao.findById(requestDTO.getEmpId())
@@ -40,20 +39,18 @@ public class EmployeeDeductionServiceImpl implements IEmployeeDeductionService {
         return requestDTO;
     }
 
-    // Get Employee Deduction by Employee ID
     public List<EmployeeDeductionResponseDTO> getEmployeeDeductionsByEmpId(Long empId) {
 
-       Employee employee = employeeDao.findById(empId)
+        Employee employee = employeeDao.findById(empId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
 
-       Optional<List<EmployeeDeduction>> employeeDeductions = employeeDeductionDao.findByEmployee_Id(empId);
+        Optional<List<EmployeeDeduction>> employeeDeductions = employeeDeductionDao.findByEmployee_Id(empId);
 
         return employeeDeductions.orElse(List.of()).stream()
                 .map(EmployeeDeductionMapper::toDto)
                 .toList();
     }
 
-    // Get All Employee Deductions
     public List<EmployeeDeductionResponseDTO> getAllEmployeeDeductions() {
         List<EmployeeDeduction> employeeDeductions = employeeDeductionDao.findAll();
         return employeeDeductions.stream()
@@ -61,12 +58,11 @@ public class EmployeeDeductionServiceImpl implements IEmployeeDeductionService {
                 .toList();
     }
 
-    // Delete Employee Deduction
-    public void deleteEmployeeDeduction(Long id,Long empId) {
+    public void deleteEmployeeDeduction(Long id, Long empId) {
         Employee employee = employeeDao.findById(empId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
         EmployeeDeduction employeeDeduction = employeeDeductionDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("EmployeeDeduction not found with id: " + id));
-        employeeDeductionDao.deleteByIdAndEmployee_Id(id,empId);
+        employeeDeductionDao.deleteByIdAndEmployee_Id(id, empId);
     }
 }
