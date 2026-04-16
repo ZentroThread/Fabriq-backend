@@ -8,9 +8,9 @@ import com.example.FabriqBackend.dto.salary.EtfFormDTO;
 import com.example.FabriqBackend.dto.salary.PayrollRecordResponseDTO;
 import com.example.FabriqBackend.mapper.PayrollMapper;
 import com.example.FabriqBackend.model.salary.PayrollRecord;
-import com.example.FabriqBackend.service.IPayrollService;
-import com.example.FabriqBackend.service.payroll.EpfReportService;
-import com.example.FabriqBackend.service.payroll.EtfReportService;
+import com.example.FabriqBackend.service.Interface.IPayrollService;
+import com.example.FabriqBackend.service.Interface.Ipayroll.EpfReportService;
+import com.example.FabriqBackend.service.Interface.Ipayroll.EtfReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.model.Tenant;
-import com.example.FabriqBackend.service.TenantService;
+import com.example.FabriqBackend.service.Interface.TenantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

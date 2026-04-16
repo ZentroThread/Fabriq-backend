@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.salary.DeductionTypeDto;
-import com.example.FabriqBackend.service.IDeductionTypeService;
+import com.example.FabriqBackend.service.Interface.IDeductionTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

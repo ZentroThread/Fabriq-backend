@@ -9,7 +9,7 @@ import com.example.FabriqBackend.dto.AttireCreateDto;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.Category;
-import com.example.FabriqBackend.service.IAttireService;
+import com.example.FabriqBackend.service.Interface.IAttireService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

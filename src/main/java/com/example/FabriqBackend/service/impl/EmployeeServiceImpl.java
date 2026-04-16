@@ -8,7 +8,7 @@ import com.example.FabriqBackend.dto.EmployeeDto;
 import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
-import com.example.FabriqBackend.service.IEmployeeService;
+import com.example.FabriqBackend.service.Interface.IEmployeeService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

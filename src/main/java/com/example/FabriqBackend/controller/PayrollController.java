@@ -1,8 +1,8 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.salary.PayrollResponseDTO;
-import com.example.FabriqBackend.service.IPayrollService;
-import com.example.FabriqBackend.service.payroll.PayrollService;
+import com.example.FabriqBackend.service.Interface.IPayrollService;
+import com.example.FabriqBackend.service.Interface.Ipayroll.PayrollService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

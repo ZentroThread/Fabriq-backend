@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.example.FabriqBackend.dao.FeedbackDao;
 import com.example.FabriqBackend.model.Feedback;
-import com.example.FabriqBackend.service.IFeedbackService;
+import com.example.FabriqBackend.service.Interface.IFeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

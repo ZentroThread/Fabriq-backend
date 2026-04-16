@@ -2,8 +2,8 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttireAvailableResponseDto;
 import com.example.FabriqBackend.model.Attire;
-import com.example.FabriqBackend.service.IAttireRentService;
-import com.example.FabriqBackend.service.IAttireService;
+import com.example.FabriqBackend.service.Interface.IAttireRentService;
+import com.example.FabriqBackend.service.Interface.IAttireService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

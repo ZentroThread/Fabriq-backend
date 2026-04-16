@@ -13,7 +13,7 @@ import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Billing;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.IBillingService;
+import com.example.FabriqBackend.service.Interface.IBillingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

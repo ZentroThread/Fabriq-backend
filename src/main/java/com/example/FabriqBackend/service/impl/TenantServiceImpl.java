@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.TenantDao;
 import com.example.FabriqBackend.model.Tenant;
-import com.example.FabriqBackend.service.TenantService;
+import com.example.FabriqBackend.service.Interface.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -9,7 +9,7 @@ import com.example.FabriqBackend.dto.salary.AdvancePaymentResponseDTO;
 import com.example.FabriqBackend.mapper.AdvancePaymentMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.AdvancePayment;
-import com.example.FabriqBackend.service.IAdvancePaymentService;
+import com.example.FabriqBackend.service.Interface.IAdvancePaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -6,7 +6,7 @@ import com.example.FabriqBackend.dao.BookingRequestDao;
 import com.example.FabriqBackend.dao.CustDao;
 import com.example.FabriqBackend.model.BookingRequest;
 import com.example.FabriqBackend.model.User;
-import com.example.FabriqBackend.service.IBookingService;
+import com.example.FabriqBackend.service.Interface.IBookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

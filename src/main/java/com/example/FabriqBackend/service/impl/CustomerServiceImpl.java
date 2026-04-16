@@ -4,7 +4,7 @@ import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.ICustomerService;
+import com.example.FabriqBackend.service.Interface.ICustomerService;
 import com.example.FabriqBackend.service.kafka.NotificationClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

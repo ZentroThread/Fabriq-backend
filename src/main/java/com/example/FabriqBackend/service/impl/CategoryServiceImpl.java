@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.example.FabriqBackend.dao.CategoryDao;
 import com.example.FabriqBackend.model.Category;
-import com.example.FabriqBackend.service.ICategoryService;
+import com.example.FabriqBackend.service.Interface.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;

@@ -11,7 +11,7 @@ import com.example.FabriqBackend.mapper.EmployeeAllowanceMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.AllowanceType;
 import com.example.FabriqBackend.model.salary.EmployeeAllowance;
-import com.example.FabriqBackend.service.IEmployeeAllowanceService;
+import com.example.FabriqBackend.service.Interface.IEmployeeAllowanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

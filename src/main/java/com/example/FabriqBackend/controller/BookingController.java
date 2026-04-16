@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.model.BookingRequest;
-import com.example.FabriqBackend.service.IBookingService;
+import com.example.FabriqBackend.service.Interface.IBookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

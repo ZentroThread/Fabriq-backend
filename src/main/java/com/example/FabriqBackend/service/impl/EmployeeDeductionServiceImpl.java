@@ -11,7 +11,7 @@ import com.example.FabriqBackend.mapper.EmployeeDeductionMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.DeductionType;
 import com.example.FabriqBackend.model.salary.EmployeeDeduction;
-import com.example.FabriqBackend.service.IEmployeeDeductionService;
+import com.example.FabriqBackend.service.Interface.IEmployeeDeductionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.example.FabriqBackend.dao.DeviceAttendanceLogDao;
 import com.example.FabriqBackend.dto.T52PunchDto;
 import com.example.FabriqBackend.model.DeviceAttendanceLog;
-import com.example.FabriqBackend.service.IAttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttendanceCreateDto;
 import com.example.FabriqBackend.dto.AttendanceDto;
-import com.example.FabriqBackend.service.IAttendanceService;
+import com.example.FabriqBackend.service.Interface.IAttendanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

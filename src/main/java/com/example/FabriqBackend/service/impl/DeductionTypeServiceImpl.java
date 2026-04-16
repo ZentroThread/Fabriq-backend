@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.example.FabriqBackend.dao.DeductionTypeDao;
 import com.example.FabriqBackend.dto.salary.DeductionTypeDto;
 import com.example.FabriqBackend.model.salary.DeductionType;
-import com.example.FabriqBackend.service.IDeductionTypeService;
+import com.example.FabriqBackend.service.Interface.IDeductionTypeService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;

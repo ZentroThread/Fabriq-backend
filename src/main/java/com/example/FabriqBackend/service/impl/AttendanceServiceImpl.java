@@ -2,7 +2,6 @@ package com.example.FabriqBackend.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.example.FabriqBackend.config.AppConfig;
 import com.example.FabriqBackend.dao.AttendanceDao;
 import com.example.FabriqBackend.dao.DeviceAttendanceLogDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
@@ -13,7 +12,7 @@ import com.example.FabriqBackend.mapper.AttendanceMapper;
 import com.example.FabriqBackend.model.Attendance;
 import com.example.FabriqBackend.model.DeviceAttendanceLog;
 import com.example.FabriqBackend.model.Employee;
-import com.example.FabriqBackend.service.IAttendanceService;
+import com.example.FabriqBackend.service.Interface.IAttendanceService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

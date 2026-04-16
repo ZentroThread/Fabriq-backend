@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.ICustomerService;
+import com.example.FabriqBackend.service.Interface.ICustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -11,7 +11,7 @@ import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.IAttireRentService;
+import com.example.FabriqBackend.service.Interface.IAttireRentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
