@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.AllowanceTypeDao;
 import com.example.FabriqBackend.dao.EmployeeAllowanceDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class EmployeeAllowanceServiceImpl implements IEmployeeAllowanceService {
 
     private final EmployeeDao employeeDao;

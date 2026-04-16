@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.FeedbackDao;
 import com.example.FabriqBackend.model.Feedback;
 import com.example.FabriqBackend.service.IFeedbackService;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class FeedbackService implements IFeedbackService {
 
     private final FeedbackDao feedbackRepository;

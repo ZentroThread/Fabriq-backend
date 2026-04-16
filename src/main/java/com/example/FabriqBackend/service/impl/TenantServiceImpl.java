@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.TenantDao;
 import com.example.FabriqBackend.model.Tenant;
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class TenantServiceImpl implements TenantService {
 
     private final TenantDao tenantDao;

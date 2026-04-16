@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dao.ProductionRecordDao;
 import com.example.FabriqBackend.dto.salary.ProductionRecordRequestDTO;
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class ProductionRecordServiceImpl implements IProductionRecordService {
 
     private final ProductionRecordDao productionRecordDao;

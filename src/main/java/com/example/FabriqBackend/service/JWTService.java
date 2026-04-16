@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 
+@Slf4j
 @Component
 public class JWTService {
 
@@ -139,6 +141,7 @@ public class JWTService {
 
             return true;
         } catch (Exception e) {
+            log.error("Failed to validate access token: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -151,6 +154,7 @@ public class JWTService {
             return !isTokenExpired(token) && "refresh".equals(tokenType);
 
         } catch (Exception e) {
+            log.error("Failed to validate refresh token: {}", e.getMessage(), e);
             return false;
         }
     }

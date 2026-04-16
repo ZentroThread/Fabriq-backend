@@ -34,6 +34,7 @@ public class CustomerServiceImpl implements ICustomerService {
     @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public ResponseEntity<?> addCustomer(Customer customer) {
         Customer savedCustomer = customerDao.save(customer);
+        log.debug("Saved customer id={} code={}", savedCustomer != null ? savedCustomer.getId() : null, savedCustomer != null ? savedCustomer.getCustCode() : null);
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("eventId", UUID.randomUUID().toString());
@@ -52,8 +53,9 @@ public class CustomerServiceImpl implements ICustomerService {
             event.put("timestamp", LocalDateTime.now().toString());
 
             notificationClient.sendNotification(event);
+            log.info("Published welcome notification for custCode={}", savedCustomer.getCustCode());
         } catch (Exception e) {
-            log.error("Failed to publish welcome notification: {}", e.getMessage());
+            log.error("Failed to publish welcome notification for custCode={}: {}", savedCustomer != null ? savedCustomer.getCustCode() : null, e.getMessage(), e);
         }
         return ResponseEntity.ok(savedCustomer);
     }

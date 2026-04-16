@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.DeviceAttendanceLogDao;
 import com.example.FabriqBackend.dto.T52PunchDto;
 import com.example.FabriqBackend.model.DeviceAttendanceLog;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class DeviceAttendanceServiceImpl {
 
     private final DeviceAttendanceLogDao deviceAttendanceLogDao;

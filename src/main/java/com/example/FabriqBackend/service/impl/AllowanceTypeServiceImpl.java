@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.AllowanceTypeDao;
 import com.example.FabriqBackend.dto.salary.AllowanceTypeDTO;
 import com.example.FabriqBackend.model.salary.AllowanceType;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
 
     private final AllowanceTypeDao allowanceTypeDao;

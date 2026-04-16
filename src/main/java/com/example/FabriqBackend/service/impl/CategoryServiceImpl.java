@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.CategoryDao;
 import com.example.FabriqBackend.model.Category;
 import com.example.FabriqBackend.service.ICategoryService;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "categories")
+@Slf4j
+
 public class CategoryServiceImpl implements ICategoryService {
 
     private final CategoryDao categoryDao;
