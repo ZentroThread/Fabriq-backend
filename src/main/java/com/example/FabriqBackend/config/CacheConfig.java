@@ -21,25 +21,14 @@ public class CacheConfig {
 
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
-        return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(24)) // Cache for 24 hours instead of 10 minutes
-                .disableCachingNullValues()
-                .computePrefixWith(cacheName -> "cache:" + cacheName + "::")
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(
-                                new GenericJackson2JsonRedisSerializer()
-                        )
-                );
+        return RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(24)).disableCachingNullValues().computePrefixWith(cacheName -> "cache:" + cacheName + "::").serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
     }
 
     @Bean(name = "cacheManager")
     @Primary
-    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
-                                     RedisCacheConfiguration cacheConfig) {
-        return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(cacheConfig)
-                .build();
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, RedisCacheConfiguration cacheConfig) {
+        return RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(cacheConfig).build();
     }
 
-    // Removed in-memory ConcurrentMapCacheManager bean to avoid overshadowing Redis
 }
+

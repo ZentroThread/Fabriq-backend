@@ -40,7 +40,6 @@ public class StockService {
 
         log.info("Reserved item {} for {}. New stock: {}", itemCode, customerCode, attire.getAttireStock());
 
-        // Send the websocket update only after the surrounding transaction commits
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
@@ -54,7 +53,6 @@ public class StockService {
                 }
             });
         } else {
-            // Fallback: if no transaction active, send immediately
             messagingTemplate.convertAndSend("/topic/stock-updates", update);
         }
 

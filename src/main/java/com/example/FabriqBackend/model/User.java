@@ -19,8 +19,8 @@ public class User {
 
     private String name;
     private String email;
-    private String password; // nullable for Google users
-    private String role = "CUSTOMER";     // CUSTOMER / OWNER / CASHIER
-    private String provider; // GOOGLE or LOCAL
+    private String password;
+    private String role = "CUSTOMER";
+    private String provider;
 
 }

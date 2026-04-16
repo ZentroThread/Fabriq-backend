@@ -62,6 +62,7 @@ public class FeedbackController {
     public List<Feedback> getAll() {
         return feedbackService.getAllFeedback();
     }
+
     @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Delete Feedback",

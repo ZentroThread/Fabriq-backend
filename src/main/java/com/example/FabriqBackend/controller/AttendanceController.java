@@ -2,9 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.AttendanceCreateDto;
 import com.example.FabriqBackend.dto.AttendanceDto;
-import com.example.FabriqBackend.dto.ResponseDto;
 import com.example.FabriqBackend.service.IAttendanceService;
-import com.example.FabriqBackend.service.impl.AttendanceServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,21 +17,19 @@ import java.util.List;
 public class AttendanceController {
     private final IAttendanceService attendanceService;
 
-    //mark attendance http://localhost:8081/attendance
     @PostMapping
     @Operation(
             summary = "Mark attendance for an employee",
             description = "This endpoint allows marking attendance for an employee by" +
                     " providing the necessary details in the request body."
     )
-    public ResponseEntity<?> markAttendance(@RequestBody AttendanceCreateDto dto){
+    public ResponseEntity<?> markAttendance(@RequestBody AttendanceCreateDto dto) {
         attendanceService.markAttendance(dto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(dto);
     }
 
-    //get attendance for an employee for a month http://localhost:8081/attendance/EMP001/month?year=2025&month=1
     @GetMapping("/{empCode}/month")
     @Operation(
             summary = "Get monthly attendance for an employee",
@@ -51,7 +47,6 @@ public class AttendanceController {
                 .body(monthlyAttendance);
     }
 
-    //get attendance for all employees for a month http://localhost:8081/attendance/month?year=2025&month=1
     @GetMapping("/month")
     @Operation(
             summary = "Get attendance for all employees for a specific month",
@@ -68,7 +63,6 @@ public class AttendanceController {
                 .body(monthlyAll);
     }
 
-    //get attendance for  employees for a date http://localhost:8081/attendance/EMP001/date?date=2025-11-01
     @GetMapping("/date")
     @Operation(
             summary = "Get attendance for all employees on a specific date",

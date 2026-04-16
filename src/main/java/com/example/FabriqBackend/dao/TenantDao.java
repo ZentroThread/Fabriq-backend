@@ -12,8 +12,6 @@ public interface TenantDao extends JpaRepository<Tenant, Integer> {
     Optional<Tenant> findByTenantIdAndActiveTrue(String tenantId);
 
     boolean existsByEmail(String email);
-    
-    Optional<Tenant> findByEmail(String email);
 
     Optional<Tenant> findByTenantId(String tenantId);
 }

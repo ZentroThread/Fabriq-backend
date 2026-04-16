@@ -19,9 +19,7 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     private final ModelMapper modelMapper;
 
 
-
     @Override
-    // Create Deduction Type
     public ResponseEntity<DeductionTypeDto> createDeductionType(DeductionTypeDto deductionTypeDto) {
 
         DeductionType deductionType = modelMapper.map(deductionTypeDto, DeductionType.class);
@@ -31,7 +29,6 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     }
 
     @Override
-    // Get Deduction Type by ID
     public ResponseEntity<DeductionTypeDto> getDeductionTypeById(Long id) {
 
         DeductionType deductionType = deductionTypeDao.findById(id)
@@ -42,7 +39,6 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     }
 
     @Override
-    // Update Deduction Type
     public ResponseEntity<DeductionTypeDto> updateDeductionType(Long id, DeductionTypeDto deductionTypeDto) {
 
         DeductionType deductionType = deductionTypeDao.findById(id)
@@ -56,7 +52,6 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     }
 
     @Override
-    // Delete Deduction Type
     public ResponseEntity<Void> deleteDeductionType(Long id) {
 
         DeductionType deductionType = deductionTypeDao.findById(id)
@@ -68,7 +63,6 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     }
 
     @Override
-    // Get All Deduction Types
     public ResponseEntity<List<DeductionTypeDto>> getAllDeductionTypes() {
 
         List<DeductionType> deductionTypes = deductionTypeDao.findAll();

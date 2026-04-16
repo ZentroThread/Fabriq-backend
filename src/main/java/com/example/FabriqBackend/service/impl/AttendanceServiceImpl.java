@@ -27,17 +27,14 @@ import java.util.List;
 public class AttendanceServiceImpl implements IAttendanceService {
 
     private final AttendanceDao attendanceDao;
-    private final AppConfig appConfig;
     private final EmployeeDao employeeDao;
     private final DeviceAttendanceLogDao deviceAttendanceLogDao;
 
-    // Attendance policy constants
-    private static final LocalTime SHIFT_START = LocalTime.of(9, 0); // 9:00 AM
-    private static final LocalTime SHIFT_END = LocalTime.of(17, 0);  // 5:00 PM
+    private static final LocalTime SHIFT_START = LocalTime.of(9, 0);
+    private static final LocalTime SHIFT_END = LocalTime.of(17, 0);
     private static final int ALLOWED_LATE_MINUTES = 10;
     private static final int REQUIRED_HOURS = 8;
 
-    // MARK ATTENDANCE MANUALLY
     public void markAttendance(AttendanceCreateDto dto) {
         if (dto.getEmpId() == null || dto.getEmpId() <= 0) {
             throw new RuntimeException("empCode is required to mark attendance");
@@ -50,7 +47,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
         attendanceDao.save(attendance);
     }
 
-    // FETCH MONTHLY ATTENDANCE BY EMPLOYEE
     public List<AttendanceDto> getMonthlyAttendanceByEmpCode(String empCode, int year, int month) {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
@@ -67,7 +63,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .toList();
     }
 
-    // FETCH MONTHLY ATTENDANCE FOR ALL
     public List<AttendanceDto> fetchAllAttendanceForMonth(int year, int month) {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
@@ -79,7 +74,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .toList();
     }
 
-    // FETCH DAILY ATTENDANCE
     public List<AttendanceDto> fetchAllAttendanceForDate(String date) {
         LocalDate localDate = LocalDate.parse(date);
 
@@ -90,18 +84,15 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .toList();
     }
 
-    // UPDATE DAILY ATTENDANCE BASED ON DEVICE LOGS
     @Transactional
     public void updateDailyAttendance(String empCode, LocalDate date) {
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(23, 59, 59);
 
-        // FETCH DEVICE LOGS FOR THE DAY
         List<DeviceAttendanceLog> logs =
                 deviceAttendanceLogDao.findByEmpCodeAndPunchTimeBetween(empCode, start, end);
 
-        // GET OR CREATE ATTENDANCE RECORD
         Attendance attendance = attendanceDao
                 .findByEmployee_EmpCodeAndDate(empCode, date)
                 .orElseGet(() -> {
@@ -116,7 +107,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
         LocalDateTime shiftStartTime = date.atTime(SHIFT_START);
         LocalDateTime graceEndTime = shiftStartTime.plusMinutes(ALLOWED_LATE_MINUTES);
 
-        // CASE 1: NO LOGS
         if (logs.isEmpty()) {
             attendance.setCheckIn(null);
             attendance.setCheckOut(null);
@@ -124,18 +114,17 @@ public class AttendanceServiceImpl implements IAttendanceService {
             attendance.setLateMinutes(0L);
 
             if (date.isBefore(LocalDate.now())) {
-                attendance.setStatus(AttendanceStatus.ABSENT); // past date, no IN → ABSENT
+                attendance.setStatus(AttendanceStatus.ABSENT);
             } else if (date.isEqual(LocalDate.now()) && now.isAfter(graceEndTime)) {
-                attendance.setStatus(AttendanceStatus.ABSENT); // today after grace → ABSENT
+                attendance.setStatus(AttendanceStatus.ABSENT);
             } else {
-                attendance.setStatus(null); // before shift start → no status yet
+                attendance.setStatus(null);
             }
 
             attendanceDao.save(attendance);
             return;
         }
 
-        // CASE 2: LOGS EXIST → FIND FIRST IN / LAST OUT
         LocalDateTime firstIn = logs.stream()
                 .filter(l -> "IN".equalsIgnoreCase(l.getDirection()))
                 .map(DeviceAttendanceLog::getPunchTime)
@@ -151,7 +140,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
         attendance.setCheckIn(firstIn != null ? firstIn.toLocalTime() : null);
         attendance.setCheckOut(lastOut != null ? lastOut.toLocalTime() : null);
 
-        // CASE 3: ONLY IN (no OUT yet)
         if (firstIn != null && lastOut == null) {
             attendance.setTotalHours(0.0);
             long lateMinutes = Duration.between(shiftStartTime, firstIn).toMinutes();
@@ -161,7 +149,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
             return;
         }
 
-        // CASE 4: IN + OUT EXISTS
         if (firstIn != null && lastOut != null && lastOut.isAfter(firstIn)) {
             long workedMinutes = Duration.between(firstIn, lastOut).toMinutes();
             double totalHours = workedMinutes / 60.0;
@@ -171,7 +158,6 @@ public class AttendanceServiceImpl implements IAttendanceService {
             long lateMinutes = Duration.between(shiftStartTime, firstIn).toMinutes();
             attendance.setLateMinutes(lateMinutes > ALLOWED_LATE_MINUTES ? lateMinutes : 0L);
 
-            // STATUS DECISION
             if (workedMinutes < (REQUIRED_HOURS * 60) / 2) {
                 attendance.setStatus(AttendanceStatus.HALF_DAY);
             } else if (workedMinutes < (REQUIRED_HOURS * 60)) {

@@ -19,5 +19,4 @@ public class Login extends TenantAwareEntity implements Serializable {
     private String password;
     private String role;
 
-    // tenantId is inherited from TenantAwareEntity
 }

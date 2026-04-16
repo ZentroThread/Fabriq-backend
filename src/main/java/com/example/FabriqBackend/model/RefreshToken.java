@@ -7,10 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-/**
- * Entity for storing refresh tokens in database
- * Refresh tokens have longer lifespan and can be revoked
- */
 @Entity
 @Table(name = "refresh_tokens")
 @Data
@@ -39,8 +35,7 @@ public class RefreshToken {
     
     @Column(nullable = false)
     private boolean revoked = false;
-    
-    // IP address and user agent for security tracking
+
     private String ipAddress;
     private String userAgent;
     

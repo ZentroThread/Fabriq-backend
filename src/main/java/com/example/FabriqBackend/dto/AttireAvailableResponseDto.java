@@ -1,6 +1,5 @@
 package com.example.FabriqBackend.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;

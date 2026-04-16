@@ -97,12 +97,6 @@ public class AttireController {
         return attireService.getAttireByCategoryId(categoryId);
     }
 
-//    @PostMapping("/reserve")
-//    public ResponseEntity<?> reserveItem(@RequestBody ReservationRequest req) {
-//        stockService.reserveItem(req.getAttireCode(), req.getCustomerCode());
-//        return ResponseEntity.ok("Reserved");
-//    }
-
     @PostMapping("/reserve")
     @Operation(summary = "Reserve an attire item", description = "Reserve an attire item for a customer and return updated stock information")
     public ResponseEntity<?> reserveItem(@RequestBody ReservationRequest req) {

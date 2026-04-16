@@ -5,22 +5,21 @@ import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
 import com.example.FabriqBackend.service.ICustomerService;
+import com.example.FabriqBackend.service.kafka.NotificationClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.example.FabriqBackend.service.kafka.NotificationClient;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -35,12 +34,10 @@ public class CustomerServiceImpl implements ICustomerService {
     @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public ResponseEntity<?> addCustomer(Customer customer) {
         Customer savedCustomer = customerDao.save(customer);
-        // send a simple welcome notification event to Kafka for notification-service
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("eventId", UUID.randomUUID().toString());
             event.put("eventType", "WELCOME");
-            // prefer WhatsApp number if present
             String phone = savedCustomer.getCustWhatsappNumber() != null && !savedCustomer.getCustWhatsappNumber().isBlank()
                     ? savedCustomer.getCustWhatsappNumber()
                     : savedCustomer.getCustMobileNumber();
@@ -56,9 +53,6 @@ public class CustomerServiceImpl implements ICustomerService {
 
             notificationClient.sendNotification(event);
         } catch (Exception e) {
-            // log and continue
-            // using lombok logger
-            //noinspection AlibabaAvoidPrintStackTrace
             log.error("Failed to publish welcome notification: {}", e.getMessage());
         }
         return ResponseEntity.ok(savedCustomer);

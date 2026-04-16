@@ -3,7 +3,6 @@ package com.example.FabriqBackend.controller;
 import com.example.FabriqBackend.dto.CustomerUpdateDto;
 import com.example.FabriqBackend.model.Customer;
 import com.example.FabriqBackend.service.ICustomerService;
-import com.example.FabriqBackend.service.impl.CustomerServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/customer")// Base URL for customer-related operations
+@RequestMapping("/v1/customer")
 @RequiredArgsConstructor
 public class CustomerController {
 
@@ -53,9 +52,10 @@ public class CustomerController {
             summary = "Update a customer's details",
             description = "This endpoint allows updating the details of an existing customer by their ID."
     )
-    public ResponseEntity<?> updateCustomer(@PathVariable Integer custId , @RequestBody CustomerUpdateDto customerUpdateDto) {
-        return customerService.updateCustomer(custId,customerUpdateDto);
+    public ResponseEntity<?> updateCustomer(@PathVariable Integer custId, @RequestBody CustomerUpdateDto customerUpdateDto) {
+        return customerService.updateCustomer(custId, customerUpdateDto);
     }
+
     @GetMapping("/{custId}")
     @Operation(
             summary = "Get customer by ID",

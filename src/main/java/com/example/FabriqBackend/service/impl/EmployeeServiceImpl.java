@@ -10,13 +10,12 @@ import com.example.FabriqBackend.service.IEmployeeService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -41,9 +40,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
             value = "employeesAll",
             key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
     )
-    public EmployeeDto addEmployee(EmployeeDto dto, MultipartFile image){
+    public EmployeeDto addEmployee(EmployeeDto dto, MultipartFile image) {
 
-        Employee emp = EmployeeMapper.toEntity(dto,new Employee());
+        Employee emp = EmployeeMapper.toEntity(dto, new Employee());
         Employee savedEmp = empDao.save(emp);
         if (image != null && !image.isEmpty()) {
             try {
@@ -101,12 +100,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
             )
     })
-    public void deleteEmployee(String empCode){
+    public void deleteEmployee(String empCode) {
 
         Employee emp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
         EmployeeBankDetails bankDetails = emp.getEmployeeBankDetails();
-        if(bankDetails != null){
+        if (bankDetails != null) {
             empBankDao.deleteById(bankDetails.getId());
         }
         empDao.deleteByEmpCode(empCode);
@@ -118,7 +117,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             value = "employees",
             key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':' + #empCode"
     )
-    public EmployeeDto fetchEmployeeById(String empCode){
+    public EmployeeDto fetchEmployeeById(String empCode) {
 
         Employee emp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
@@ -128,11 +127,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
 
     @Transactional(readOnly = true)
-//    @Cacheable(
-//            value = "employeesAll",
-//            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
-//    )
-    public List<EmployeeDto> fetchAllEmployees(){
+    public List<EmployeeDto> fetchAllEmployees() {
         List<Employee> empList = empDao.findAll();
         return empList
                 .stream()
@@ -141,7 +136,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeDto> fetchEmployeeByRole(String role){
+    public List<EmployeeDto> fetchEmployeeByRole(String role) {
 
         Optional<Employee> empList = empDao.findByRole(role);
 

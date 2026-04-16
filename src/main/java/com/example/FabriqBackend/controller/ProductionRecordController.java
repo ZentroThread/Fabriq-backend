@@ -92,7 +92,7 @@ public class ProductionRecordController {
 
         ProductionRecordServiceImpl.deleteProductionRecordById(recordId);
         Map<String, String> response = new HashMap<>();
-        response.put("deletedRecord", recordId.toString() );
+        response.put("deletedRecord", recordId.toString());
         return ResponseEntity.ok(response);
     }
 

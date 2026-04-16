@@ -2,13 +2,14 @@ package com.example.FabriqBackend.service.impl;
 
 import com.example.FabriqBackend.dao.*;
 import com.example.FabriqBackend.dto.salary.PayrollResponseDTO;
-import com.example.FabriqBackend.enums.*;
+import com.example.FabriqBackend.enums.AllowanceTypeEnum;
+import com.example.FabriqBackend.enums.AttendanceStatus;
+import com.example.FabriqBackend.enums.DeductionTypeEnum;
+import com.example.FabriqBackend.enums.HolidayCategoryEnum;
 import com.example.FabriqBackend.model.Attendance;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.*;
-import com.example.FabriqBackend.service.payroll.CommissionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,7 +22,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PayrollCalculationServiceImpl {
 
-    // DAOs
     private final PayrollRecordDao payrollRecordDao;
     private final EmployeeDao employeeDao;
     private final AttendanceDao attendanceDao;
@@ -31,7 +31,6 @@ public class PayrollCalculationServiceImpl {
     private final HolidayDao holidayDao;
     private final AdvancePaymentDao advancePaymentDao;
 
-    // Constants
     private static final double EPF_EMPLOYEE_RATE = 0.08;
     private static final double EPF_EMPLOYER_RATE = 0.12;
     private static final double ETF_RATE = 0.03;
@@ -43,7 +42,6 @@ public class PayrollCalculationServiceImpl {
     private static final int DEFAULT_MONTHLY_HOLIDAYS = 5;
     private static final double BREAK_TIME_HOURS = 1.0;
 
-    // Calculate Payroll
     public PayrollResponseDTO calculatePayroll(Long empId, Integer month, Integer year) {
 
         var employee = employeeDao.findById(empId)
@@ -58,30 +56,26 @@ public class PayrollCalculationServiceImpl {
 
         List<Holiday> holidays = holidayDao.findByDateBetween(startDate.toString(), endDate.toString());
 
-        // Allowances
         double totalAllowances = getTotalAllowances(employee, basicSalary);
 
-        // Deductions
         double totalDeductions = getTotalDeductions(employee, basicSalary);
 
-        // Production Pay
         double productionPay = getProductionPay(employee, startDate, endDate);
 
-        // Overtime Pay
         List<Attendance> attendances =
                 attendanceDao.findByEmployee_IdAndDateBetween(employee.getId(), startDate, endDate)
                         .orElse(List.of());
 
         double doubleOTCHours = attendances.stream()
-                .mapToDouble(a -> doubleOTCHoursCalculator(a.getTotalHours(), a.getDate(), holidays,a))
+                .mapToDouble(a -> doubleOTCHoursCalculator(a.getTotalHours(), a.getDate(), holidays, a))
                 .sum();
         double singleOTCHours = attendances.stream()
                 .filter(a -> !isPoyaDay(a.getDate(), holidays))
-                .mapToDouble(a -> singleOTCHoursCalculator(a.getTotalHours(),a))
+                .mapToDouble(a -> singleOTCHoursCalculator(a.getTotalHours(), a))
                 .sum();
 
-        double doubleOTRate = ((basicSalary / STANDARD_WORKING_DAYS)/STANDARD_WORKING_HOURS_IN_DAY) * DOUBLE_OVERTIME_RATE;
-        double singleOTRate = ((basicSalary / STANDARD_WORKING_DAYS)/STANDARD_WORKING_HOURS_IN_DAY) * SINGLE_OVERTIME_RATE;
+        double doubleOTRate = ((basicSalary / STANDARD_WORKING_DAYS) / STANDARD_WORKING_HOURS_IN_DAY) * DOUBLE_OVERTIME_RATE;
+        double singleOTRate = ((basicSalary / STANDARD_WORKING_DAYS) / STANDARD_WORKING_HOURS_IN_DAY) * SINGLE_OVERTIME_RATE;
 
         double doubleOTAmount = doubleOTCHours * doubleOTRate;
         double singleOTAmount = singleOTCHours * singleOTRate;
@@ -89,11 +83,9 @@ public class PayrollCalculationServiceImpl {
         double overtimePay = doubleOTAmount + singleOTAmount;
 
         int monthlyHolidays = DEFAULT_MONTHLY_HOLIDAYS;
-        if(doubleOTAmount > 0){
-            monthlyHolidays --;
+        if (doubleOTAmount > 0) {
+            monthlyHolidays--;
         }
-
-        // Extra Holidays Taken Deduction
 
         double absentDays = attendances.stream()
                 .filter(a ->
@@ -114,35 +106,28 @@ public class PayrollCalculationServiceImpl {
         double attendanceAllowanceDeduction =
                 (baseForDeduction / STANDARD_WORKING_DAYS) * extraHolidaysTaken;
 
-        if(attendanceAllowanceDeduction > 0){
+        if (attendanceAllowanceDeduction > 0) {
             totalAllowances -= attendanceAllowanceDeduction;
         }
-        // Commission
         double salesEarned = 0.0;
         double totalCommissionAmount = 0.0;
-        double commission =calculateCommission(
+        double commission = calculateCommission(
                 employee,
                 employeeDao.sumOfPerformancePointsOfCommissionEligibleEmployees(),
                 totalCommissionAmount
         );
-
-        // Salary Advance 
         double salaryAdvance = getTotalAdvancePayments(employee, startDate, endDate);
-
-        // EPF/ETF
         double epfEmployee = basicSalary * EPF_EMPLOYEE_RATE;
         double epfEmployer = basicSalary * EPF_EMPLOYER_RATE;
         double etf = basicSalary * ETF_RATE;
 
-        // Final salary calculations
         double gross = basicSalary + totalAllowances + commission + overtimePay + productionPay;
         double net = gross - totalDeductions - epfEmployee - salaryAdvance;
 
         return getPayrollResponseDTO(month, year, employee, basicSalary, totalAllowances, totalDeductions, commission, salaryAdvance, productionPay,
-                singleOTCHours,singleOTAmount,doubleOTCHours,doubleOTAmount,singleOTRate,doubleOTRate, overtimePay, epfEmployee, epfEmployer, etf, gross, net,extraHolidaysTaken);
+                singleOTCHours, singleOTAmount, doubleOTCHours, doubleOTAmount, singleOTRate, doubleOTRate, overtimePay, epfEmployee, epfEmployer, etf, gross, net, extraHolidaysTaken);
     }
 
-    // Confirm and Save Payroll
     public PayrollResponseDTO confirmAndSave(Long empId, Integer month, Integer year) {
 
         PayrollResponseDTO calc = calculatePayroll(empId, month, year);
@@ -152,7 +137,6 @@ public class PayrollCalculationServiceImpl {
         return calc;
     }
 
-    // Production Pay
     private double getProductionPay(Employee employee, LocalDate startDate, LocalDate endDate) {
 
         List<ProductionRecord> productionRecords =
@@ -166,7 +150,6 @@ public class PayrollCalculationServiceImpl {
                 .sum();
     }
 
-    // Deductions
     private double getTotalDeductions(Employee employee, double basicSalary) {
 
         List<EmployeeDeduction> deductions =
@@ -184,7 +167,6 @@ public class PayrollCalculationServiceImpl {
         }).sum();
     }
 
-    // Allowances
     private double getTotalAllowances(Employee employee, double basicSalary) {
 
         List<EmployeeAllowance> allowances =
@@ -202,7 +184,6 @@ public class PayrollCalculationServiceImpl {
         }).sum();
     }
 
-    //Advance Payment
     private double getTotalAdvancePayments(Employee employee, LocalDate startDate, LocalDate endDate) {
         List<AdvancePayment> advancePayments =
                 advancePaymentDao.findByEmployeeIdAndDateBetween(employee.getId(), startDate, endDate);
@@ -213,12 +194,11 @@ public class PayrollCalculationServiceImpl {
     }
 
 
-    // Response DTO
     private static PayrollResponseDTO getPayrollResponseDTO(Integer month, Integer year, Employee employee, double basicSalary, double totalAllowances,
-                                                            double totalDeductions, double commission, double salaryAdvance, double productionPay,double singleOTCHours,
-                                                            double singleOTAmount,double doubleOTCHours,double doubleOTAmount,double singleOTRate,double doubleOTRate,
-                                                            double overtimePay, double epfEmployee, double epfEmployer, double etf, double gross, double net,double extraHolidaysTaken) {
-        // Response DTO
+                                                            double totalDeductions, double commission, double salaryAdvance, double productionPay, double singleOTCHours,
+                                                            double singleOTAmount, double doubleOTCHours, double doubleOTAmount, double singleOTRate, double doubleOTRate,
+                                                            double overtimePay, double epfEmployee, double epfEmployer, double etf, double gross, double net, double extraHolidaysTaken) {
+
         PayrollResponseDTO resp = new PayrollResponseDTO();
         resp.setEmpId(Math.toIntExact(employee.getId()));
         resp.setEmpCode(employee.getEmpCode());
@@ -248,7 +228,6 @@ public class PayrollCalculationServiceImpl {
         return resp;
     }
 
-    // Save Payroll Record
     private void extracted(Long empId, Integer month, Integer year, PayrollResponseDTO calc) {
         PayrollRecord record = PayrollRecord.builder()
 
@@ -282,21 +261,21 @@ public class PayrollCalculationServiceImpl {
                         holiday.getDate().equals(date.toString()) && holiday.getCategory() == HolidayCategoryEnum.POYA_DAY);
     }
 
-    private static Double singleOTCHoursCalculator(Double totalHours,Attendance attendance) {
-       if (Objects.equals(attendance.getStatus().toString(), AttendanceStatus.PRESENT.toString())) {
-           double consideredHours = totalHours - BREAK_TIME_HOURS;
-           if (consideredHours <= STANDARD_WORKING_HOURS_IN_DAY) {
-               return 0.0;
-           } else if (consideredHours > STANDARD_WORKING_HOURS_IN_DAY && consideredHours <= 12) {
-               return consideredHours - STANDARD_WORKING_HOURS_IN_DAY;
-           } else {
-               return 3.0;
-           }
-       }
-         return 0.0;
+    private static Double singleOTCHoursCalculator(Double totalHours, Attendance attendance) {
+        if (Objects.equals(attendance.getStatus().toString(), AttendanceStatus.PRESENT.toString())) {
+            double consideredHours = totalHours - BREAK_TIME_HOURS;
+            if (consideredHours <= STANDARD_WORKING_HOURS_IN_DAY) {
+                return 0.0;
+            } else if (consideredHours > STANDARD_WORKING_HOURS_IN_DAY && consideredHours <= 12) {
+                return consideredHours - STANDARD_WORKING_HOURS_IN_DAY;
+            } else {
+                return 3.0;
+            }
+        }
+        return 0.0;
     }
 
-    private static Double doubleOTCHoursCalculator(Double totalHours, LocalDate date, List<Holiday> holidays,Attendance attendance) {
+    private static Double doubleOTCHoursCalculator(Double totalHours, LocalDate date, List<Holiday> holidays, Attendance attendance) {
         if (isPoyaDay(date, holidays) && attendance.getStatus().toString().equals(AttendanceStatus.PRESENT.toString()))
             return totalHours;
         return 0.0;
@@ -309,8 +288,8 @@ public class PayrollCalculationServiceImpl {
 
     private double calculateCommission(Employee employee, double totalPoints, double totalCommissionAmount) {
         if (employee.isCommissionEligible() && totalPoints > 0) {
-           return  (employee.getPerformancePoints() / totalPoints)
-                            * totalCommissionAmount;
+            return (employee.getPerformancePoints() / totalPoints)
+                    * totalCommissionAmount;
         }
         return 0.0;
     }

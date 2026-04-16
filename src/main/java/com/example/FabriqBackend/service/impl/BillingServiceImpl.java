@@ -6,8 +6,8 @@ import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.BillingDao;
 import com.example.FabriqBackend.dao.CustomerDao;
 import com.example.FabriqBackend.dto.AttireRentItemDto;
-import com.example.FabriqBackend.dto.CreateBillingWithRentalsDto;
 import com.example.FabriqBackend.dto.CreateBillingAndPayDto;
+import com.example.FabriqBackend.dto.CreateBillingWithRentalsDto;
 import com.example.FabriqBackend.dto.PayBillingDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
@@ -20,8 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -37,7 +38,7 @@ public class BillingServiceImpl implements IBillingService {
     private final CustomerDao customerDao;
     public final AttireDao attireDao;
     public final AttireRentDao attireRentDao;
-    public  final TemplateEngine templateEngine;
+    public final TemplateEngine templateEngine;
     private final com.example.FabriqBackend.service.kafka.NotificationClient notificationClient;
 
     public ResponseEntity<?> addBilling(Billing billing) {
@@ -50,27 +51,24 @@ public class BillingServiceImpl implements IBillingService {
         billingDao.findAllByTenantId(tenantId);
         return ResponseEntity.ok(billingDao.findAllByTenantId(tenantId));
     }
+
     @Transactional
     public ResponseEntity<?> createBillingWithRentals(CreateBillingWithRentalsDto dto) {
 
         log.info("createBillingWithRentals received dto: {}", dto);
 
-        // 1. Find customer
         Customer customer = customerDao.findByCustCode(dto.getCustomerCode().trim())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        // 2. Create and save Billing
         Billing billing = new Billing();
         billing.setCustomer(customer);
         billing = billingDao.save(billing);
-        billing = billingDao.save(billing); // Save twice to ensure code generation
-        
+        billing = billingDao.save(billing);
+
         double total = 0;
 
-        // 3. Create rentals
         for (AttireRentItemDto item : dto.getItems()) {
 
-            // 🔍 ADD THIS LOGGING
             System.out.println("═══════════════════════════════════════");
             System.out.println("📥 RECEIVED FROM FRONTEND:");
             System.out.println("   attireCode: " + item.getAttireCode());
@@ -88,27 +86,21 @@ public class BillingServiceImpl implements IBillingService {
             rent.setCustomer(customer);
             rent.setBilling(billing);
 
-            // Set codes from entities ONLY
             rent.setAttireCode(attire.getAttireCode());
             rent.setCustCode(customer.getCustCode());
             rent.setBillingCode(billing.getBillingCode());
 
-            // Handle dates properly - frontend sends date-only strings (yyyy-MM-dd)
             LocalDateTime start;
             if (item.getRentDate() != null) {
-                // Use the date from frontend and set time to 00:00:00
                 start = item.getRentDate().atStartOfDay();
             } else {
-                // If no date provided, use current date at 00:00:00
                 start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
             }
 
             LocalDateTime end;
             if (item.getReturnDate() != null) {
-                // Use the date from frontend and set time to 23:59:59
                 end = item.getReturnDate().atTime(23, 59, 59);
             } else {
-                // Default to 3 days after start
                 end = start.plusDays(3).withHour(23).withMinute(59).withSecond(59);
             }
 
@@ -118,16 +110,14 @@ public class BillingServiceImpl implements IBillingService {
             int duration = (int) Math.max(1, ChronoUnit.DAYS.between(start, end));
             rent.setRentDuration(duration);
 
-            total += (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0) ;
+            total += (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0);
             System.out.println(total);
             attireRentDao.save(rent);
         }
 
-        // 4. Update total
         billing.setBillingTotal(String.valueOf(total));
         billingDao.save(billing);
 
-        //log.info("Billing {} total updated to {}", billing.getBillingCode(), billing.getBillingTotal());
 
         return ResponseEntity.ok(billing);
     }
@@ -140,15 +130,13 @@ public class BillingServiceImpl implements IBillingService {
         Customer customer = customerDao.findByCustCode(dto.getCustomerCode().trim())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        // 2. Create and save Billing
         Billing billing = new Billing();
         billing.setCustomer(customer);
         billing = billingDao.save(billing);
-        billing = billingDao.save(billing); // Save twice to ensure code generation
-        
+        billing = billingDao.save(billing);
+
         double subtotal = 0.0;
 
-        // 3. Create rentals
         List<AttireRent> rents = new ArrayList<>();
         for (AttireRentItemDto item : dto.getItems()) {
 
@@ -162,25 +150,20 @@ public class BillingServiceImpl implements IBillingService {
             System.out.println("═══════════════════════════════════════");
 
             AttireRent rent = new AttireRent();
-            
-            // Check if it's a customized item
+
             if (item.getIsCustomItem() != null && item.getIsCustomItem()) {
-                // Handle customized item (no attire in database)
-                rent.setAttire(null); // No attire entity for custom items
+                rent.setAttire(null);
                 rent.setCustomer(customer);
                 rent.setBilling(billing);
 
-                // Set codes
                 rent.setAttireCode(item.getAttireCode().trim());
                 rent.setCustCode(customer.getCustCode());
                 rent.setBillingCode(billing.getBillingCode());
-                
-                // Set custom item fields
+
                 rent.setIsCustomItem(true);
                 rent.setCustomItemName(item.getCustomItemName());
                 rent.setCustomPrice(item.getCustomPrice());
 
-                // Handle dates
                 LocalDateTime start;
                 if (item.getRentDate() != null) {
                     start = item.getRentDate().atStartOfDay();
@@ -207,9 +190,8 @@ public class BillingServiceImpl implements IBillingService {
 
                 attireRentDao.save(rent);
                 rents.add(rent);
-                
+
             } else {
-                // Handle regular item (existing attire in database)
                 Attire attire = attireDao.findByAttireCode(item.getAttireCode().trim());
                 if (attire == null) continue;
 
@@ -217,12 +199,10 @@ public class BillingServiceImpl implements IBillingService {
                 rent.setCustomer(customer);
                 rent.setBilling(billing);
 
-                // Set codes from entities ONLY
                 rent.setAttireCode(attire.getAttireCode());
                 rent.setCustCode(customer.getCustCode());
                 rent.setBillingCode(billing.getBillingCode());
 
-                // Handle dates properly - frontend sends date-only strings (yyyy-MM-dd)
                 LocalDateTime start;
                 if (item.getRentDate() != null) {
                     start = item.getRentDate().atStartOfDay();
@@ -244,20 +224,18 @@ public class BillingServiceImpl implements IBillingService {
                 rent.setRentDuration(duration);
 
                 subtotal += (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0);
-            
+
                 attireRentDao.save(rent);
                 rents.add(rent);
             }
         }
 
-        // 4. Calculate discount and total
         double discountPerc = dto.getDiscountPercentage() != null ? dto.getDiscountPercentage() : 0.0;
         discountPerc = Math.max(0, Math.min(100, discountPerc));
 
         double discountAmount = subtotal * (discountPerc / 100.0);
         double total = subtotal - discountAmount;
 
-        // 5. Update billing with payment details
         billing.setBillingTotal(String.valueOf(total));
         billing.setBillingStatus("PAID");
         billing.setBillingType(dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "cash");
@@ -265,19 +243,16 @@ public class BillingServiceImpl implements IBillingService {
 
         log.info("Billing {} created and marked as PAID", billing.getBillingCode());
 
-        // 6. Prepare data for template
         Context context = new Context();
         context.setVariable("customerName", customer.getCustName());
         context.setVariable("billingCode", billing.getBillingCode());
         context.setVariable("mobile", customer.getCustMobileNumber());
 
-        // Prepare items for template
         List<Map<String, Object>> itemList = new ArrayList<>();
         for (AttireRent r : rents) {
             Map<String, Object> item = new HashMap<>();
             String code = r.getAttireCode();
-            
-            // Check if it's a custom item
+
             double price;
             if (r.getIsCustomItem() != null && r.getIsCustomItem()) {
                 price = r.getCustomPrice() != null ? r.getCustomPrice() : 0.0;
@@ -287,7 +262,6 @@ public class BillingServiceImpl implements IBillingService {
             }
             double lineTotal = price;
 
-            // Format return date for display
             String returnDateStr = "-";
             if (r.getReturnDate() != null) {
                 returnDateStr = r.getReturnDate().toLocalDate().toString();
@@ -305,7 +279,6 @@ public class BillingServiceImpl implements IBillingService {
         context.setVariable("total", total);
         context.setVariable("paymentMethod", dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "cash");
 
-        // 7. Generate HTML
         String billHtml = templateEngine.process("bill", context);
 
         Map<String, Object> resp = new HashMap<>();
@@ -313,7 +286,6 @@ public class BillingServiceImpl implements IBillingService {
         resp.put("items", rents);
         resp.put("billHtml", billHtml);
 
-        // 8. Publish notification event
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("eventId", UUID.randomUUID().toString());
@@ -334,21 +306,20 @@ public class BillingServiceImpl implements IBillingService {
             templateData.put("total", String.valueOf(total));
             templateData.put("paymentMethod", dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "cash");
 
-            // Build items summary for notifications
             StringBuilder itemsSb = new StringBuilder();
             for (AttireRent r : rents) {
                 String code = r.getAttireCode();
-                
+
                 // Check if it's a custom item
                 double price;
                 if (r.getIsCustomItem() != null && r.getIsCustomItem()) {
                     price = r.getCustomPrice() != null ? r.getCustomPrice() : 0.0;
                 } else {
-                    price = r.getAttire() != null && r.getAttire().getAttirePrice() != null ? 
+                    price = r.getAttire() != null && r.getAttire().getAttirePrice() != null ?
                             r.getAttire().getAttirePrice() : 0.0;
                 }
-                
-                itemsSb.append(code).append(":Rs.").append((long)price).append("; ");
+
+                itemsSb.append(code).append(":Rs.").append((long) price).append("; ");
             }
             templateData.put("items", itemsSb.toString());
             event.put("templateData", templateData);
@@ -374,7 +345,6 @@ public class BillingServiceImpl implements IBillingService {
         Billing billing = billingDao.findByBillingCode(billingCode);
         if (billing == null) return ResponseEntity.badRequest().body("Billing not found");
 
-        // Find attire rents
         double subtotal = 0.0;
         List<AttireRent> allRents = attireRentDao.findAll();
         List<AttireRent> rents = new ArrayList<>();
@@ -382,7 +352,6 @@ public class BillingServiceImpl implements IBillingService {
             if (billingCode.equals(r.getBillingCode())) {
                 rents.add(r);
                 if (r.getAttire() != null && r.getAttire().getAttirePrice() != null) {
-                    // Use unit price only (do NOT multiply by rent duration)
                     subtotal += r.getAttire().getAttirePrice();
                 }
             }
@@ -394,15 +363,11 @@ public class BillingServiceImpl implements IBillingService {
         double discountAmount = subtotal * (discountPerc / 100.0);
         double total = subtotal - discountAmount;
 
-        // Update billing
         billing.setBillingTotal(String.valueOf(total));
         billing.setBillingStatus("PAID");
         billing.setBillingType(dto.getPaymentMethod());
         billingDao.save(billing);
 
-        //log.info("Billing {} marked as PAID", billing.getBillingCode());
-
-        // Prepare data for template
         Context context = new Context();
         context.setVariable("customerName",
                 billing.getCustomer() != null ? billing.getCustomer().getCustName() : "-");
@@ -410,19 +375,17 @@ public class BillingServiceImpl implements IBillingService {
         context.setVariable("mobile",
                 billing.getCustomer() != null ? billing.getCustomer().getCustMobileNumber() : "-");
 
-        // Prepare items for template
         List<Map<String, Object>> itemList = new ArrayList<>();
         for (AttireRent r : rents) {
             Map<String, Object> item = new HashMap<>();
             String code = r.getAttireCode() != null ? r.getAttireCode() :
                     (r.getAttire() != null ? r.getAttire().getAttireCode() : "-");
-                double price = r.getAttire() != null && r.getAttire().getAttirePrice() != null ?
+            double price = r.getAttire() != null && r.getAttire().getAttirePrice() != null ?
                     r.getAttire().getAttirePrice() : 0.0;
-                // Show unit price only
-                double lineTotal = price;
+            double lineTotal = price;
 
-                item.put("code", code);
-                item.put("price", lineTotal);
+            item.put("code", code);
+            item.put("price", lineTotal);
             itemList.add(item);
         }
         context.setVariable("items", itemList);
@@ -432,7 +395,6 @@ public class BillingServiceImpl implements IBillingService {
         context.setVariable("total", total);
         context.setVariable("paymentMethod", dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "-");
 
-        // Generate HTML
         String billHtml = templateEngine.process("bill", context);
 
         Map<String, Object> resp = new HashMap<>();
@@ -440,7 +402,6 @@ public class BillingServiceImpl implements IBillingService {
         resp.put("items", rents);
         resp.put("billHtml", billHtml);
 
-        // Publish a notification event so the notification-service can send WhatsApp/email
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("eventId", UUID.randomUUID().toString());
@@ -456,19 +417,16 @@ public class BillingServiceImpl implements IBillingService {
 
             Map<String, String> templateData = new HashMap<>();
             templateData.put("billingCode", billing.getBillingCode() == null ? "" : billing.getBillingCode());
-            // Add amount/orderId keys expected by notification-service
             templateData.put("amount", String.valueOf(total));
             templateData.put("orderId", billing.getBillingCode() == null ? "" : billing.getBillingCode());
             templateData.put("total", String.valueOf(total));
             templateData.put("paymentMethod", dto.getPaymentMethod() == null ? "" : dto.getPaymentMethod());
-
-            // Build a short items summary for notifications
             StringBuilder itemsSb = new StringBuilder();
             if (rents != null) {
                 for (AttireRent r : rents) {
                     String code = r.getAttireCode() != null ? r.getAttireCode() : (r.getAttire() != null ? r.getAttire().getAttireCode() : "-");
                     double price = r.getAttire() != null && r.getAttire().getAttirePrice() != null ? r.getAttire().getAttirePrice() : 0.0;
-                    itemsSb.append(code).append(":Rs.").append((long)price).append("; ");
+                    itemsSb.append(code).append(":Rs.").append((long) price).append("; ");
                 }
             }
             templateData.put("items", itemsSb.toString());

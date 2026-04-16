@@ -13,6 +13,6 @@ public class AttireRentDto {
     private String custCode;
     private String billingCode;
     private Integer rentDuration;
-    private String rentDate; // ISO string
-    private String returnDate; // ISO string
+    private String rentDate;
+    private String returnDate;
 }

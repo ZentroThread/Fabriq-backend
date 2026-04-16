@@ -1,7 +1,6 @@
 package com.example.FabriqBackend.dao;
 
 import com.example.FabriqBackend.model.Attire;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +14,5 @@ public interface AttireDao extends TenantAwareDao<Attire, Integer> {
 
     List<Attire> findByCategoryCategoryId(Integer categoryId);
 
-    List<Attire> findAllByTenantId(String tenantId);
 
 }

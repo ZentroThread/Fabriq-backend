@@ -13,15 +13,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@RestController //base url for user related operations
+@RestController
 @RequestMapping("/v1/user")
-@RequiredArgsConstructor//lombok will create constructor for all final fields
+@RequiredArgsConstructor
 public class UserController {
 
 
     private final UserServiceImpl userService;
 
-    @PostMapping("/register") //register new user
+    @PostMapping("/register")
     @Operation(
             summary = "Register a new user",
             description = "This endpoint allows registering a new user by providing the necessary details in the request body."
@@ -30,7 +30,7 @@ public class UserController {
         return userService.registerUser(user);
     }
 
-    @PostMapping("/login") //login existing user
+    @PostMapping("/login")
     @Operation(
             summary = "Login an existing user",
             description = "This endpoint allows an existing user to log in by providing their credentials in the request body."
@@ -39,7 +39,7 @@ public class UserController {
         return userService.verify(user, request, response);
     }
 
-    @GetMapping("/me") //get current user details
+    @GetMapping("/me")
     @Operation(
             summary = "Get current user details",
             description = "This endpoint returns the details of the currently authenticated user."
@@ -54,7 +54,7 @@ public class UserController {
         throw new RuntimeException("User not authenticated");
     }
 
-    @PostMapping("/logout") //logout user and clear cookie
+    @PostMapping("/logout")
     @Operation(
             summary = "Logout user",
             description = "This endpoint logs out the user by clearing the JWT token cookie."
@@ -63,16 +63,16 @@ public class UserController {
         return userService.logout(response);
     }
 
-    @PostMapping("/refresh") //refresh access token using refresh token
+    @PostMapping("/refresh")
     @Operation(
             summary = "Refresh access token",
             description = "This endpoint refreshes the access token using a valid refresh token from the cookie."
     )
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response)  {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         return userService.refreshAccessToken(request, response);
     }
 
-    @GetMapping("/token-status") //check token validity
+    @GetMapping("/token-status")
     @Operation(
             summary = "Check token status",
             description = "This endpoint checks the current access token validity and returns token information."
@@ -81,7 +81,7 @@ public class UserController {
         return userService.checkTokenStatus(request);
     }
 
-    @PostMapping("/change-password") //change user password
+    @PostMapping("/change-password")
     @Operation(
             summary = "Change user password",
             description = "This endpoint allows the authenticated user to change their password."

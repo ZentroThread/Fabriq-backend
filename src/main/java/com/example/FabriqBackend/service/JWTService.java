@@ -25,11 +25,9 @@ public class JWTService {
     @Value("${jwt.secret.key:}")
     private String secretKey;
 
-    // Token expiration times
-    private static final long ACCESS_TOKEN_VALIDITY =   60 * 60 * 1000; // 1 hour
-    private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 days
+    private static final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000;
+    private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000;
 
-    // Initialize secretKey after properties are set. If none provided, generate a 256-bit key and warn.
     @PostConstruct
     public void init() {
         if (secretKey == null || secretKey.isBlank()) {
@@ -40,13 +38,10 @@ public class JWTService {
         }
     }
 
-    /**
-     * Generate access token with configured expiration
-     */
     public String generateAccessToken(String username, String tenantId, Integer userId, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("tenantId", tenantId);
-        claims.put("userId", userId); // Store as Integer directly
+        claims.put("userId", userId);
         claims.put("role", role);
         claims.put("type", "access");
 
@@ -62,10 +57,6 @@ public class JWTService {
     }
 
 
-
-    /**
-     * Generate refresh token with 7 days expiration
-     */
     public String generateRefreshToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", "refresh");
@@ -81,9 +72,6 @@ public class JWTService {
                 .compact();
     }
 
-    /**
-     * @deprecated Use generateAccessToken instead
-     */
     @Deprecated
     public String generateToken(String username, String tenantId, Integer userId, String role) {
         return generateAccessToken(username, tenantId, userId, role);
@@ -110,15 +98,6 @@ public class JWTService {
         return extractClaim(token, claims -> claims.get("tenantId", String.class));
     }
 
-    public Integer extractUserId(String token) {
-        // Extract as Integer to match the type stored in the token
-        return extractClaim(token, claims -> claims.get("userId", Integer.class));
-    }
-
-    public String extractRole(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
-    }
-
     public String extractTokenType(String token) {
         return extractClaim(token, claims -> claims.get("type", String.class));
     }
@@ -141,9 +120,6 @@ public class JWTService {
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    /**
-     * Validate access token - checks both expiration and token type
-     */
     public boolean validateAccessToken(String token, UserDetails userDetails) {
         try {
             final String userName = extractUserName(token);
@@ -167,9 +143,6 @@ public class JWTService {
         }
     }
 
-    /**
-     * Validate refresh token - checks expiration and token type
-     */
     public boolean validateRefreshToken(String token) {
         try {
             final String tokenType = extractTokenType(token);

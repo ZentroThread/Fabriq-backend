@@ -18,8 +18,8 @@ public class TenantController {
 
     @GetMapping("/current")
     @Operation(
-        summary = "Get current tenant information",
-        description = "Returns the tenant information for the currently authenticated user"
+            summary = "Get current tenant information",
+            description = "Returns the tenant information for the currently authenticated user"
     )
     public ResponseEntity<Tenant> getCurrentTenant() {
         return tenantService.getCurrentTenantInfo()
@@ -29,8 +29,8 @@ public class TenantController {
 
     @GetMapping("/{tenantId}")
     @Operation(
-        summary = "Get tenant by ID",
-        description = "Returns tenant information by tenant ID"
+            summary = "Get tenant by ID",
+            description = "Returns tenant information by tenant ID"
     )
     public ResponseEntity<Tenant> getTenantById(@PathVariable String tenantId) {
         return tenantService.getTenantById(tenantId)
@@ -40,8 +40,8 @@ public class TenantController {
 
     @PutMapping("/{tenantId}")
     @Operation(
-        summary = "Update tenant information",
-        description = "Updates tenant details like name, email, phone, address etc."
+            summary = "Update tenant information",
+            description = "Updates tenant details like name, email, phone, address etc."
     )
     public ResponseEntity<Tenant> updateTenant(
             @PathVariable String tenantId,
@@ -57,8 +57,8 @@ public class TenantController {
 
     @PutMapping("/current")
     @Operation(
-        summary = "Update current tenant information",
-        description = "Updates the tenant information for the currently authenticated user's tenant"
+            summary = "Update current tenant information",
+            description = "Updates the tenant information for the currently authenticated user's tenant"
     )
     public ResponseEntity<Tenant> updateCurrentTenant(@RequestBody Tenant tenant) {
         return tenantService.getCurrentTenantInfo()
@@ -71,8 +71,8 @@ public class TenantController {
 
     @GetMapping("/all")
     @Operation(
-        summary = "Get all tenants",
-        description = "Returns a list of all tenants (Admin only)"
+            summary = "Get all tenants",
+            description = "Returns a list of all tenants (Admin only)"
     )
     public ResponseEntity<Iterable<Tenant>> getAllTenants() {
         return ResponseEntity.ok(tenantService.getAllTenants());

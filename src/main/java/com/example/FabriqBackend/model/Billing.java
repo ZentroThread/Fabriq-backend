@@ -36,7 +36,6 @@ public class Billing  extends TenantAwareEntity implements Serializable {
     @PrePersist
     public void generateCode() {
         if (this.billingCode == null) {
-            // Generate random unique code: BIL-20251229-XXXX
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             String random = String.format("%04d", (int)(Math.random() * 10000));
             this.billingCode = "BIL-" + timestamp + "-" + random;

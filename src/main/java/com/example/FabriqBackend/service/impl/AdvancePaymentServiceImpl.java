@@ -69,17 +69,17 @@ public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
     }
 
     @Override
-    public List<AdvancePaymentResponseDTO> getAdvancePaymentsByEmployeeIdAndDateRange(Long empId,String startDate, String endDate) {
+    public List<AdvancePaymentResponseDTO> getAdvancePaymentsByEmployeeIdAndDateRange(Long empId, String startDate, String endDate) {
 
         employeeDao.findById(empId).orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
 
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
         List<AdvancePayment> advancePayment = advancePaymentDao.findByEmployeeIdAndDateBetween(empId, start, end);
-        if(advancePayment.isEmpty()){
+        if (advancePayment.isEmpty()) {
             return List.of();
         }
 
-        return  advancePayment.stream().map(AdvancePaymentMapper::toDto).collect(Collectors.toList());
+        return advancePayment.stream().map(AdvancePaymentMapper::toDto).collect(Collectors.toList());
     }
 }

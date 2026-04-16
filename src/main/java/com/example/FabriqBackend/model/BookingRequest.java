@@ -21,7 +21,7 @@ public class BookingRequest {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private String status = "PENDING"; // PENDING, APPROVED, REJECTED
+    private String status = "PENDING";
     private String customerName;
     private String userEmail;
 

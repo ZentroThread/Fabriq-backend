@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 public class T52PunchDto {
 
-    // New firmware fields
     @JsonProperty("UserID")
     private String userID;
 
@@ -16,7 +15,6 @@ public class T52PunchDto {
     @JsonProperty("Direction")
     private String direction;
 
-    // Old firmware fields
     @JsonProperty("emp_code")
     private String empCode;
 

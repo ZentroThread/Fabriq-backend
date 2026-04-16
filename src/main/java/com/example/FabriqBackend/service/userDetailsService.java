@@ -12,37 +12,29 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 
 @Service
 public class userDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserDao userDao;   // internal users
+    private UserDao userDao;
 
     @Autowired
-    private CustDao custDao;   // Google users
+    private CustDao custDao;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-       // System.out.println(" Trying to load user: " + username);
-
-        //  Try internal users (username login)
         Login internalUser = userDao.findByUsername(username);
 
         if (internalUser != null) {
-           // System.out.println(" Found INTERNAL user: " + internalUser.getUsername());
             return new UserPrincipal(internalUser);
         }
 
-        //  Try Google / customer users (email login)
         User customer = custDao.findByEmail(username).orElse(null);
 
         if (customer != null) {
-            //System.out.println(" Found CUSTOMER user: " + customer.getEmail());
-
             return new org.springframework.security.core.userdetails.User(
                     customer.getEmail(),
                     customer.getPassword() != null ? customer.getPassword() : "N/A",
@@ -50,7 +42,6 @@ public class userDetailsService implements UserDetailsService {
             );
         }
 
-        //  Not found anywhere
         throw new UsernameNotFoundException("User not found: " + username);
     }
 }

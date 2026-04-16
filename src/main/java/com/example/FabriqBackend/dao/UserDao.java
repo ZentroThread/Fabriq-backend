@@ -7,9 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserDao extends TenantAwareDao<Login, Integer> {
-    
-    // This query bypasses tenant filtering for authentication purposes
-    // We need to load the user WITH their tenantId to SET the tenant context
+
     @Query("SELECT u FROM Login u WHERE u.username = :username")
     Login findByUsername(@Param("username") String username);
 }

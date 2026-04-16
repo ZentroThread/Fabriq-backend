@@ -1,6 +1,5 @@
 package com.example.FabriqBackend.controller;
 
-import com.example.FabriqBackend.dto.AttireAvailabilityRequestDto;
 import com.example.FabriqBackend.dto.AttireAvailableResponseDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.service.IAttireRentService;

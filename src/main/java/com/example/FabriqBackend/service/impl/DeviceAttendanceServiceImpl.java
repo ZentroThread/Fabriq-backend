@@ -19,7 +19,6 @@ public class DeviceAttendanceServiceImpl {
     private final DeviceAttendanceLogDao deviceAttendanceLogDao;
     private final AttendanceServiceImpl attendanceService;
 
-    // Process punch data from T52 device
     public void processPunch(T52PunchDto dto){
 
         String empCode;
@@ -27,12 +26,10 @@ public class DeviceAttendanceServiceImpl {
         String direction;
 
         if(dto.getEmpCode() != null && dto.getPunchTime() != null){
-            // Old firmware
             empCode = dto.getEmpCode();
             punchTime = parseTime(dto.getPunchTime());
             direction = normalizeDirection(dto.getStatus().toString());
         } else {
-            // New firmware
             empCode = dto.getUserID();
             punchTime = parseTime(dto.getLogDate());
             direction = normalizeDirection(dto.getDirection());
@@ -43,17 +40,14 @@ public class DeviceAttendanceServiceImpl {
         attendanceLog.setPunchTime(punchTime);
         attendanceLog.setDirection(direction);
 
-        // Save device log
         deviceAttendanceLogDao.save(attendanceLog);
 
-        // Immediately update attendance
         attendanceService.updateDailyAttendance(
                 empCode,
                 punchTime.toLocalDate()
         );
     }
 
-    // Normalize direction to "IN" or "OUT"
     private String normalizeDirection(String dir){
 
         if(dir == null){
@@ -71,7 +65,6 @@ public class DeviceAttendanceServiceImpl {
         }
     }
 
-    // Parse time from different formats
     private LocalDateTime parseTime(String input) {
         try {
             return LocalDateTime.parse(input);

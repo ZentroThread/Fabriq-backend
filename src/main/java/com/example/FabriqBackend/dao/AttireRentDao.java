@@ -11,20 +11,14 @@ import java.util.List;
 @Repository
 public interface AttireRentDao extends TenantAwareDao<AttireRent, Integer> {
 
-    AttireRent findByIdAndTenantId(Integer id, String tenantId);
-
-    List<AttireRent> findAllByTenantId(String tenantId);
-
-
     List<AttireRent> findAllByBillingCode(String billingCode);
 
-    List<AttireRent> findByAttireId(Integer id);
 
     @Query("""
-        SELECT ar FROM AttireRent ar
-        WHERE ar.attireCode = :attireCode
-        AND ar.returnDate >= :blockedFrom
-    """)
+                SELECT ar FROM AttireRent ar
+                WHERE ar.attireCode = :attireCode
+                AND ar.returnDate >= :blockedFrom
+            """)
     List<AttireRent> findConflictingRents(
             @Param("attireCode") String attireCode,
             @Param("blockedFrom") LocalDateTime blockedFrom
@@ -32,7 +26,4 @@ public interface AttireRentDao extends TenantAwareDao<AttireRent, Integer> {
 
     List<AttireRent> findAllByAttireCode(String attireCode);
 
-//    List<AttireRent> findAllByAttireCodeAndRentDateAfter(String attireCode, java.time.LocalDateTime dateTime);
-//
-//    List<AttireRent> findAllByAttireCodeAndRentDateBefore(String attireCode, java.time.LocalDateTime dateTime);
 }

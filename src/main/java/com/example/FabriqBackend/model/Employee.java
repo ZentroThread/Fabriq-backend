@@ -38,31 +38,24 @@ public class Employee extends TenantAwareEntity {
     private boolean commissionEligible;
     private Integer performancePoints;
 
-    //production records relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
     private List<ProductionRecord> productionRecords;
 
-    //employee allowances relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
     private List<EmployeeAllowance> employeeAllowances;
 
-    //employee deductions relationship
     @OneToMany (mappedBy = "employee", cascade = CascadeType.ALL)
     private List<EmployeeDeduction> employeeDeductions;
 
-    //attendance relationship
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Attendance> attendances;
 
-    //payroll records relationship
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<PayrollRecord> payrollRecords;
 
-    //Advance payments relationship
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<AdvancePayment> advancePayments;
 
-    //employee bank details relationship
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_details_id")
     private EmployeeBankDetails employeeBankDetails;

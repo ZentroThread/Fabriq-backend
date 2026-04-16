@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ChatMessage {
     private String senderId;
-    private String senderRole; // "SALES_ASSISTANT" or "CASHIER"
+    private String senderRole;
     private String receiverRole; 
 
     private String content;
