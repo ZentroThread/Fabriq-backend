@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dao.ProductionRecordDao;
 import com.example.FabriqBackend.dto.salary.ProductionRecordRequestDTO;
@@ -7,7 +9,7 @@ import com.example.FabriqBackend.dto.salary.ProductionRecordResponseDTO;
 import com.example.FabriqBackend.mapper.ProductionRecordMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.ProductionRecord;
-import com.example.FabriqBackend.service.IProductionRecordService;
+import com.example.FabriqBackend.service.Interface.IProductionRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class ProductionRecordServiceImpl implements IProductionRecordService {
 
     private final ProductionRecordDao productionRecordDao;

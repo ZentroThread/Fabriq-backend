@@ -2,7 +2,7 @@ package com.example.FabriqBackend.config;
 
 import com.example.FabriqBackend.dao.CustDao;
 import com.example.FabriqBackend.model.User;
-import com.example.FabriqBackend.service.JWTService;
+import com.example.FabriqBackend.service.impl.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

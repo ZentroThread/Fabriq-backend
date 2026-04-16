@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.*;
 import com.example.FabriqBackend.dto.salary.PayrollResponseDTO;
 import com.example.FabriqBackend.enums.AllowanceTypeEnum;
@@ -20,6 +22,8 @@ import java.util.Optional;
 
 
 @RequiredArgsConstructor
+@Slf4j
+
 public class PayrollCalculationServiceImpl {
 
     private final PayrollRecordDao payrollRecordDao;
@@ -43,6 +47,7 @@ public class PayrollCalculationServiceImpl {
     private static final double BREAK_TIME_HOURS = 1.0;
 
     public PayrollResponseDTO calculatePayroll(Long empId, Integer month, Integer year) {
+        log.info("Calculating payroll for empId={} month={} year={}", empId, month, year);
 
         var employee = employeeDao.findById(empId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -63,12 +68,13 @@ public class PayrollCalculationServiceImpl {
         double productionPay = getProductionPay(employee, startDate, endDate);
 
         List<Attendance> attendances =
-                attendanceDao.findByEmployee_IdAndDateBetween(employee.getId(), startDate, endDate)
-                        .orElse(List.of());
+            attendanceDao.findByEmployee_IdAndDateBetween(employee.getId(), startDate, endDate)
+                .orElse(List.of());
+        log.debug("Found {} attendance records for empId={}", attendances.size(), empId);
 
         double doubleOTCHours = attendances.stream()
-                .mapToDouble(a -> doubleOTCHoursCalculator(a.getTotalHours(), a.getDate(), holidays, a))
-                .sum();
+            .mapToDouble(a -> doubleOTCHoursCalculator(a.getTotalHours(), a.getDate(), holidays, a))
+            .sum();
         double singleOTCHours = attendances.stream()
                 .filter(a -> !isPoyaDay(a.getDate(), holidays))
                 .mapToDouble(a -> singleOTCHoursCalculator(a.getTotalHours(), a))
@@ -88,17 +94,18 @@ public class PayrollCalculationServiceImpl {
         }
 
         double absentDays = attendances.stream()
-                .filter(a ->
-                        !isPoyaDay(a.getDate(), holidays)
-                )
-                .mapToDouble(a -> a.getStatus().getDayValue())
-                .sum();
+            .filter(a ->
+                !isPoyaDay(a.getDate(), holidays)
+            )
+            .mapToDouble(a -> a.getStatus().getDayValue())
+            .sum();
 
 
         double extraHolidaysTaken = extraHolidaysTakenCalculator(
                 absentDays,
                 monthlyHolidays
         );
+        log.debug("absentDays={} extraHolidaysTaken={}", absentDays, extraHolidaysTaken);
 
         double baseForDeduction =
                 (totalAllowances > 0 ? totalAllowances : basicSalary);
@@ -108,13 +115,14 @@ public class PayrollCalculationServiceImpl {
 
         if (attendanceAllowanceDeduction > 0) {
             totalAllowances -= attendanceAllowanceDeduction;
+            log.debug("Attendance allowance deduction applied: {} newTotalAllowances={}", attendanceAllowanceDeduction, totalAllowances);
         }
         double salesEarned = 0.0;
         double totalCommissionAmount = 0.0;
         double commission = calculateCommission(
-                employee,
-                employeeDao.sumOfPerformancePointsOfCommissionEligibleEmployees(),
-                totalCommissionAmount
+            employee,
+            employeeDao.sumOfPerformancePointsOfCommissionEligibleEmployees(),
+            totalCommissionAmount
         );
         double salaryAdvance = getTotalAdvancePayments(employee, startDate, endDate);
         double epfEmployee = basicSalary * EPF_EMPLOYEE_RATE;
@@ -123,6 +131,8 @@ public class PayrollCalculationServiceImpl {
 
         double gross = basicSalary + totalAllowances + commission + overtimePay + productionPay;
         double net = gross - totalDeductions - epfEmployee - salaryAdvance;
+
+        log.info("Payroll calculated for empId={} month={} year={} gross={} net={}", empId, month, year, gross, net);
 
         return getPayrollResponseDTO(month, year, employee, basicSalary, totalAllowances, totalDeductions, commission, salaryAdvance, productionPay,
                 singleOTCHours, singleOTAmount, doubleOTCHours, doubleOTAmount, singleOTRate, doubleOTRate, overtimePay, epfEmployee, epfEmployer, etf, gross, net, extraHolidaysTaken);
@@ -154,6 +164,7 @@ public class PayrollCalculationServiceImpl {
 
         List<EmployeeDeduction> deductions =
                 employeeDeductionDao.findByEmployee_Id(employee.getId()).orElse(List.of());
+        log.debug("Found {} deduction records for employee id={}", deductions.size(), employee.getId());
 
         return deductions.stream().mapToDouble(ed -> {
             DeductionType dt = ed.getDeductionType();
@@ -253,6 +264,7 @@ public class PayrollCalculationServiceImpl {
                 .build();
 
         payrollRecordDao.save(record);
+        log.info("Saved payroll record for empId={} month={} year={} recordId={}", empId, month, year, record.getId());
     }
 
     private static boolean isPoyaDay(LocalDate date, List<Holiday> holidays) {

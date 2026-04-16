@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.salary.AdvancePaymentRequestDTO;
 import com.example.FabriqBackend.dto.salary.AdvancePaymentResponseDTO;
-import com.example.FabriqBackend.service.IAdvancePaymentService;
+import com.example.FabriqBackend.service.Interface.IAdvancePaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

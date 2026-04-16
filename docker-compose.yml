@@ -1,11 +1,11 @@
 services:
   # 1. Your Spring Boot Application
   backend:
-    build: .                  # Builds from your Dockerfile in this folder
+    build: .
     container_name: fabriq-backend
     restart: always
     ports:
-      - "3000:8081"           # CONNECTS HOST(3000) -> CONTAINER(8081)
+      - "3000:8081"
     environment:
       - AWS_RDS_DB_URL=${AWS_RDS_DB_URL}
       - AWS_RDS_DB_USER=${AWS_RDS_DB_USER}
@@ -15,7 +15,7 @@ services:
       - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
       - AWS_S3_EMP_BUCKET_NAME=${AWS_S3_EMP_BUCKET_NAME}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}   # This tells the app to look for the service named 'redis' below
+      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}
     depends_on:
       - redis
 

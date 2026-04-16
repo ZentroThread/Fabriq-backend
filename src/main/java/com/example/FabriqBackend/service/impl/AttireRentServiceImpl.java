@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.AttireRentDao;
 import com.example.FabriqBackend.dao.CustomerDao;
@@ -9,7 +11,7 @@ import com.example.FabriqBackend.dto.AttireRentDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.IAttireRentService;
+import com.example.FabriqBackend.service.Interface.IAttireRentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "attireRents")
+@Slf4j
+
 public class AttireRentServiceImpl implements IAttireRentService {
 
     private final AttireRentDao attireRentDao;
@@ -39,6 +43,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
 
     @CachePut(key = "'attire added for rent.'")
     public ResponseEntity<?> addAttireRent(AttireRentAddDto attireRentAddDto) {
+        log.info("addAttireRent called for attireCode={} customerCode={}", attireRentAddDto != null ? attireRentAddDto.getAttireCode() : null, attireRentAddDto != null ? attireRentAddDto.getCustomerCode() : null);
         AttireRent attireRent = modelMapper.map(attireRentAddDto, AttireRent.class);
         Customer customer = customerDao.findByCustCode(attireRentAddDto.getCustomerCode()).orElse(null);
         if (customer == null) {
@@ -52,16 +57,18 @@ public class AttireRentServiceImpl implements IAttireRentService {
         }
         attireRent.setAttire(attire);
 
-        attireRentDao.save(attireRent);
-        return new ResponseEntity<>(attireRent, HttpStatus.CREATED);
+        AttireRent saved = attireRentDao.save(attireRent);
+        log.info("AttireRent created id={} attireCode={} custCode={}", saved.getId(), saved.getAttireCode(), saved.getCustCode());
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
 
     @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
     public List<AttireRentDto> getAllAttireRent() {
+        log.debug("Fetching all attire rents");
         return attireRentDao.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
     }
 
     private AttireRentDto convertToDto(AttireRent rent) {
@@ -85,6 +92,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
 
     @CachePut(key = "'updateAttireRent:' + #id")
     public ResponseEntity<?> updateAttireRent(Integer id, AttireRentAddDto dto) {
+        log.info("updateAttireRent called for id={}", id);
 
         AttireRent existing = attireRentDao.findById(id)
                 .map(attireRent -> {
@@ -108,11 +116,13 @@ public class AttireRentServiceImpl implements IAttireRentService {
             return new ResponseEntity<>("AttireRent not found", HttpStatus.NOT_FOUND);
         }
         AttireRent updated = attireRentDao.save(existing);
+        log.info("Updated AttireRent id={} attireCode={} custCode={}", updated.getId(), updated.getAttireCode(), updated.getCustCode());
 
         return ResponseEntity.ok(updated);
     }
 
     public ResponseEntity<?> getAttireRentsByBillingCode(String billingCode) {
+        log.info("getAttireRentsByBillingCode called for billingCode={}", billingCode);
         if (billingCode == null) return ResponseEntity.badRequest().body("billingCode required");
         List<AttireRent> rents = attireRentDao.findAllByBillingCode(billingCode.trim());
         List<com.example.FabriqBackend.dto.AttireRentDto> list = rents.stream().map(r -> {
@@ -133,34 +143,39 @@ public class AttireRentServiceImpl implements IAttireRentService {
 
     @Override
     public AttireAvailableResponseDto checkAvailability(String attireCode, LocalDateTime rentDate) {
+        log.debug("checkAvailability called for attireCode={} rentDate={}", attireCode, rentDate);
 
         LocalDateTime returnDate = rentDate.plusDays(DEFAULT_RENT_DAYS);
         LocalDateTime blockedFrom = rentDate.minusDays(BUFFER_DAYS);
 
         List<AttireRent> conflicts =
-                attireRentDao.findConflictingRents(
-                        attireCode,
-                        blockedFrom
-                );
+            attireRentDao.findConflictingRents(
+                attireCode,
+                blockedFrom
+            );
 
         if (!conflicts.isEmpty()) {
             return new AttireAvailableResponseDto(
-                    false,
-                    returnDate,
-                    "Attire not available (in cleaning / rented period)"
+                false,
+                returnDate,
+                "Attire not available (in cleaning / rented period)"
             );
         }
 
+        log.debug("Attire {} available for rentDate={}", attireCode, rentDate);
         return new AttireAvailableResponseDto(
-                true,
-                returnDate,
-                "Attire available"
+            true,
+            returnDate,
+            "Attire available"
         );
     }
 
     public ResponseEntity<?> getStatsByAttireCode(String attireCode) {
-        if (attireCode == null || attireCode.trim().isEmpty())
+        log.info("getStatsByAttireCode called for attireCode={}", attireCode);
+        if (attireCode == null || attireCode.trim().isEmpty()) {
+            log.warn("Invalid request: empty attireCode");
             return ResponseEntity.badRequest().body("attireCode required");
+        }
 
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
@@ -191,6 +206,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
         resp.put("wishlistCount", wishlist.size());
         resp.put("wishlist", wishlist);
 
+        log.info("Stats for attireCode={} rentalCount={} wishlistCount={}", attireCode, rentalCount, wishlist.size());
         return ResponseEntity.ok(resp);
     }
 

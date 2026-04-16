@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.AttireDao;
 import com.example.FabriqBackend.dao.CategoryDao;
@@ -7,7 +9,7 @@ import com.example.FabriqBackend.dto.AttireCreateDto;
 import com.example.FabriqBackend.dto.AttireUpdateDto;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.Category;
-import com.example.FabriqBackend.service.IAttireService;
+import com.example.FabriqBackend.service.Interface.IAttireService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,6 +28,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "attires")
+@Slf4j
+
 public class AttireServiceImpl implements IAttireService {
 
     private final AttireDao attireDao;
@@ -38,6 +42,7 @@ public class AttireServiceImpl implements IAttireService {
 
     @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image) {
+        log.info("createAttire called for categoryId={} filename={}", dto != null ? dto.getCategoryId() : null, image != null ? image.getOriginalFilename() : null);
         try {
             String currentTenantId = TenantContext.getCurrentTenant();
             if (currentTenantId == null || currentTenantId.isEmpty()) {
@@ -60,6 +65,7 @@ public class AttireServiceImpl implements IAttireService {
             }
 
             Attire savedAttire = attireDao.save(attire);
+            log.info("Attire created id={} code={}", savedAttire.getId(), savedAttire.getAttireCode());
             return ResponseEntity.status(HttpStatus.CREATED).body(savedAttire);
 
         } catch (IOException e) {
@@ -72,7 +78,7 @@ public class AttireServiceImpl implements IAttireService {
     @Cacheable(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
     public List<Attire> getAllAttire() {
         String currentTenantId = TenantContext.getCurrentTenant();
-        System.out.println("Fetching all attires for tenant: " + currentTenantId);
+        log.info("Fetching all attires for tenant: " + currentTenantId);
         return attireDao.findAll();
     }
 
@@ -97,6 +103,7 @@ public class AttireServiceImpl implements IAttireService {
 
     @CacheEvict(value = "attires", allEntries = true)
     public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto dto, MultipartFile image) {
+        log.info("updateAttire called for id={} filename={}", id, image != null ? image.getOriginalFilename() : null);
         try {
             String currentTenantId = TenantContext.getCurrentTenant();
 
@@ -112,7 +119,10 @@ public class AttireServiceImpl implements IAttireService {
                         if (dto.getCategoryId() != null) {
                             Category category = categoryDao.findByCategoryId(
                                             dto.getCategoryId())
-                                    .orElseThrow(() -> new RuntimeException("Category not found"));
+                                    .orElseThrow(() -> {
+                                        log.warn("Category not found during update for id={}", dto.getCategoryId());
+                                        return new RuntimeException("Category not found");
+                                    });
                             attire.setCategory(category);
                         }
 
@@ -127,16 +137,21 @@ public class AttireServiceImpl implements IAttireService {
                                     try {
                                         s3Service.deleteFile(previousImageUrl);
                                     } catch (Exception e) {
-                                        System.err.println("Failed to delete previous image from S3: " + e.getMessage());
+                                        log.error("Failed to delete previous image from S3 for attire id={} url={}: {}", id, previousImageUrl, e.getMessage(), e);
                                     }
                                 }
                             } catch (IOException e) {
                                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
                             }
                         }
-                        return ResponseEntity.ok(attireDao.save(attire));
+                        Attire saved = attireDao.save(attire);
+                        log.info("Updated attire id={} code={}", saved.getId(), saved.getAttireCode());
+                        return ResponseEntity.ok(saved);
                     })
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+                    .orElseGet(() -> {
+                        log.warn("Attempted to update non-existent attire id={}", id);
+                        return ResponseEntity.notFound().build();
+                    });
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

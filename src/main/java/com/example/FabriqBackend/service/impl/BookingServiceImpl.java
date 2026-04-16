@@ -1,10 +1,12 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.BookingRequestDao;
 import com.example.FabriqBackend.dao.CustDao;
 import com.example.FabriqBackend.model.BookingRequest;
 import com.example.FabriqBackend.model.User;
-import com.example.FabriqBackend.service.IBookingService;
+import com.example.FabriqBackend.service.Interface.IBookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class BookingServiceImpl implements IBookingService {
 
     private final BookingRequestDao bookingRequestRepository;

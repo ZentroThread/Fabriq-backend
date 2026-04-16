@@ -13,7 +13,7 @@ import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Billing;
 import com.example.FabriqBackend.model.Customer;
-import com.example.FabriqBackend.service.IBillingService;
+import com.example.FabriqBackend.service.Interface.IBillingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,17 +68,14 @@ public class BillingServiceImpl implements IBillingService {
         double total = 0;
 
         for (AttireRentItemDto item : dto.getItems()) {
-
-            System.out.println("═══════════════════════════════════════");
-            System.out.println("📥 RECEIVED FROM FRONTEND:");
-            System.out.println("   attireCode: " + item.getAttireCode());
-            System.out.println("   rentDate: " + item.getRentDate());
-            System.out.println("   returnDate: " + item.getReturnDate());
-            System.out.println("   rentDate type: " + (item.getRentDate() != null ? item.getRentDate().getClass() : "null"));
-            System.out.println("═══════════════════════════════════════");
+            log.debug("Received rental item from frontend: attireCode={} rentDate={} returnDate={} rentDateType={}",
+                    item.getAttireCode(), item.getRentDate(), item.getReturnDate(), (item.getRentDate() != null ? item.getRentDate().getClass() : "null"));
 
             Attire attire = attireDao.findByAttireCode(item.getAttireCode().trim());
-            if (attire == null) continue;
+            if (attire == null) {
+                log.warn("Attire not found for code={}; skipping item", item.getAttireCode());
+                continue;
+            }
 
 
             AttireRent rent = new AttireRent();
@@ -110,8 +107,9 @@ public class BillingServiceImpl implements IBillingService {
             int duration = (int) Math.max(1, ChronoUnit.DAYS.between(start, end));
             rent.setRentDuration(duration);
 
-            total += (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0);
-            System.out.println(total);
+            double price = (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0);
+            total += price;
+            log.debug("Adding rent for attireCode={} price={} runningTotal={}", attire.getAttireCode(), price, total);
             attireRentDao.save(rent);
         }
 
@@ -139,15 +137,8 @@ public class BillingServiceImpl implements IBillingService {
 
         List<AttireRent> rents = new ArrayList<>();
         for (AttireRentItemDto item : dto.getItems()) {
-
-            System.out.println("═══════════════════════════════════════");
-            System.out.println("📥 RECEIVED FROM FRONTEND:");
-            System.out.println("   attireCode: " + item.getAttireCode());
-            System.out.println("   rentDate: " + item.getRentDate());
-            System.out.println("   returnDate: " + item.getReturnDate());
-            System.out.println("   isCustomItem: " + item.getIsCustomItem());
-            System.out.println("   customPrice: " + item.getCustomPrice());
-            System.out.println("═══════════════════════════════════════");
+            log.debug("Received billing item: attireCode={} rentDate={} returnDate={} isCustomItem={} customPrice={}",
+                    item.getAttireCode(), item.getRentDate(), item.getReturnDate(), item.getIsCustomItem(), item.getCustomPrice());
 
             AttireRent rent = new AttireRent();
 
@@ -190,10 +181,14 @@ public class BillingServiceImpl implements IBillingService {
 
                 attireRentDao.save(rent);
                 rents.add(rent);
+                log.debug("Saved custom rent item for code={} price={}", rent.getAttireCode(), rent.getCustomPrice());
 
             } else {
                 Attire attire = attireDao.findByAttireCode(item.getAttireCode().trim());
-                if (attire == null) continue;
+                if (attire == null) {
+                    log.warn("Attire not found for code={}; skipping", item.getAttireCode());
+                    continue;
+                }
 
                 rent.setAttire(attire);
                 rent.setCustomer(customer);
@@ -223,10 +218,11 @@ public class BillingServiceImpl implements IBillingService {
                 int duration = (int) Math.max(1, ChronoUnit.DAYS.between(start, end));
                 rent.setRentDuration(duration);
 
-                subtotal += (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0);
-
+                double price = (attire.getAttirePrice() != null ? attire.getAttirePrice() : 0.0);
+                subtotal += price;
                 attireRentDao.save(rent);
                 rents.add(rent);
+                log.debug("Saved rent item for attireCode={} price={}", attire.getAttireCode(), price);
             }
         }
 
@@ -241,7 +237,7 @@ public class BillingServiceImpl implements IBillingService {
         billing.setBillingType(dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "cash");
         billingDao.save(billing);
 
-        log.info("Billing {} created and marked as PAID", billing.getBillingCode());
+        log.info("Billing {} created and marked as PAID; total={}", billing.getBillingCode(), total);
 
         Context context = new Context();
         context.setVariable("customerName", customer.getCustName());
@@ -329,7 +325,7 @@ public class BillingServiceImpl implements IBillingService {
 
             notificationClient.sendNotification(event);
         } catch (Exception e) {
-            log.error("Failed to publish billing paid notification: {}", e.getMessage());
+            log.error("Failed to publish billing paid notification: {}", e.getMessage(), e);
         }
 
         return ResponseEntity.ok(resp);
@@ -437,7 +433,7 @@ public class BillingServiceImpl implements IBillingService {
 
             notificationClient.sendNotification(event);
         } catch (Exception e) {
-            log.error("Failed to publish billing paid notification: {}", e.getMessage());
+            log.error("Failed to publish billing paid notification: {}", e.getMessage(), e);
         }
 
         return ResponseEntity.ok(resp);

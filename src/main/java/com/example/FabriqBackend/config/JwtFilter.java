@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.config;
 
-import com.example.FabriqBackend.service.JWTService;
-import com.example.FabriqBackend.service.userDetailsService;
+import com.example.FabriqBackend.service.impl.JWTService;
+import com.example.FabriqBackend.service.impl.userDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

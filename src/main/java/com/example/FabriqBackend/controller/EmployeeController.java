@@ -1,7 +1,7 @@
 package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.EmployeeDto;
-import com.example.FabriqBackend.service.IEmployeeService;
+import com.example.FabriqBackend.service.Interface.IEmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

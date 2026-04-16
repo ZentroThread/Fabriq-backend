@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dao.CustDao;
 import com.example.FabriqBackend.model.User;
-import com.example.FabriqBackend.service.JWTService;
+import com.example.FabriqBackend.service.impl.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,12 +1,14 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.EmployeeBankDetailsDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.EmployeeDto;
 import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
-import com.example.FabriqBackend.service.IEmployeeService;
+import com.example.FabriqBackend.service.Interface.IEmployeeService;
 import com.example.FabriqBackend.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class EmployeeServiceImpl implements IEmployeeService {
 
     private final EmployeeDao empDao;
@@ -41,9 +45,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
             key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
     )
     public EmployeeDto addEmployee(EmployeeDto dto, MultipartFile image) {
-
+        log.info("Attempting to add new employee with code: {}", dto.getEmpCode());
         Employee emp = EmployeeMapper.toEntity(dto, new Employee());
         Employee savedEmp = empDao.save(emp);
+        log.debug("Employee details saved to database for code: {}", savedEmp.getEmpCode());
+        
         if (image != null && !image.isEmpty()) {
             try {
                 String imageUrl = s3Service.uploadFile(image);
@@ -70,9 +76,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee existingEmp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
+        log.debug("Found employee details. Mapping updated DTO to entity.");
         EmployeeMapper.toEntity(dto, existingEmp);
 
         if (existingEmp.getEmployeeBankDetails() != null) {
+            log.trace("Updating employee bank details for code: {}", empCode);
             empBankDao.save(existingEmp.getEmployeeBankDetails());
         }
 
@@ -86,7 +94,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
 
         Employee updatedEmp = empDao.save(existingEmp);
-
+        log.info("Employee details successfully updated for code: {}", empCode);
         return EmployeeMapper.toDto(updatedEmp);
     }
 
@@ -108,8 +116,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (bankDetails != null) {
             empBankDao.deleteById(bankDetails.getId());
         }
+        
         empDao.deleteByEmpCode(empCode);
-
+        log.info("Employee with code {} has been successfully deleted.", empCode);
     }
 
     @Transactional(readOnly = true)
@@ -122,6 +131,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee emp = empDao.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
 
+        log.debug("Employee fetched successfully with code: {}", empCode);
         return EmployeeMapper.toDto(emp);
     }
 

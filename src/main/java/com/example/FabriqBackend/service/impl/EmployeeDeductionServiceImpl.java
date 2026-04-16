@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.DeductionTypeDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dao.EmployeeDeductionDao;
@@ -9,7 +11,7 @@ import com.example.FabriqBackend.mapper.EmployeeDeductionMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.DeductionType;
 import com.example.FabriqBackend.model.salary.EmployeeDeduction;
-import com.example.FabriqBackend.service.IEmployeeDeductionService;
+import com.example.FabriqBackend.service.Interface.IEmployeeDeductionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class EmployeeDeductionServiceImpl implements IEmployeeDeductionService {
 
     private final EmployeeDeductionDao employeeDeductionDao;

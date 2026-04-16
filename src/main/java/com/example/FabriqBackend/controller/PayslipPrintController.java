@@ -4,7 +4,7 @@ import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.salary.PayrollResponseDTO;
 import com.example.FabriqBackend.model.Employee;
-import com.example.FabriqBackend.service.payroll.PayrollService;
+import com.example.FabriqBackend.service.Interface.Ipayroll.PayrollService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

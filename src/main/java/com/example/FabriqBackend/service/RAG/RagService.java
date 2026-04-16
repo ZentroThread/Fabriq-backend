@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service.RAG;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class RagService {
 
@@ -28,13 +30,18 @@ public class RagService {
 
         HttpEntity<Map<String,Object>> request = new HttpEntity<>(body, headers);
 
-        System.out.println("Sending request to RAG: " + body);
+        log.info("Sending request to RAG service for role: {}, question: {}", role, question);
+        try {
+            ResponseEntity<Map> response =
+                    restTemplate.postForEntity(url, request, Map.class);
 
-        ResponseEntity<Map> response =
-                restTemplate.postForEntity(url, request, Map.class);
+            log.info("Received RAG response successfully.");
+            log.debug("RAG response body: {}", response.getBody());
 
-        System.out.println("RAG response: " + response.getBody());
-
-        return response.getBody().get("answer").toString();
+            return response.getBody().get("answer").toString();
+        } catch (Exception e) {
+            log.error("Error occurred while directly querying the RAG service: ", e);
+            throw e;
+        }
     }
 }

@@ -2,7 +2,7 @@ package com.example.FabriqBackend.controller;
 
 import com.example.FabriqBackend.dto.CreateBillingWithRentalsDto;
 import com.example.FabriqBackend.model.Billing;
-import com.example.FabriqBackend.service.IBillingService;
+import com.example.FabriqBackend.service.Interface.IBillingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,14 +1,16 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.PayrollRecordDao;
 import com.example.FabriqBackend.dto.salary.EpfFormDTO;
 import com.example.FabriqBackend.dto.salary.EtfFormDTO;
 import com.example.FabriqBackend.dto.salary.PayrollRecordResponseDTO;
 import com.example.FabriqBackend.mapper.PayrollMapper;
 import com.example.FabriqBackend.model.salary.PayrollRecord;
-import com.example.FabriqBackend.service.IPayrollService;
-import com.example.FabriqBackend.service.payroll.EpfReportService;
-import com.example.FabriqBackend.service.payroll.EtfReportService;
+import com.example.FabriqBackend.service.Interface.IPayrollService;
+import com.example.FabriqBackend.service.Interface.Ipayroll.EpfReportService;
+import com.example.FabriqBackend.service.Interface.Ipayroll.EtfReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class PayrollServiceImpl implements IPayrollService {
 
     private final PayrollRecordDao payrollRecordDao;

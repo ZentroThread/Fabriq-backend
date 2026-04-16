@@ -1,10 +1,12 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.HolidayDao;
 import com.example.FabriqBackend.dto.salary.HolidayRequestDTO;
 import com.example.FabriqBackend.dto.salary.HolidayResponseDTO;
 import com.example.FabriqBackend.model.salary.Holiday;
-import com.example.FabriqBackend.service.IHolidayService;
+import com.example.FabriqBackend.service.Interface.IHolidayService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class HolidayServiceImpl implements IHolidayService {
 
     private final HolidayDao holidayDao;

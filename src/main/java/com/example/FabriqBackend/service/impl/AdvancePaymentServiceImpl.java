@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.example.FabriqBackend.dao.AdvancePaymentDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.salary.AdvancePaymentRequestDTO;
@@ -7,7 +9,7 @@ import com.example.FabriqBackend.dto.salary.AdvancePaymentResponseDTO;
 import com.example.FabriqBackend.mapper.AdvancePaymentMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.AdvancePayment;
-import com.example.FabriqBackend.service.IAdvancePaymentService;
+import com.example.FabriqBackend.service.Interface.IAdvancePaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
 
