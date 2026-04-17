@@ -83,7 +83,7 @@ public class AttireRentServiceImpl implements IAttireRentService {
         return dto;
     }
 
-    @CacheEvict(key = "'deleteAttireRent'")
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttireRent'")
     public ResponseEntity<?> deleteAttireRent(Integer id) {
         attireRentDao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);

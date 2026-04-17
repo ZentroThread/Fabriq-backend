@@ -40,7 +40,7 @@ public class AttireServiceImpl implements IAttireService {
     @Value("${aws.s3.bucket.name}")
     private String attireBucketName;
 
-    @CacheEvict(value = "attires", allEntries = true)
+    @CacheEvict(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
     public ResponseEntity<?> createAttire(AttireCreateDto dto, MultipartFile image) {
         log.info("createAttire called for categoryId={} filename={}", dto != null ? dto.getCategoryId() : null, image != null ? image.getOriginalFilename() : null);
         try {
@@ -82,7 +82,7 @@ public class AttireServiceImpl implements IAttireService {
         return attireDao.findAll();
     }
 
-    @CacheEvict(value = "attires", allEntries = true)
+    @CacheEvict(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
     public ResponseEntity<?> deleteAttire(Integer id) {
         return attireDao.findById(id)
                 .map(attire -> {
@@ -101,7 +101,7 @@ public class AttireServiceImpl implements IAttireService {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attire not found"));
     }
 
-    @CacheEvict(value = "attires", allEntries = true)
+    @CacheEvict(value = "attires", key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttires'")
     public ResponseEntity<?> updateAttire(Integer id, AttireUpdateDto dto, MultipartFile image) {
         log.info("updateAttire called for id={} filename={}", id, image != null ? image.getOriginalFilename() : null);
         try {

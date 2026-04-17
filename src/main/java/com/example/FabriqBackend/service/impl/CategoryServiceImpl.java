@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements ICategoryService {
         return new ResponseEntity<>(cat, HttpStatus.CREATED);
     }
 
-    @CacheEvict(key = "#id")
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCategories'")
     public ResponseEntity<?> deleteCategory(Integer id) {
         categoryDao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);

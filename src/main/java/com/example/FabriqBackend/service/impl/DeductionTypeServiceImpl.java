@@ -4,10 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.example.FabriqBackend.dao.DeductionTypeDao;
 import com.example.FabriqBackend.dto.salary.DeductionTypeDto;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import com.example.FabriqBackend.model.salary.DeductionType;
 import com.example.FabriqBackend.service.Interface.IDeductionTypeService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-
+@CacheConfig(cacheNames = "deductionTypes")
 public class DeductionTypeServiceImpl implements IDeductionTypeService {
 
     private final DeductionTypeDao deductionTypeDao;
@@ -24,6 +28,7 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
 
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allDeductionTypes'")
     public ResponseEntity<DeductionTypeDto> createDeductionType(DeductionTypeDto deductionTypeDto) {
 
         DeductionType deductionType = modelMapper.map(deductionTypeDto, DeductionType.class);
@@ -36,17 +41,18 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     public ResponseEntity<DeductionTypeDto> getDeductionTypeById(Long id) {
 
         DeductionType deductionType = deductionTypeDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("Deduction Type not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Deduction Type", "id", String.valueOf(id)));
         DeductionTypeDto deductionTypeDto = modelMapper.map(deductionType, DeductionTypeDto.class);
 
         return ResponseEntity.ok(deductionTypeDto);
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allDeductionTypes'")
     public ResponseEntity<DeductionTypeDto> updateDeductionType(Long id, DeductionTypeDto deductionTypeDto) {
 
         DeductionType deductionType = deductionTypeDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("Deduction Type not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Deduction Type", "id", String.valueOf(id)));
 
         DeductionType updatedDeductionType = modelMapper.map(deductionTypeDto, DeductionType.class);
         updatedDeductionType.setDeductionId(deductionType.getDeductionId());
@@ -56,10 +62,11 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allDeductionTypes'")
     public ResponseEntity<Void> deleteDeductionType(Long id) {
 
         DeductionType deductionType = deductionTypeDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("Deduction Type not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Deduction Type", "id", String.valueOf(id)));
 
         deductionTypeDao.delete(deductionType);
 
@@ -67,6 +74,7 @@ public class DeductionTypeServiceImpl implements IDeductionTypeService {
     }
 
     @Override
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allDeductionTypes'")
     public ResponseEntity<List<DeductionTypeDto>> getAllDeductionTypes() {
 
         List<DeductionType> deductionTypes = deductionTypeDao.findAll();

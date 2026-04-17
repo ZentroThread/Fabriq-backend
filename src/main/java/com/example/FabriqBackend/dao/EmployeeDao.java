@@ -3,10 +3,12 @@ package com.example.FabriqBackend.dao;
 import com.example.FabriqBackend.model.Employee;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface EmployeeDao extends TenantAwareDao<Employee, Long> {
 
     Optional<Employee> findByEmpCode(String empCode);

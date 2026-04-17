@@ -8,6 +8,9 @@ import com.example.FabriqBackend.model.salary.AllowanceType;
 import com.example.FabriqBackend.service.Interface.IAllowanceTypeService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-
+@CacheConfig(cacheNames = "allowanceTypes")
 public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
 
     private final AllowanceTypeDao allowanceTypeDao;
@@ -24,6 +27,7 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
 
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAllowanceTypes'")
     public ResponseEntity<AllowanceTypeDTO> createAllowanceType(AllowanceTypeDTO allowanceTypeDTO) {
 
         AllowanceType allowanceType = modelMapper.map(allowanceTypeDTO, AllowanceType.class);
@@ -34,6 +38,7 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAllowanceTypes'")
     public ResponseEntity<AllowanceTypeDTO> updateAllowanceType(Long id, AllowanceTypeDTO allowanceTypeDTO) {
 
         AllowanceType allowanceType = allowanceTypeDao.findById(id)
@@ -60,6 +65,7 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAllowanceTypes'")
     public ResponseEntity<List<AllowanceTypeDTO>> getAllAllowanceTypes() {
 
         List<AllowanceType> allowanceTypes = allowanceTypeDao.findAll();
@@ -71,6 +77,7 @@ public class AllowanceTypeServiceImpl implements IAllowanceTypeService {
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAllowanceTypes'")
     public ResponseEntity<?> deleteAllowanceType(Long id) {
 
         AllowanceType allowanceType = allowanceTypeDao.findById(id)

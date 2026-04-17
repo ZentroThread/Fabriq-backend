@@ -12,6 +12,9 @@ import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.AdvancePayment;
 import com.example.FabriqBackend.service.Interface.IAdvancePaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,12 +24,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@CacheConfig(cacheNames = "advancePayments")
 public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
 
     private final AdvancePaymentDao advancePaymentDao;
     private final EmployeeDao employeeDao;
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public AdvancePaymentResponseDTO createAdvancePayment(AdvancePaymentRequestDTO requestDTO) {
 
         Employee employee = employeeDao.findById(requestDTO.getEmpId())
@@ -49,17 +54,20 @@ public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
     }
 
     @Override
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public List<AdvancePaymentResponseDTO> getAllAdvancePayments() {
         List<AdvancePayment> payments = advancePaymentDao.findAll();
         return payments.stream().map(AdvancePaymentMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public void deleteAdvancePayment(Long id) {
         advancePaymentDao.deleteById(id);
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public AdvancePaymentResponseDTO updateAdvancePayment(Long id, AdvancePaymentRequestDTO requestDTO) {
 
         AdvancePayment existingPayment = advancePaymentDao.findById(id)
