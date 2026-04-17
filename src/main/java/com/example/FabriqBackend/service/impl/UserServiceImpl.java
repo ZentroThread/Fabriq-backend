@@ -3,6 +3,8 @@ package com.example.FabriqBackend.service.impl;
 import com.example.FabriqBackend.config.Tenant.TenantContext;
 import com.example.FabriqBackend.dao.UserDao;
 import com.example.FabriqBackend.dto.ChangePasswordDto;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
+import com.example.FabriqBackend.exception.UnauthorizedException;
 import com.example.FabriqBackend.model.Login;
 import com.example.FabriqBackend.model.RefreshToken;
 import com.example.FabriqBackend.model.UserPrincipal;
@@ -105,11 +107,11 @@ public class UserServiceImpl implements IUserService {
             return ResponseEntity.ok().build();
             } else {
                 log.warn("Authentication failed for user: {}", user.getUsername());
-                throw new RuntimeException("Invalid credentials");
+                throw new UnauthorizedException("Invalid credentials");
             }
         } catch (Exception e) {
             log.error("Authentication error for user: {}", user.getUsername(), e);
-            throw new RuntimeException("Invalid credentials", e);
+            throw new UnauthorizedException("Invalid credentials", e);
         }
     }
 
@@ -188,7 +190,7 @@ public class UserServiceImpl implements IUserService {
 
         Login user = userDao.findByUsername(validRefreshToken.getUsername());
         if (user == null) {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User", "username", validRefreshToken.getUsername());
         }
 
         String newAccessToken = jwtService.generateAccessToken(

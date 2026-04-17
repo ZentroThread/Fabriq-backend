@@ -9,6 +9,7 @@ import com.example.FabriqBackend.dto.AttireRentItemDto;
 import com.example.FabriqBackend.dto.CreateBillingAndPayDto;
 import com.example.FabriqBackend.dto.CreateBillingWithRentalsDto;
 import com.example.FabriqBackend.dto.PayBillingDto;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import com.example.FabriqBackend.model.Attire;
 import com.example.FabriqBackend.model.AttireRent;
 import com.example.FabriqBackend.model.Billing;
@@ -18,6 +19,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -41,11 +44,13 @@ public class BillingServiceImpl implements IBillingService {
     public final TemplateEngine templateEngine;
     private final com.example.FabriqBackend.service.kafka.NotificationClient notificationClient;
 
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allBillings'")
     public ResponseEntity<?> addBilling(Billing billing) {
         billingDao.save(billing);
         return ResponseEntity.ok("Billing record added successfully.");
     }
 
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allBillings'")
     public ResponseEntity<?> getAllBillings() {
         String tenantId = TenantContext.getCurrentTenant();
         billingDao.findAllByTenantId(tenantId);
@@ -53,12 +58,13 @@ public class BillingServiceImpl implements IBillingService {
     }
 
     @Transactional
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allBillings'")
     public ResponseEntity<?> createBillingWithRentals(CreateBillingWithRentalsDto dto) {
 
         log.info("createBillingWithRentals received dto: {}", dto);
 
         Customer customer = customerDao.findByCustCode(dto.getCustomerCode().trim())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "code", dto.getCustomerCode()));
 
         Billing billing = new Billing();
         billing.setCustomer(customer);
@@ -121,12 +127,16 @@ public class BillingServiceImpl implements IBillingService {
     }
 
     @Transactional
+    @CacheEvict(
+            value = {"billings", "attireRents"},
+            key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + '*'"
+    )
     public ResponseEntity<?> createBillingAndPay(CreateBillingAndPayDto dto) {
         log.info("createBillingAndPay received dto: {}", dto);
 
         // 1. Find customer
         Customer customer = customerDao.findByCustCode(dto.getCustomerCode().trim())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "code", dto.getCustomerCode()));
 
         Billing billing = new Billing();
         billing.setCustomer(customer);

@@ -15,6 +15,9 @@ import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.service.Interface.IAttendanceService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -26,7 +29,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-
+@CacheConfig(cacheNames = "attendances")
 public class AttendanceServiceImpl implements IAttendanceService {
 
     private final AttendanceDao attendanceDao;
@@ -38,13 +41,14 @@ public class AttendanceServiceImpl implements IAttendanceService {
     private static final int ALLOWED_LATE_MINUTES = 10;
     private static final int REQUIRED_HOURS = 8;
 
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttendances'")
     public void markAttendance(AttendanceCreateDto dto) {
         log.info("markAttendance called for empId={}", dto != null ? dto.getEmpId() : null);
         if (dto == null || dto.getEmpId() == null || dto.getEmpId() <= 0) {
-            throw new RuntimeException("empCode is required to mark attendance");
+            throw new com.example.FabriqBackend.exception.BadRequestException("empCode is required to mark attendance");
         }
         Employee employee = employeeDao.findById(dto.getEmpId())
-                .orElseThrow(() -> new RuntimeException("Employee not found with Id: " + dto.getEmpId()));
+                .orElseThrow(() -> new com.example.FabriqBackend.exception.BadRequestException("Employee not found with Id: " + dto.getEmpId()));
 
         Attendance attendance = AttendanceMapper.toEntity(dto, new Attendance());
         attendance.setEmployee(employee);
@@ -52,6 +56,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
         log.info("Attendance recorded for empId={}", dto.getEmpId());
     }
 
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':emp:' + #empCode + ':year:' + #year + ':month:' + #month")
     public List<AttendanceDto> getMonthlyAttendanceByEmpCode(String empCode, int year, int month) {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
@@ -60,7 +65,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .findByEmployee_EmpCodeAndDateBetweenOrderByDateAsc(empCode, start, end);
 
         if (attendanceList.isEmpty()) {
-            throw new RuntimeException("Attendance not found for empCode:" + empCode + " month: " + month);
+            throw new com.example.FabriqBackend.exception.BadRequestException("Attendance not found for empCode:" + empCode + " month: " + month);
         }
 
         return attendanceList.stream()
@@ -68,6 +73,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .toList();
     }
 
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttendances:month:' + #year + '-' + #month")
     public List<AttendanceDto> fetchAllAttendanceForMonth(int year, int month) {
         log.info("Fetching all attendance for year={} month={}", year, month);
         LocalDate start = LocalDate.of(year, month, 1);
@@ -80,6 +86,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .toList();
     }
 
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAttendances:date:' + #date")
     public List<AttendanceDto> fetchAllAttendanceForDate(String date) {
         log.info("Fetching attendance for date={}", date);
         LocalDate localDate = LocalDate.parse(date);
@@ -92,6 +99,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
     }
 
     @Transactional
+    @CacheEvict(value = "attendances", allEntries = true)
     public void updateDailyAttendance(String empCode, LocalDate date) {
         log.info("Updating daily attendance for empCode={} date={}", empCode, date);
 
@@ -106,7 +114,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .orElseGet(() -> {
                     Attendance a = new Attendance();
                     a.setEmployee(employeeDao.findByEmpCode(empCode)
-                            .orElseThrow(() -> new RuntimeException("Employee not found")));
+                            .orElseThrow(() -> new com.example.FabriqBackend.exception.BadRequestException("Employee not found")));
                     a.setDate(date);
                     return a;
                 });

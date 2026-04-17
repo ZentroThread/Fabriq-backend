@@ -8,6 +8,7 @@ import com.example.FabriqBackend.mapper.PayrollMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.PayrollRecord;
 import com.example.FabriqBackend.service.Interface.Ipayroll.*;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class PayrollServiceImpl implements PayrollService {
     public PayrollResponseDTO calculate(Long empId, int month, int year) {
 
         Employee employee = employeeDao.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee not found with Id: " + empId));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", String.valueOf(empId)));
 
         YearMonth period = YearMonth.of(year, month);
 

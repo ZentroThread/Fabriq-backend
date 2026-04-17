@@ -11,7 +11,9 @@ import com.example.FabriqBackend.enums.HolidayCategoryEnum;
 import com.example.FabriqBackend.model.Attendance;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.*;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
-
+@Service
 public class PayrollCalculationServiceImpl {
 
     private final PayrollRecordDao payrollRecordDao;
@@ -50,7 +52,7 @@ public class PayrollCalculationServiceImpl {
         log.info("Calculating payroll for empId={} month={} year={}", empId, month, year);
 
         var employee = employeeDao.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", String.valueOf(empId)));
 
         double basicSalary = employee.getBasicSalary();
 

@@ -1,5 +1,6 @@
 package com.example.FabriqBackend.service.impl;
 
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.example.FabriqBackend.dao.AdvancePaymentDao;
@@ -11,6 +12,9 @@ import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.AdvancePayment;
 import com.example.FabriqBackend.service.Interface.IAdvancePaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,16 +24,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@CacheConfig(cacheNames = "advancePayments")
 public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
 
     private final AdvancePaymentDao advancePaymentDao;
     private final EmployeeDao employeeDao;
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public AdvancePaymentResponseDTO createAdvancePayment(AdvancePaymentRequestDTO requestDTO) {
 
         Employee employee = employeeDao.findById(requestDTO.getEmpId())
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + requestDTO.getEmpId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", String.valueOf(requestDTO.getEmpId())));
 
         AdvancePayment advancePayment = AdvancePaymentMapper.toEntity(requestDTO);
         advancePayment.setEmployee(employee);
@@ -41,28 +47,31 @@ public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
     @Override
     public List<AdvancePaymentResponseDTO> getAdvancePaymentsByEmployeeId(Long empId) {
 
-        employeeDao.findById(empId).orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
+        employeeDao.findById(empId).orElseThrow(() -> new ResourceNotFoundException("Employee", "id", String.valueOf(empId)));
         List<AdvancePayment> payments = advancePaymentDao.findByEmployeeId(empId);
 
         return payments.stream().map(AdvancePaymentMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
+    @Cacheable(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public List<AdvancePaymentResponseDTO> getAllAdvancePayments() {
         List<AdvancePayment> payments = advancePaymentDao.findAll();
         return payments.stream().map(AdvancePaymentMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public void deleteAdvancePayment(Long id) {
         advancePaymentDao.deleteById(id);
     }
 
     @Override
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allAdvancePayments'")
     public AdvancePaymentResponseDTO updateAdvancePayment(Long id, AdvancePaymentRequestDTO requestDTO) {
 
         AdvancePayment existingPayment = advancePaymentDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("Advance Payment not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Advance Payment", "id", String.valueOf(id)));
         AdvancePayment updatedPayment = AdvancePaymentMapper.toEntity(requestDTO);
         updatedPayment.setEmployee(existingPayment.getEmployee());
         updatedPayment.setId(existingPayment.getId());
@@ -74,7 +83,7 @@ public class AdvancePaymentServiceImpl implements IAdvancePaymentService {
     @Override
     public List<AdvancePaymentResponseDTO> getAdvancePaymentsByEmployeeIdAndDateRange(Long empId, String startDate, String endDate) {
 
-        employeeDao.findById(empId).orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
+        employeeDao.findById(empId).orElseThrow(() -> new ResourceNotFoundException("Employee", "id", String.valueOf(empId)));
 
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);

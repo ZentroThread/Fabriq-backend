@@ -1,11 +1,13 @@
 package com.example.FabriqBackend.dao;
 
 import com.example.FabriqBackend.model.salary.ProductionRecord;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface ProductionRecordDao extends TenantAwareDao<ProductionRecord, Long> {
 
 

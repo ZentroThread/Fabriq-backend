@@ -65,13 +65,13 @@ public class CustomerServiceImpl implements ICustomerService {
         return customerDao.findAllByTenantId(tenantId);
     }
 
-    @CacheEvict(allEntries = true)
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public ResponseEntity<?> deleteCustomer(Integer custId) {
         customerDao.deleteById(custId);
         return ResponseEntity.ok().build();
     }
 
-    @CacheEvict(allEntries = true)
+    @CacheEvict(key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant() + ':allCustomers'")
     public ResponseEntity<?> updateCustomer(Integer custId, CustomerUpdateDto customerUpdateDto) {
         Customer cust = customerDao.findById(custId)
                 .map(customer -> {
