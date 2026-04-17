@@ -41,10 +41,10 @@ public class AttendanceServiceImpl implements IAttendanceService {
     public void markAttendance(AttendanceCreateDto dto) {
         log.info("markAttendance called for empId={}", dto != null ? dto.getEmpId() : null);
         if (dto == null || dto.getEmpId() == null || dto.getEmpId() <= 0) {
-            throw new RuntimeException("empCode is required to mark attendance");
+            throw new com.example.FabriqBackend.exception.BadRequestException("empCode is required to mark attendance");
         }
         Employee employee = employeeDao.findById(dto.getEmpId())
-                .orElseThrow(() -> new RuntimeException("Employee not found with Id: " + dto.getEmpId()));
+                .orElseThrow(() -> new com.example.FabriqBackend.exception.BadRequestException("Employee not found with Id: " + dto.getEmpId()));
 
         Attendance attendance = AttendanceMapper.toEntity(dto, new Attendance());
         attendance.setEmployee(employee);
@@ -60,7 +60,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .findByEmployee_EmpCodeAndDateBetweenOrderByDateAsc(empCode, start, end);
 
         if (attendanceList.isEmpty()) {
-            throw new RuntimeException("Attendance not found for empCode:" + empCode + " month: " + month);
+            throw new com.example.FabriqBackend.exception.BadRequestException("Attendance not found for empCode:" + empCode + " month: " + month);
         }
 
         return attendanceList.stream()
@@ -106,7 +106,7 @@ public class AttendanceServiceImpl implements IAttendanceService {
                 .orElseGet(() -> {
                     Attendance a = new Attendance();
                     a.setEmployee(employeeDao.findByEmpCode(empCode)
-                            .orElseThrow(() -> new RuntimeException("Employee not found")));
+                            .orElseThrow(() -> new com.example.FabriqBackend.exception.BadRequestException("Employee not found")));
                     a.setDate(date);
                     return a;
                 });

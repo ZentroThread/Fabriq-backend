@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import com.example.FabriqBackend.dao.EmployeeBankDetailsDao;
 import com.example.FabriqBackend.dao.EmployeeDao;
 import com.example.FabriqBackend.dto.EmployeeDto;
+import com.example.FabriqBackend.exception.EmployeeAlreadyExistsException;
+import com.example.FabriqBackend.exception.FileUploadException;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import com.example.FabriqBackend.mapper.EmployeeMapper;
 import com.example.FabriqBackend.model.Employee;
 import com.example.FabriqBackend.model.salary.EmployeeBankDetails;
@@ -45,6 +48,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
             key = "T(com.example.FabriqBackend.config.Tenant.TenantContext).getCurrentTenant()"
     )
     public EmployeeDto addEmployee(EmployeeDto dto, MultipartFile image) {
+        Optional<Employee> existingEmployee = empDao.findByEmpCode(dto.getEmpCode());
+        if (existingEmployee.isPresent()) {
+            throw new EmployeeAlreadyExistsException("Employee with code " + dto.getEmpCode() + " already exists!");
+        }
+
         log.info("Attempting to add new employee with code: {}", dto.getEmpCode());
         Employee emp = EmployeeMapper.toEntity(dto, new Employee());
         Employee savedEmp = empDao.save(emp);
@@ -56,7 +64,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 savedEmp.setImgUrl(imageUrl);
                 empDao.save(savedEmp);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image: " + e.getMessage());
+                throw new FileUploadException("Failed to upload image: " + e.getMessage(), e);
             }
         }
 
@@ -74,7 +82,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     )
     public EmployeeDto updateEmployee(EmployeeDto dto, String empCode, MultipartFile image) {
         Employee existingEmp = empDao.findByEmpCode(empCode)
-                .orElseThrow(() -> new RuntimeException("Employee does not exist with id: " + empCode));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", empCode));
 
         log.debug("Found employee details. Mapping updated DTO to entity.");
         EmployeeMapper.toEntity(dto, existingEmp);
@@ -89,7 +97,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 String imageUrl = s3Service.uploadFile(image);
                 existingEmp.setImgUrl(imageUrl);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image: " + e.getMessage());
+                throw new FileUploadException("Failed to upload image: " + e.getMessage(), e);
             }
         }
 

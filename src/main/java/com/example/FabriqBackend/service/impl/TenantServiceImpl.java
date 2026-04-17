@@ -1,5 +1,7 @@
 package com.example.FabriqBackend.service.impl;
 
+import com.example.FabriqBackend.exception.BadRequestException;
+import com.example.FabriqBackend.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.example.FabriqBackend.config.Tenant.TenantContext;
@@ -53,7 +55,7 @@ public class TenantServiceImpl implements TenantService {
                     existing.setCity(updatedTenant.getCity());
                     return tenantDao.save(existing);
                 })
-                .orElseThrow(() -> new RuntimeException("Tenant not found: " + tenantId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tenant", "id", tenantId));
     }
 
     @Override
@@ -74,7 +76,7 @@ public class TenantServiceImpl implements TenantService {
     @Transactional
     public Tenant createTenant(Tenant tenant) {
         if (tenantDao.existsByEmail(tenant.getEmail())) {
-            throw new RuntimeException("Tenant with email already exists");
+            throw new BadRequestException("Tenant with email already exists");
         }
         return tenantDao.save(tenant);
     }
