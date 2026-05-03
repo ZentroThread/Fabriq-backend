@@ -1,25 +1,18 @@
 services:
-  # 1. Your Spring Boot Application
+  # Backend
   backend:
-    build: .
+    image: thilinarodrigo/fabriq-backend:latest
     container_name: fabriq-backend
     restart: always
     ports:
       - "3000:8081"
-    environment:
-      - AWS_RDS_DB_URL=${AWS_RDS_DB_URL}
-      - AWS_RDS_DB_USER=${AWS_RDS_DB_USER}
-      - AWS_RDS_DB_PASSWORD=${AWS_RDS_DB_PASSWORD}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
-      - AWS_S3_EMP_BUCKET_NAME=${AWS_S3_EMP_BUCKET_NAME}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}
+    env_file:
+      - .env
     depends_on:
       - redis
+      - kafka
 
-  # 2. Redis Service
+  # Redis
   redis:
     image: redis:7-alpine
     container_name: fabriq-redis
@@ -28,6 +21,38 @@ services:
       - "6379:6379"
     volumes:
         - redis_data:/data
+  #zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  # kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
 
 volumes:
     redis_data:
